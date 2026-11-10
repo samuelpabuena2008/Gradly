@@ -1,0 +1,68 @@
+:root {
+  --fondo: #f6f7f9;
+  --tarjeta: #ffffff;
+  --texto: #1d2330;
+  --suave: #5d6677;
+  --borde: #dde1e8;
+  --acento: #2f5fd0;
+  --verde: #2e9d5b;
+  --amarillo: #d79b12;
+  --rojo: #d2453c;
+  --cursada: #e7ecf7;
+  --reprobada: #f6e3e1;
+  --bloqueada: #f1f2f4;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--texto);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--fondo); }
+
+.app { display: flex; flex-direction: column; height: 100vh; }
+header { display: flex; align-items: baseline; gap: 16px; padding: 12px 20px; border-bottom: 1px solid var(--borde); background: var(--tarjeta); }
+header h1 { margin: 0; font-size: 22px; color: var(--acento); }
+header p { margin: 0; color: var(--suave); }
+
+main { flex: 1; display: grid; grid-template-columns: 1fr 380px; min-height: 0; }
+aside { overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; border-left: 1px solid var(--borde); }
+.malla { height: 100%; min-height: 400px; }
+
+@media (max-width: 900px) {
+  main { grid-template-columns: 1fr; }
+  .malla { height: 60vh; }
+  aside { border-left: none; }
+}
+
+.tarjeta { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 10px; padding: 14px; }
+.tarjeta h2 { margin: 0 0 10px; font-size: 16px; }
+.tarjeta p { margin: 6px 0; font-size: 14px; }
+.fila { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
+.fila-entre { display: flex; justify-content: space-between; gap: 8px; }
+.ayuda { color: var(--suave); font-size: 13px; }
+.errores { color: var(--rojo); font-size: 13px; padding-left: 18px; }
+textarea { width: 100%; font: inherit; font-size: 13px; margin-bottom: 6px; }
+button { font: inherit; font-size: 13px; padding: 5px 10px; border: 1px solid var(--borde); border-radius: 6px; background: var(--tarjeta); cursor: pointer; }
+button:hover:not(:disabled) { border-color: var(--acento); }
+
+.enfoque { background: #eef3ff; border-radius: 8px; padding: 8px 10px; font-size: 14px; margin-bottom: 10px; }
+.predicciones { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.prediccion { border: 1px solid var(--borde); border-left-width: 5px; border-radius: 8px; padding: 8px 10px; font-size: 14px; cursor: pointer; }
+.borde-verde { border-left-color: var(--verde); }
+.borde-amarillo { border-left-color: var(--amarillo); }
+.borde-rojo { border-left-color: var(--rojo); }
+.chip { font-size: 12px; padding: 1px 8px; border-radius: 10px; color: #fff; white-space: nowrap; }
+.chip-verde { background: var(--verde); }
+.chip-amarillo { background: var(--amarillo); }
+.chip-rojo { background: var(--rojo); }
+
+/* Nodos de la malla */
+.react-flow__node.nodo { width: 180px; font-size: 12px; border-radius: 8px; border: 1px solid var(--borde); padding: 6px 8px; }
+.nodo .detalle { color: var(--suave); margin-top: 2px; }
+.react-flow__node.nodo-cursada { background: var(--cursada); }
+.react-flow__node.nodo-reprobada { background: var(--reprobada); }
+.react-flow__node.nodo-bloqueada { background: var(--bloqueada); color: var(--suave); }
+.react-flow__node.nodo-verde { background: #fff; border: 2px solid var(--verde); }
+.react-flow__node.nodo-amarillo { background: #fff; border: 2px solid var(--amarillo); }
+.react-flow__node.nodo-rojo { background: #fff; border: 2px solid var(--rojo); }
+.react-flow__node.nodo-seleccionado { box-shadow: 0 0 0 3px var(--acento); }
+.arista-blanda path { stroke-dasharray: 5 4; opacity: 0.6; }

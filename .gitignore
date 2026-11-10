@@ -1,0 +1,22 @@
+# Node / web
+node_modules/
+web/dist/
+*.tsbuildinfo
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Datos generados y bases locales (pueden tener notas reales)
+data/simulados.csv
+data/donaciones/
+*.db
+
+# Editor / sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+.env

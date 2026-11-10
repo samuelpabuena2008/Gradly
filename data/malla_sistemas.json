@@ -1,0 +1,47 @@
+{
+  "programa": "Ingeniería de Sistemas",
+  "universidad": "Uninorte",
+  "version": "ejemplo",
+  "nota": "MALLA DE EJEMPLO. Los IDs y prerrequisitos son ilustrativos: reemplazar con el plan de estudios oficial.",
+  "nota_aprobacion": 3.0,
+  "materias": [
+    { "id": "CAL1", "nombre": "Cálculo I", "semestre": 1, "creditos": 4 },
+    { "id": "PROG1", "nombre": "Programación I", "semestre": 1, "creditos": 3 },
+    { "id": "LOG", "nombre": "Lógica", "semestre": 1, "creditos": 3 },
+    { "id": "CAL2", "nombre": "Cálculo II", "semestre": 2, "creditos": 4 },
+    { "id": "ALGLIN", "nombre": "Álgebra Lineal", "semestre": 2, "creditos": 3 },
+    { "id": "FIS1", "nombre": "Física I", "semestre": 2, "creditos": 4 },
+    { "id": "PROG2", "nombre": "Programación II", "semestre": 2, "creditos": 3 },
+    { "id": "DISC", "nombre": "Matemáticas Discretas", "semestre": 2, "creditos": 3 },
+    { "id": "CAL3", "nombre": "Cálculo III", "semestre": 3, "creditos": 4 },
+    { "id": "ED", "nombre": "Ecuaciones Diferenciales", "semestre": 3, "creditos": 3 },
+    { "id": "FIS2", "nombre": "Física II", "semestre": 3, "creditos": 4 },
+    { "id": "ESTR", "nombre": "Estructuras de Datos", "semestre": 3, "creditos": 3 },
+    { "id": "PROB", "nombre": "Probabilidad y Estadística", "semestre": 3, "creditos": 3 },
+    { "id": "ALGOR", "nombre": "Algoritmos", "semestre": 4, "creditos": 3 },
+    { "id": "MET", "nombre": "Métodos Numéricos", "semestre": 4, "creditos": 3 },
+    { "id": "BD", "nombre": "Bases de Datos", "semestre": 4, "creditos": 3 }
+  ],
+  "prerrequisitos": [
+    { "de": "CAL1", "a": "CAL2" },
+    { "de": "CAL1", "a": "FIS1" },
+    { "de": "LOG", "a": "DISC" },
+    { "de": "PROG1", "a": "PROG2" },
+    { "de": "CAL2", "a": "CAL3" },
+    { "de": "CAL2", "a": "ED" },
+    { "de": "CAL2", "a": "FIS2" },
+    { "de": "FIS1", "a": "FIS2" },
+    { "de": "CAL2", "a": "PROB" },
+    { "de": "PROG2", "a": "ESTR" },
+    { "de": "DISC", "a": "ESTR" },
+    { "de": "ESTR", "a": "ALGOR" },
+    { "de": "ED", "a": "MET" },
+    { "de": "ALGLIN", "a": "MET" },
+    { "de": "PROG2", "a": "BD" }
+  ],
+  "aristas_blandas": [
+    { "de": "ALGLIN", "a": "ED" },
+    { "de": "DISC", "a": "PROB" },
+    { "de": "DISC", "a": "ALGOR" }
+  ]
+}

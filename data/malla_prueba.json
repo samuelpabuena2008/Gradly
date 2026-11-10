@@ -1,0 +1,22 @@
+{
+  "programa": "Malla de prueba (hecha a mano)",
+  "version": "prueba",
+  "nota": "Resultados esperados calculados en papel: ver docs/PLAN.md, sección Pruebas.",
+  "nota_aprobacion": 3.0,
+  "materias": [
+    { "id": "A", "nombre": "Materia A", "semestre": 1, "creditos": 3 },
+    { "id": "F", "nombre": "Materia F (aislada)", "semestre": 1, "creditos": 3 },
+    { "id": "B", "nombre": "Materia B", "semestre": 2, "creditos": 3 },
+    { "id": "C", "nombre": "Materia C", "semestre": 2, "creditos": 3 },
+    { "id": "D", "nombre": "Materia D", "semestre": 3, "creditos": 3 },
+    { "id": "E", "nombre": "Materia E", "semestre": 4, "creditos": 3 }
+  ],
+  "prerrequisitos": [
+    { "de": "A", "a": "B" },
+    { "de": "A", "a": "C" },
+    { "de": "B", "a": "D" },
+    { "de": "C", "a": "D" },
+    { "de": "D", "a": "E" }
+  ],
+  "aristas_blandas": []
+}
