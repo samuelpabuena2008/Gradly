@@ -3,6 +3,7 @@
 
 import type { Malla, Prediccion } from '../../types'
 import { recomendarEnfoque } from '../../lib/model/predict'
+import './prediccion.css'
 
 interface Props {
   malla: Malla

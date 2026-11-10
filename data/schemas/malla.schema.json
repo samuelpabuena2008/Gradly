@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "malla.schema.json",
+  "title": "Malla curricular como grafo",
+  "description": "Materias (nodos), prerrequisitos (aristas dirigidas de → a) y aristas blandas. Lo usan web/, model/ y api/.",
+  "type": "object",
+  "required": ["programa", "version", "nota_aprobacion", "materias", "prerrequisitos", "aristas_blandas"],
+  "properties": {
+    "programa": { "type": "string", "minLength": 1 },
+    "universidad": { "type": "string" },
+    "version": { "type": "string", "minLength": 1 },
+    "nota": { "type": "string", "description": "Comentario libre." },
+    "nota_aprobacion": { "type": "number", "minimum": 0, "maximum": 5 },
+    "materias": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "nombre", "semestre", "creditos"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^[A-Z0-9_]+$", "description": "Código en mayúsculas, sin espacios." },
+          "nombre": { "type": "string", "minLength": 1 },
+          "semestre": { "type": "integer", "minimum": 1 },
+          "creditos": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "prerrequisitos": { "type": "array", "items": { "$ref": "#/$defs/arista" } },
+    "aristas_blandas": { "type": "array", "items": { "$ref": "#/$defs/arista" } }
+  },
+  "$defs": {
+    "arista": {
+      "type": "object",
+      "required": ["de", "a"],
+      "additionalProperties": false,
+      "properties": {
+        "de": { "type": "string" },
+        "a": { "type": "string" }
+      }
+    }
+  }
+}

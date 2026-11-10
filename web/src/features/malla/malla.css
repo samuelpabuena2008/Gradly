@@ -1,0 +1,18 @@
+/* Malla interactiva (React Flow). */
+
+.malla { height: 100%; min-height: 400px; }
+
+@media (max-width: 900px) {
+  .malla { height: 60vh; }
+}
+
+.react-flow__node.nodo { width: 180px; font-size: 12px; border-radius: 8px; border: 1px solid var(--borde); padding: 6px 8px; }
+.nodo .detalle { color: var(--suave); margin-top: 2px; }
+.react-flow__node.nodo-cursada { background: var(--cursada); }
+.react-flow__node.nodo-reprobada { background: var(--reprobada); }
+.react-flow__node.nodo-bloqueada { background: var(--bloqueada); color: var(--suave); }
+.react-flow__node.nodo-verde { background: #fff; border: 2px solid var(--verde); }
+.react-flow__node.nodo-amarillo { background: #fff; border: 2px solid var(--amarillo); }
+.react-flow__node.nodo-rojo { background: #fff; border: 2px solid var(--rojo); }
+.react-flow__node.nodo-seleccionado { box-shadow: 0 0 0 3px var(--acento); }
+.arista-blanda path { stroke-dasharray: 5 4; opacity: 0.6; }

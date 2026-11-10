@@ -4,6 +4,7 @@
 import { useMemo } from 'react'
 import { Background, Controls, Position, ReactFlow, type Edge, type Node } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
+import './malla.css'
 import type { Malla, Prediccion } from '../../types'
 
 interface Props {

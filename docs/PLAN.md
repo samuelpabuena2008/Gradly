@@ -13,11 +13,13 @@ Gradly/
 │   ├── malla_sistemas.json   # Malla como grafo: materias, prerrequisitos, aristas blandas
 │   ├── malla_prueba.json     # Malla pequeña hecha a mano (pruebas con resultado conocido)
 │   ├── plantilla_notas.csv   # Formato de entrada: materia,periodo,nota
-│   └── pesos.json            # Modelo exportado por model/ y leído por web/
+│   ├── pesos.json            # Modelo exportado por model/ y leído por web/
+│   ├── schemas/              # Esquemas JSON del contrato (malla, pesos)
+│   └── fixtures/             # Caso de predicción conocido que resuelven Python y TypeScript
 │
 ├── web/                  # Frente 4 (+ Frente 2): React + TypeScript + Vite
 │   └── src/
-│       ├── types/            # Tipos del contrato (Malla, Nota, Modelo, Prediccion)
+│       ├── types/            # Tipos del contrato, un archivo por dominio (malla, notas, modelo)
 │       ├── lib/
 │       │   ├── graph/        # Frente 2: orden topológico, camino más largo, centralidad, descendientes
 │       │   ├── model/        # Inferencia en el navegador: predicción, rango, riesgo, "por qué"
@@ -62,6 +64,12 @@ Por eso:
 - **En `web/` se organiza por funcionalidad** (`features/malla`, `features/notas`…) y la lógica pura va en
   `lib/`. Así los algoritmos de grafos y del modelo se prueban sin abrir el navegador.
 - **Las pruebas van junto al código** (`*.test.ts`, `model/tests`, `api/tests`) en vez de un `tests/` global.
+- **Sin archivos que todos editen**: los tipos están partidos por dominio (`types/malla.ts`, `notas.ts`,
+  `modelo.ts`) y cada pantalla tiene su propio CSS en su carpeta; `index.css` solo tiene lo común.
+- **La fórmula vive en dos lenguajes** (Python para entrenar, TypeScript para predecir). Ambas resuelven el
+  mismo caso de `data/fixtures/`; si alguien cambia una sin la otra, falla una prueba.
+- **El contrato de datos se valida**: `data/schemas/` + `model/tests/test_contrato_datos.py` revisan que la
+  malla, los pesos, la plantilla y los fixtures cumplan el formato y usen los mismos códigos de materia.
 - **`dist/`/`build/` no se versionan**: se generan con `npm run build` y están en `.gitignore`.
 
 ## 2. Contrato de datos (lo que todos deben respetar)
@@ -124,6 +132,8 @@ Cada parte guarda sus pruebas junto a su código. Se corren con `npm test` (en `
 | `web/src/lib/model/predict.test.ts` | Predicción, rango y semáforo con pesos fijos |
 | `web/src/lib/import/csv.test.ts` | Lectura del CSV: separadores, coma decimal, notas fuera de 0–5 |
 | `model/tests/test_modelo.py` | Recupera los pesos simulados, le gana al promedio, sin fuga de datos |
+| `web/src/lib/model/contrato.test.ts` y `model/tests/test_contrato_prediccion.py` | El mismo caso conocido da lo mismo en TypeScript y en Python |
+| `model/tests/test_contrato_datos.py` | `data/` cumple los esquemas, sin ciclos, y todos usan los mismos códigos |
 | `api/tests/test_donaciones.py` | Sin datos personales, con consentimiento, exportación con token |
 
 ### Resultados calculados a mano (`data/malla_prueba.json`)

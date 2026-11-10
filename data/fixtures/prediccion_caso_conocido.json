@@ -1,0 +1,104 @@
+{
+  "descripcion": "Casos de predicción calculados a mano. Los resuelven web/ (TypeScript) y model/ (Python) y ambos deben dar lo mismo. Si cambia la fórmula, se actualiza aquí primero.",
+  "tolerancia": 0.001,
+  "umbrales": { "amarillo": 0.2, "rojo": 0.5 },
+  "malla": {
+    "programa": "Mini malla del caso conocido",
+    "version": "fixture",
+    "nota_aprobacion": 3.0,
+    "materias": [
+      { "id": "CAL1", "nombre": "Cálculo I", "semestre": 1, "creditos": 4 },
+      { "id": "ALGLIN", "nombre": "Álgebra Lineal", "semestre": 1, "creditos": 3 },
+      { "id": "CAL2", "nombre": "Cálculo II", "semestre": 2, "creditos": 4 },
+      { "id": "ED", "nombre": "Ecuaciones Diferenciales", "semestre": 3, "creditos": 3 }
+    ],
+    "prerrequisitos": [
+      { "de": "CAL1", "a": "CAL2" },
+      { "de": "CAL2", "a": "ED" }
+    ],
+    "aristas_blandas": [{ "de": "ALGLIN", "a": "ED" }]
+  },
+  "modelo": {
+    "tipo": "regresion_lineal",
+    "sigma_global": 0.6,
+    "cursos": {
+      "ED": { "b": -0.2, "sigma": 0.5, "pesos": { "CAL2": 0.6, "ALGLIN": 0.2 } }
+    }
+  },
+  "casos": [
+    {
+      "nombre": "ED con Cálculo II bajo: rojo",
+      "materia": "ED",
+      "notas": [
+        { "materia": "CAL1", "periodo": "2025-1", "nota": 4.0 },
+        { "materia": "ALGLIN", "periodo": "2025-1", "nota": 3.5 },
+        { "materia": "CAL2", "periodo": "2025-2", "nota": 2.5 }
+      ],
+      "esperado": {
+        "nota": 2.666667,
+        "rango": [2.166667, 3.166667],
+        "probNoAprobar": 0.747507,
+        "semaforo": "rojo",
+        "porQue": [
+          { "materia": "CAL2", "aporte": -0.5 },
+          { "materia": "ALGLIN", "aporte": 0.033333 }
+        ],
+        "usaModelo": true
+      }
+    },
+    {
+      "nombre": "ED justo en 3,0: rojo (probabilidad 0,5); un aporte de 0 no aparece en el por qué",
+      "materia": "ED",
+      "notas": [
+        { "materia": "CAL1", "periodo": "2025-1", "nota": 4.0 },
+        { "materia": "ALGLIN", "periodo": "2025-1", "nota": 3.5 },
+        { "materia": "CAL2", "periodo": "2025-2", "nota": 3.0 }
+      ],
+      "esperado": {
+        "nota": 3.0,
+        "rango": [2.5, 3.5],
+        "probNoAprobar": 0.5,
+        "semaforo": "rojo",
+        "porQue": [{ "materia": "CAL2", "aporte": -0.3 }],
+        "usaModelo": true
+      }
+    },
+    {
+      "nombre": "ED con buenas notas: verde",
+      "materia": "ED",
+      "notas": [
+        { "materia": "CAL1", "periodo": "2025-1", "nota": 4.0 },
+        { "materia": "ALGLIN", "periodo": "2025-1", "nota": 4.0 },
+        { "materia": "CAL2", "periodo": "2025-2", "nota": 4.5 }
+      ],
+      "esperado": {
+        "nota": 4.133333,
+        "rango": [3.633333, 4.633333],
+        "probNoAprobar": 0.011705,
+        "semaforo": "verde",
+        "porQue": [
+          { "materia": "CAL2", "aporte": 0.2 },
+          { "materia": "ALGLIN", "aporte": -0.033333 }
+        ],
+        "usaModelo": true
+      }
+    },
+    {
+      "nombre": "Materia sin pesos: usa el promedio y sigma_global (amarillo)",
+      "materia": "CAL2",
+      "notas": [
+        { "materia": "CAL1", "periodo": "2025-1", "nota": 4.0 },
+        { "materia": "ALGLIN", "periodo": "2025-1", "nota": 3.5 },
+        { "materia": "CAL2", "periodo": "2025-2", "nota": 2.5 }
+      ],
+      "esperado": {
+        "nota": 3.333333,
+        "rango": [2.733333, 3.933333],
+        "probNoAprobar": 0.289257,
+        "semaforo": "amarillo",
+        "porQue": [],
+        "usaModelo": false
+      }
+    }
+  ]
+}

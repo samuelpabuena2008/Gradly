@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pesos.schema.json",
+  "title": "Modelo exportado (pesos.json)",
+  "description": "Lo escribe model/ (gradly_model.train) y lo lee web/ para predecir en el navegador.",
+  "type": "object",
+  "required": ["tipo", "sigma_global", "cursos"],
+  "properties": {
+    "tipo": { "type": "string", "minLength": 1 },
+    "sigma_global": { "type": "number", "exclusiveMinimum": 0 },
+    "cursos": {
+      "type": "object",
+      "description": "Una entrada por materia objetivo (clave = id de la materia).",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["b", "sigma", "pesos"],
+        "additionalProperties": false,
+        "properties": {
+          "b": { "type": "number", "description": "Dificultad respecto al promedio del estudiante." },
+          "sigma": { "type": "number", "exclusiveMinimum": 0, "description": "Error típico de la predicción." },
+          "pesos": {
+            "type": "object",
+            "description": "Peso de cada materia previa (clave = id).",
+            "additionalProperties": { "type": "number" }
+          }
+        }
+      }
+    }
+  }
+}

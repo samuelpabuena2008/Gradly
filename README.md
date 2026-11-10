@@ -87,4 +87,6 @@ donde ȳ es el promedio del estudiante en materias anteriores.
 | Predicción, rango y semáforo con pesos fijos | `web/src/lib/model/predict.test.ts` |
 | Lectura del CSV | `web/src/lib/import/csv.test.ts` |
 | El modelo recupera pesos simulados y le gana al promedio | `model/tests/test_modelo.py` |
+| La fórmula da lo mismo en TypeScript y en Python (caso de `data/fixtures/`) | `web/src/lib/model/contrato.test.ts`, `model/tests/test_contrato_prediccion.py` |
+| Los archivos de `data/` cumplen los esquemas de `data/schemas/` y usan los mismos códigos | `model/tests/test_contrato_datos.py` |
 | Donaciones sin datos personales y con consentimiento | `api/tests/test_donaciones.py` |
