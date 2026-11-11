@@ -11,7 +11,7 @@ import re
 import pytest
 from jsonschema import Draft202012Validator
 
-from gradly_model.malla import DATA, predecesores
+from gradly_model.malla import DATA, ancestros
 
 ESQUEMA_MALLA = json.loads((DATA / "schemas" / "malla.schema.json").read_text(encoding="utf-8"))
 ESQUEMA_PESOS = json.loads((DATA / "schemas" / "pesos.schema.json").read_text(encoding="utf-8"))
@@ -80,9 +80,12 @@ def test_pesos_cumplen_el_esquema_y_la_malla(pesos, malla):
     ids = {m["id"] for m in malla["materias"]}
     for materia, curso in pesos["cursos"].items():
         assert materia in ids, f"pesos.json tiene la materia {materia}, que no está en la malla (¿reentrenar?)"
-        previas = set(predecesores(malla, materia))
+        previas = set(ancestros(malla, materia))
         sobrantes = set(curso["pesos"]) - previas
-        assert not sobrantes, f"{materia}: pesos para {sobrantes}, que no son materias previas en la malla"
+        assert not sobrantes, f"{materia}: pesos para {sobrantes}, que no son ancestros en la malla"
+    assert set(pesos["medias"]) >= ids & (set(pesos["cursos"]) | {p for c in pesos["cursos"].values() for p in c["pesos"]}), (
+        "faltan medias de materias que el modelo usa"
+    )
 
 
 def test_plantilla_de_notas():

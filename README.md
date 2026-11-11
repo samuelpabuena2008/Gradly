@@ -74,12 +74,13 @@ Si una materia se repite, cuenta el intento más reciente.
 aristas blandas (relaciones del mismo área que no son prerrequisito oficial).
 ⚠️ La malla actual es **de ejemplo**: hay que reemplazarla por el plan de estudios oficial.
 
-**Modelo** (`data/pesos.json`): para cada materia, `b` (dificultad), `sigma` (error típico) y el peso de cada
-materia previa. La predicción es
+**Modelo** (`data/pesos.json`): `medias` (μ de cada materia) y, para cada materia objetivo, `b`, `beta`,
+`sigma` (error típico) y el peso de cada materia de la que depende en la malla (sus ancestros). La predicción es
 
-ŷ = ȳ + b + Σ w · (nota previa − ȳ)
+ŷ = μ + b + β · a + Σ w · z
 
-donde ȳ es el promedio del estudiante en materias anteriores.
+donde `a` es el nivel del estudiante, Σ (nota − μ) / (n + 1) sobre sus n materias anteriores, y
+`z` = (nota previa − μ) − a es cómo le fue en esa materia frente a su propio nivel.
 
 ## Pruebas con resultado conocido
 

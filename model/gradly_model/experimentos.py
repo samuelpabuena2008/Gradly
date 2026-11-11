@@ -18,7 +18,7 @@ import numpy as np
 
 from .malla import DATA, RAIZ, cargar_malla
 from .simulate import pesos_reales, simular
-from .train import entrenar, entrenar_regresion, preparar
+from .train import entrenar, entrenar_regresion, medias_por_materia, preparar
 
 SALIDA = RAIZ / "docs" / "modelo"
 NOMBRES = {"baseline": "Promedio del estudiante", "regresion": "Regresión sobre la malla", "red": "Red neuronal"}
@@ -44,12 +44,13 @@ def recuperacion_pesos(malla: dict, tamanos: list[int]) -> list[dict]:
     filas = []
     for n in tamanos:
         df, _ = simular(malla, n, semilla=200 + n, no_lineal=False, reales=reales)
+        mu = medias_por_materia(df, malla)
         pares = []
         for materia, curso in reales.items():
             datos = preparar(df, malla, materia)
             if datos is None:
                 continue
-            estimado = entrenar_regresion(datos, alpha=1.0)["pesos"]
+            estimado = entrenar_regresion(datos, malla, mu, alpha=1.0)["pesos"]
             pares += [[round(w, 4), round(estimado[p], 4)] for p, w in curso["pesos"].items()]
         real, est = np.array(pares).T
         fila = {"estudiantes": n, "error_medio_abs": round(float(np.abs(real - est).mean()), 3),

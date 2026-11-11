@@ -29,14 +29,17 @@ const malla: Malla = {
 }
 
 const modelo: Modelo = {
-  tipo: 'regresion_lineal',
+  tipo: 'regresion_nivel',
   sigma_global: 0.6,
+  k_nivel: 1,
+  medias: { CAL1: 3.6, ALGLIN: 3.4, CAL2: 3.2, ED: 3.1 },
   cursos: {
-    ED: { b: -0.2, sigma: 0.5, pesos: { CAL2: 0.6, ALGLIN: 0.2 } },
+    ED: { b: -0.1, beta: 1.1, sigma: 0.5, pesos: { CAL2: 0.6, ALGLIN: 0.2 } },
   },
 }
 
-// CAL1 = 4.0, CAL2 = 2.5, ALGLIN = 3.5  →  ȳ = 10 / 3 = 3.333…
+// CAL1 = 4.0, ALGLIN = 3.5, CAL2 = 2.5  →  desviaciones +0,4, +0,1 y −0,7
+// nivel a = (0,4 + 0,1 − 0,7) / (3 + 1) = −0,05
 const notas = ultimasNotas([
   { materia: 'CAL1', periodo: '2025-1', nota: 4.0 },
   { materia: 'ALGLIN', periodo: '2025-1', nota: 3.5 },
@@ -53,13 +56,14 @@ describe('normalCdf', () => {
 
 describe('predecirMateria', () => {
   it('calcula la fórmula a mano', () => {
-    // ŷ = 3,333 − 0,2 + 0,6·(2,5 − 3,333) + 0,2·(3,5 − 3,333) = 2,667
+    // z(CAL2) = −0,7 + 0,05 = −0,65   z(ALGLIN) = 0,1 + 0,05 = 0,15
+    // ŷ = 3,1 − 0,1 + 1,1·(−0,05) + 0,6·(−0,65) + 0,2·(0,15) = 2,585
     const p = predecirMateria('ED', malla, modelo, notas)!
-    expect(p.nota).toBeCloseTo(8 / 3, 6)
-    expect(p.rango[0]).toBeCloseTo(8 / 3 - 0.5, 6)
-    expect(p.rango[1]).toBeCloseTo(8 / 3 + 0.5, 6)
-    // P(no aprobar) = Φ((3 − 2,667) / 0,5) = Φ(0,667) ≈ 0,748
-    expect(p.probNoAprobar).toBeCloseTo(0.7475, 3)
+    expect(p.nota).toBeCloseTo(2.585, 6)
+    expect(p.rango[0]).toBeCloseTo(2.085, 6)
+    expect(p.rango[1]).toBeCloseTo(3.085, 6)
+    // P(no aprobar) = Φ((3 − 2,585) / 0,5) = Φ(0,83) ≈ 0,797
+    expect(p.probNoAprobar).toBeCloseTo(0.7967, 3)
     expect(p.semaforo).toBe('rojo')
     expect(p.usaModelo).toBe(true)
   })
@@ -67,12 +71,12 @@ describe('predecirMateria', () => {
   it('el "por qué" pone primero la materia que más pesa', () => {
     const p = predecirMateria('ED', malla, modelo, notas)!
     expect(p.porQue[0].materia).toBe('CAL2')
-    expect(p.porQue[0].aporte).toBeCloseTo(-0.5, 6)
+    expect(p.porQue[0].aporte).toBeCloseTo(-0.39, 6)
   })
 
-  it('sin pesos para la materia usa el promedio (baseline)', () => {
+  it('sin pesos para la materia usa su media más el nivel del estudiante', () => {
     const p = predecirMateria('CAL2', malla, modelo, notas)!
-    expect(p.nota).toBeCloseTo(10 / 3, 6)
+    expect(p.nota).toBeCloseTo(3.2 - 0.05, 6)
     expect(p.usaModelo).toBe(false)
     expect(p.rango[1] - p.nota).toBeCloseTo(0.6, 6) // usa sigma_global
   })

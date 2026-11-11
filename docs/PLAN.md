@@ -92,19 +92,27 @@ más reciente.
 **Modelo** (`data/pesos.json`):
 ```json
 {
-  "tipo": "regresion_lineal",
+  "tipo": "regresion_nivel",
   "sigma_global": 0.45,
-  "cursos": { "ED": { "b": -0.1, "sigma": 0.4, "pesos": { "CAL2": 0.6, "ALGLIN": 0.2 } } }
+  "k_nivel": 1,
+  "medias": { "CAL1": 3.6, "CAL2": 3.2, "ALGLIN": 3.4, "ED": 3.1 },
+  "cursos": { "ED": { "b": -0.1, "beta": 1.1, "sigma": 0.4, "pesos": { "CAL2": 0.6, "ALGLIN": 0.2 } } }
 }
 ```
 
-Fórmula (con row-centering), donde ȳ es el promedio del estudiante **solo con materias anteriores**:
+Fórmula, **solo con materias anteriores** (cambiada el 10 nov; ver `docs/modelo/DECISIONES.md`):
 
-ŷ(s,c) = ȳ(s) + b(c) + Σ w(p→c) · (y(s,p) − ȳ(s))
+ŷ(s,c) = μ(c) + b(c) + β(c) · a(s) + Σ w(p→c) · z(s,p)
+
+- μ(c): media de la materia (`medias`).
+- a(s) = Σ (y(s,p) − μ(p)) / (n + k_nivel): nivel del estudiante sobre sus n materias con nota.
+- z(s,p) = (y(s,p) − μ(p)) − a(s): cómo le fue en p frente a su propio nivel.
+- p recorre los ancestros de c en la malla (prerrequisitos directos e indirectos, y aristas blandas).
+- Sin pesos para c: ŷ = μ(c) + a(s), con `sigma_global`.
 
 - Rango: ŷ ± σ(c).
 - Riesgo: P(no aprobar) = Φ((3,0 − ŷ) / σ(c)). Verde < 20 %, amarillo < 50 %, rojo ≥ 50 %.
-- "Por qué": las 3 materias previas con mayor |w · (y − ȳ)|.
+- "Por qué": las 3 materias previas con mayor |w · z|.
 
 ## 3. Pasos
 
@@ -156,18 +164,20 @@ B: de los 2 caminos A→D, uno pasa por B (½); igual para A→E (½); total 1. 
 
 ### Predicción calculada a mano
 
-Pesos: ED con b = −0,2, σ = 0,5, CAL2 → ED = 0,6, ALGLIN → ED = 0,2.
-Notas: CAL1 = 4,0, CAL2 = 2,5, ALGLIN = 3,5, así que ȳ = 3,333.
+Medias: CAL1 = 3,6, ALGLIN = 3,4, CAL2 = 3,2, ED = 3,1.
+Pesos: ED con b = −0,1, β = 1,1, σ = 0,5, CAL2 → ED = 0,6, ALGLIN → ED = 0,2.
+Notas: CAL1 = 4,0, ALGLIN = 3,5, CAL2 = 2,5, así que las desviaciones son +0,4, +0,1 y −0,7.
 
-ŷ = 3,333 − 0,2 + 0,6·(2,5 − 3,333) + 0,2·(3,5 − 3,333) = **2,667**
-P(no aprobar) = Φ((3 − 2,667) / 0,5) = Φ(0,667) ≈ **0,748**, así que el semáforo queda en rojo.
+a = (0,4 + 0,1 − 0,7) / (3 + 1) = −0,05; z(CAL2) = −0,65; z(ALGLIN) = 0,15.
+ŷ = 3,1 − 0,1 + 1,1·(−0,05) + 0,6·(−0,65) + 0,2·(0,15) = **2,585**
+P(no aprobar) = Φ((3 − 2,585) / 0,5) = Φ(0,83) ≈ **0,797**, así que el semáforo queda en rojo.
 
 ## 5. Decisiones tomadas
 
 - **React + TypeScript + Vite**, grafo con **React Flow** (`@xyflow/react`). Las posiciones salen del semestre
   de cada materia, así que no hace falta una librería de layout.
-- **Modelo lineal como JSON** y suma en TS; sin ONNX por ahora. El MLP se entrena en scikit-learn y se
-  compara; exportarlo es el paso 8.
+- **Modelo lineal como JSON** y suma en TS; sin ONNX por ahora. El MLP está escrito en NumPy
+  (`model/gradly_model/red.py`), se exporta en `pesos.json` y corre en TS (`web/src/lib/model/red.ts`).
 - **Backend: FastAPI + SQLModel**. En local usa SQLite; para producción basta cambiar `DATABASE_URL` a un
   Postgres (por ejemplo, Supabase). La web funciona sin backend.
 - **La simulación tiene una parte no lineal** (un castigo extra si un prerrequisito quedó por debajo de 3,0)

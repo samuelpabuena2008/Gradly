@@ -3,7 +3,11 @@
 Sirve para revisar en Python lo que verá el estudiante en la web. Las dos versiones
 se comparan con el caso de data/fixtures/prediccion_caso_conocido.json.
 
-    ŷ(s,c) = ȳ(s) + b(c) + Σ w(p→c) · (y(s,p) − ȳ(s))
+    ŷ(s,c) = μ(c) + b(c) + β(c)·a(s) + Σ w(p→c) · z(s,p)
+
+    μ(c)   media de la materia c (modelo["medias"])
+    a(s)   nivel del estudiante: Σ (y_p − μ_p) / (n + k_nivel)
+    z(s,p) cómo le fue en p frente a su nivel: (y_p − μ_p) − a(s)
 """
 
 from dataclasses import dataclass, field
@@ -50,20 +54,30 @@ def _limitar(x: float) -> float:
     return min(5.0, max(0.0, x))
 
 
+def nivel(modelo: dict, notas: dict[str, float]) -> float:
+    """a(s): desviación media del estudiante frente a la media de cada materia, encogida hacia 0."""
+    medias = modelo["medias"]
+    desviaciones = [nota - medias[m] for m, nota in notas.items() if m in medias]
+    return sum(desviaciones) / (len(desviaciones) + modelo["k_nivel"])
+
+
 def predecir_materia(materia: str, malla: dict, modelo: dict, notas: dict[str, float]) -> Prediccion | None:
     if not notas:
         return None
-    ybar = sum(notas.values()) / len(notas)
+    medias = modelo["medias"]
+    a = nivel(modelo, notas)
     curso = modelo["cursos"].get(materia)
 
-    nota, sigma, contribuciones = ybar, modelo["sigma_global"], []
+    # Sin pesos para la materia: su media más el nivel del estudiante.
+    nota = medias.get(materia, sum(notas.values()) / len(notas)) + a
+    sigma, contribuciones = modelo["sigma_global"], []
     if curso:
-        nota += curso["b"]
+        nota = medias[materia] + curso["b"] + curso["beta"] * a
         sigma = curso["sigma"]
         for previa, w in curso["pesos"].items():
             if previa not in notas:
                 continue  # materia previa sin nota: no aporta
-            aporte = w * (notas[previa] - ybar)
+            aporte = w * (notas[previa] - medias[previa] - a)
             nota += aporte
             contribuciones.append((previa, aporte))
 

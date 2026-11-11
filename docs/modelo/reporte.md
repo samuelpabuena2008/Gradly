@@ -7,15 +7,15 @@ Fuente de datos: simulado (300 estudiantes). Malla: versión «ejemplo». Valida
 | Modelo | MAE (puntos de nota) | Precisión de riesgo | Recall de riesgo |
 | --- | --- | --- | --- |
 | Promedio del estudiante | 0,404 | 0,82 | 0,50 |
-| Regresión sobre la malla | 0,301 | 0,84 | 0,77 |
+| Regresión sobre la malla | 0,292 | 0,81 | 0,80 |
 | Red neuronal | 0,304 | 0,83 | 0,76 |
 
 "Riesgo" = nota real menor que la de aprobación; el modelo alerta cuando predice menos que eso.
 
 ## Comparación entre modelos
 
-- Regresión frente al promedio del estudiante: -0,103 (IC 95 %: -0,115 a -0,091).
-- Red neuronal frente a la regresión: 0,003 (IC 95 %: 0,001 a 0,005).
+- Regresión frente al promedio del estudiante: -0,112 (IC 95 %: -0,125 a -0,100).
+- Red neuronal frente a la regresión: 0,012 (IC 95 %: 0,009 a 0,016).
 
 Diferencia de MAE; negativo significa que el primero se equivoca menos. El intervalo se calcula remuestreando estudiantes completos.
 
@@ -23,8 +23,8 @@ Diferencia de MAE; negativo significa que el primero se equivoca menos. El inter
 
 ## Rango y semáforo (modelo recomendado)
 
-- El rango ŷ ± σ contiene la nota real el 67 % de las veces (lo esperado es 68 %).
+- El rango ŷ ± σ contiene la nota real el 68 % de las veces (lo esperado es 68 %).
 - El semáforo en amarillo o rojo detecta al 94 % de quienes reprueban (AUC 0,95).
-- Verde: 2084 predicciones; reprobó de verdad el 3 %.
-- Amarillo: 668 predicciones; reprobó de verdad el 24 %.
-- Rojo: 848 predicciones; reprobó de verdad el 84 %.
+- Verde: 2082 predicciones; reprobó de verdad el 3 %.
+- Amarillo: 604 predicciones; reprobó de verdad el 22 %.
+- Rojo: 914 predicciones; reprobó de verdad el 81 %.

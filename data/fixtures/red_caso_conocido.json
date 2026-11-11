@@ -49,7 +49,7 @@
     ]
   },
   "modelo": {
-    "tipo": "regresion_lineal",
+    "tipo": "regresion_nivel",
     "sigma_global": 0.6,
     "cursos": {},
     "red": {
@@ -82,6 +82,13 @@
           "sigma": 0.5
         }
       }
+    },
+    "k_nivel": 1.0,
+    "medias": {
+      "CAL1": 3.6,
+      "ALGLIN": 3.4,
+      "CAL2": 3.2,
+      "ED": 3.1
     }
   },
   "casos": [

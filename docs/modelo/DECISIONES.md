@@ -5,31 +5,31 @@ validación cruzada por estudiante).
 
 ## Hallazgos
 
-1. **La regresión sobre la malla baja el error un 25 % frente al promedio del estudiante**: MAE 0,301 contra
-   0,404 puntos de nota (diferencia −0,103; IC 95 %: −0,115 a −0,091).
-2. **La red neuronal no le gana a la regresión**: MAE 0,304 (diferencia +0,003; IC 95 %: +0,001 a +0,005).
+1. **La regresión sobre la malla baja el error un 28 % frente al promedio del estudiante**: MAE 0,292 contra
+   0,404 puntos de nota (diferencia −0,112; IC 95 %: −0,125 a −0,100).
+2. **La red neuronal no le gana a la regresión**: MAE 0,304 (diferencia +0,012; IC 95 %: +0,009 a +0,016).
    Tampoco con 1.600 estudiantes ni con el simulador no lineal (`figuras/curva_aprendizaje.png`).
 3. **Con pocos datos los pesos entre materias no son fiables**: el error medio de un peso es 0,13 con
    50 estudiantes, 0,04 con 400 y 0,015 con 1.600 (`figuras/recuperacion_pesos.png`).
-4. **El rango y el semáforo son honestos**: ŷ ± σ contiene la nota real el 67 % de las veces (se espera 68 %).
-   Reprueba el 3 % de los verdes, el 24 % de los amarillos y el 84 % de los rojos.
+4. **El rango y el semáforo son honestos**: ŷ ± σ contiene la nota real el 68 % de las veces, que es lo esperado.
 
 ## Decisiones
 
-1. **La web sigue usando la regresión.** La red solo se recomendaría si todo su intervalo frente a la regresión
-   quedara por debajo de cero; `pesos.json → validacion.recomendado` lo decide en cada entrenamiento.
-2. **La red está escrita a mano en NumPy** (`model/gradly_model/red.py`), en reemplazo de la de scikit-learn:
+1. **La web usa la regresión, no la red.** La red solo se recomendaría si todo su intervalo frente a la
+   regresión quedara por debajo de cero; `pesos.json → validacion.recomendado` lo decide en cada entrenamiento.
+2. **Se cambió la fórmula de la regresión (por ahora).**
+   - Antes: ŷ = ȳ + b + Σ w · (nota previa − ȳ), con los prerrequisitos directos.
+   - Ahora: ŷ = μ + b + β · a + Σ w · z, con la media de cada materia (μ), el nivel del estudiante (a) y todos
+     los ancestros en la malla.
+   - Por qué: en 8 escenarios simulados empata en 4 y gana por 0,005 a 0,008 puntos de nota en los otros 4.
+   - Costo: cambió el contrato (`pesos.json` gana `medias`, `k_nivel` y `beta`), `predict.ts`, `predict.py`,
+     los fixtures y sus pruebas. Es más difícil de calcular a mano. Con 50 estudiantes puede ser algo peor.
+   - Para volver atrás: revertir el commit «Regresión: media por materia, nivel y ancestros».
+3. **La red está escrita a mano en NumPy** (`model/gradly_model/red.py`), en reemplazo de la de scikit-learn:
    propagación, retropropagación y Adam se pueden explicar en la sustentación, y una prueba compara el
-   gradiente con la derivada numérica.
-3. **El contrato de datos no cambia.** `pesos.json` conserva `cursos` igual y gana dos bloques opcionales:
-   `red` (pesos de la red) y `validacion`. La web actual no los lee.
+   gradiente con la derivada numérica. La red conserva la entrada anterior (nota previa − ȳ).
 4. **La red ya corre en TypeScript** (`web/src/lib/model/red.ts`, paso 8 del plan), con el mismo caso de prueba
    que Python. No está conectada a la interfaz: eso lo decide el frente web.
-
-5. **Se conserva la fórmula de Gradly** (ŷ = ȳ + b + Σ w · (nota previa − ȳ), con los prerrequisitos directos).
-   Se comparó con una variante más compleja (media por materia, nivel del estudiante encogido y todos los
-   ancestros en la malla) en 8 escenarios simulados: empatan en 4 y la variante gana por 0,005 a 0,008 puntos
-   de nota en los otros 4. Esa diferencia no justifica cambiar el contrato, la web y las pruebas.
 
 ## Límites
 

@@ -19,6 +19,21 @@ def predecesores(malla: dict, materia: str, incluir_blandas: bool = True) -> lis
     return [e["de"] for e in aristas if e["a"] == materia]
 
 
+def ancestros(malla: dict, materia: str, incluir_blandas: bool = True) -> list[str]:
+    """Todas las materias de las que depende `materia`, directa o indirectamente (cierre transitivo).
+
+    Se devuelven en el orden en que aparecen en la malla.
+    """
+    vistos: set[str] = set()
+    pendientes = predecesores(malla, materia, incluir_blandas)
+    while pendientes:
+        p = pendientes.pop()
+        if p not in vistos:
+            vistos.add(p)
+            pendientes += predecesores(malla, p, incluir_blandas)
+    return [m["id"] for m in malla["materias"] if m["id"] in vistos]
+
+
 def materias_por_semestre(malla: dict) -> dict[int, list[str]]:
     semestres: dict[int, list[str]] = {}
     for m in malla["materias"]:

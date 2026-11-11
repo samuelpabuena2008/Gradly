@@ -58,7 +58,7 @@ export function PanelPrediccion({ malla, predicciones, onSeleccionar }: Props) {
                     .join(', ')}
                 </div>
               ) : (
-                !p.usaModelo && <div className="ayuda">Basado en tu promedio (aún no hay pesos para esta materia).</div>
+                !p.usaModelo && <div className="ayuda">Basado en la media de la materia y en tu nivel (aún no hay pesos para esta materia).</div>
               )}
             </li>
           ))}

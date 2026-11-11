@@ -2,11 +2,13 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "pesos.schema.json",
   "title": "Modelo exportado (pesos.json)",
-  "description": "Lo escribe model/ (gradly_model.train) y lo lee web/ para predecir en el navegador.",
+  "description": "Lo escribe model/ (gradly_model.train) y lo lee web/ para predecir en el navegador. ŷ = μ(c) + b + β·a + Σ w·z, con a = Σ(nota − μ)/(n + k_nivel) y z = (nota − μ) − a.",
   "type": "object",
   "required": [
     "tipo",
     "sigma_global",
+    "k_nivel",
+    "medias",
     "cursos"
   ],
   "properties": {
@@ -25,6 +27,7 @@
         "type": "object",
         "required": [
           "b",
+          "beta",
           "sigma",
           "pesos"
         ],
@@ -32,7 +35,7 @@
         "properties": {
           "b": {
             "type": "number",
-            "description": "Dificultad respecto al promedio del estudiante."
+            "description": "Ajuste de la materia sobre su media μ(c)."
           },
           "sigma": {
             "type": "number",
@@ -41,10 +44,14 @@
           },
           "pesos": {
             "type": "object",
-            "description": "Peso de cada materia previa (clave = id).",
+            "description": "Peso de cada materia ancestro en la malla (clave = id).",
             "additionalProperties": {
               "type": "number"
             }
+          },
+          "beta": {
+            "type": "number",
+            "description": "Cuánto pesa el nivel del estudiante en esta materia."
           }
         }
       }
@@ -113,6 +120,18 @@
             }
           }
         }
+      }
+    },
+    "k_nivel": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Encoge el nivel del estudiante hacia 0 cuando tiene pocas notas."
+    },
+    "medias": {
+      "type": "object",
+      "description": "μ: media de cada materia de la malla (clave = id).",
+      "additionalProperties": {
+        "type": "number"
       }
     }
   }

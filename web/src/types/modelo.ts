@@ -1,11 +1,13 @@
 // Frente 3 (Modelo). Debe coincidir con data/schemas/pesos.schema.json.
 
 export interface ModeloCurso {
-  /** Dificultad de la materia respecto al promedio del estudiante. */
+  /** Ajuste de la materia sobre su media. */
   b: number
+  /** Cuánto pesa el nivel del estudiante en esta materia. */
+  beta: number
   /** Error típico de la predicción (desviación de los residuos en validación). */
   sigma: number
-  /** Peso de cada materia previa sobre esta. */
+  /** Peso de cada materia ancestro en la malla sobre esta. */
   pesos: Record<string, number>
 }
 
@@ -13,6 +15,10 @@ export interface ModeloCurso {
 export interface Modelo {
   tipo: string
   sigma_global: number
+  /** Encoge el nivel del estudiante hacia 0 cuando tiene pocas notas. */
+  k_nivel: number
+  /** Media de cada materia de la malla. */
+  medias: Record<string, number>
   cursos: Record<string, ModeloCurso>
   /** Opcional: red neuronal por materia (alternativa a la regresión). */
   red?: { activacion: string; cursos: Record<string, RedCurso> }
@@ -33,7 +39,7 @@ export interface Prediccion {
   probNoAprobar: number
   semaforo: Semaforo
   porQue: Contribucion[]
-  /** false si no hay pesos para esta materia y se usó el promedio (baseline). */
+  /** false si no hay pesos para esta materia y se usó su media más el nivel del estudiante. */
   usaModelo: boolean
 }
 
