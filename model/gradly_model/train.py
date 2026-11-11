@@ -3,9 +3,12 @@
 Niveles (del PDF):
   1. Baseline: la nota esperada es el promedio previo del estudiante.
   2. Regresión por materia (Ridge): ŷ = ȳ + b + Σ w · (y_p − ȳ). Los pesos se leen directo.
-  3. Red neuronal pequeña (MLP de 1 capa oculta): misma entrada, puede captar efectos no lineales.
+  3. Red neuronal pequeña (1 capa oculta, escrita en NumPy: ver red.py): misma entrada, puede
+     captar efectos no lineales.
 
 Validación: GroupKFold por estudiante, así nunca se evalúa con estudiantes del entrenamiento.
+Además de pesos.json (lo que lee la web), se exportan los pesos de la red y un bloque
+"validacion" con la comparación entre modelos y la calibración del rango y del semáforo.
 
 Uso:
   python -m gradly_model.train                       # simula 300 estudiantes y entrena
@@ -15,18 +18,17 @@ Uso:
 import argparse
 import json
 import sys
-import warnings
 from dataclasses import dataclass
 from datetime import date
 
 import numpy as np
 import pandas as pd
-from sklearn.exceptions import ConvergenceWarning
 from sklearn.linear_model import Ridge
 from sklearn.model_selection import GroupKFold
-from sklearn.neural_network import MLPRegressor
 
+from .evaluacion import calibracion, diferencia_mae
 from .malla import DATA, cargar_malla, predecesores
+from .red import RedNeuronal
 from .simulate import simular
 
 MIN_ESTUDIANTES = 10
@@ -80,7 +82,7 @@ def nuevos_modelos(alpha: float) -> dict:
     return {
         "baseline": None,
         "regresion": Ridge(alpha=alpha),
-        "red": MLPRegressor(hidden_layer_sizes=(8,), alpha=0.01, max_iter=3000, random_state=0),
+        "red": RedNeuronal(oculta=8, semilla=0),
     }
 
 
@@ -90,15 +92,13 @@ def validar(datos: DatosCurso, alpha: float = 1.0, pliegues: int = 5) -> dict[st
     gkf = GroupKFold(n_splits=min(pliegues, n_grupos))
     oof = {nombre: np.zeros_like(datos.y) for nombre in nuevos_modelos(alpha)}
 
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", ConvergenceWarning)
-        for train, test in gkf.split(datos.X, datos.y, datos.grupos):
-            for nombre, modelo in nuevos_modelos(alpha).items():
-                if modelo is None:
-                    oof[nombre][test] = 0.0  # baseline: desviación 0 → ŷ = ȳ
-                else:
-                    modelo.fit(datos.X[train], datos.y[train])
-                    oof[nombre][test] = modelo.predict(datos.X[test])
+    for train, test in gkf.split(datos.X, datos.y, datos.grupos):
+        for nombre, modelo in nuevos_modelos(alpha).items():
+            if modelo is None:
+                oof[nombre][test] = 0.0  # baseline: desviación 0 → ŷ = ȳ
+            else:
+                modelo.fit(datos.X[train], datos.y[train])
+                oof[nombre][test] = modelo.predict(datos.X[test])
 
     return {nombre: np.clip(pred + datos.ybar, 0, 5) for nombre, pred in oof.items()}
 
@@ -110,6 +110,11 @@ def entrenar_regresion(datos: DatosCurso, alpha: float = 1.0) -> dict:
         "b": float(modelo.intercept_),
         "pesos": {p: float(w) for p, w in zip(datos.previas, modelo.coef_)},
     }
+
+
+def entrenar_red(datos: DatosCurso) -> dict:
+    """Ajusta la red con todos los datos y devuelve sus pesos (el orden de W1 sigue a `previas`)."""
+    return {"previas": datos.previas, **RedNeuronal(oculta=8, semilla=0).fit(datos.X, datos.y).exportar()}
 
 
 def metricas(real: np.ndarray, pred: np.ndarray, aprobacion: float) -> dict:
@@ -126,8 +131,9 @@ def metricas(real: np.ndarray, pred: np.ndarray, aprobacion: float) -> dict:
 def entrenar(df: pd.DataFrame, malla: dict, alpha: float = 1.0) -> tuple[dict, pd.DataFrame]:
     """Valida los tres modelos en cada materia y arma el JSON de pesos (regresión)."""
     aprobacion = malla["nota_aprobacion"]
-    cursos, resumen = {}, []
-    todos_real, todos_pred = [], {n: [] for n in nuevos_modelos(alpha)}
+    cursos, redes, resumen = {}, {}, []
+    todos_real, todos_grupos, todos_pred = [], [], {n: [] for n in nuevos_modelos(alpha)}
+    todos_sigma = {"regresion": [], "red": []}
 
     for m in malla["materias"]:
         datos = preparar(df, malla, m["id"])
@@ -138,6 +144,11 @@ def entrenar(df: pd.DataFrame, malla: dict, alpha: float = 1.0) -> tuple[dict, p
         residuo = real - preds["regresion"]
 
         cursos[m["id"]] = {**entrenar_regresion(datos, alpha), "sigma": float(np.sqrt(np.mean(residuo**2)))}
+        sigma_red = float(np.sqrt(np.mean((real - preds["red"]) ** 2)))
+        redes[m["id"]] = {**entrenar_red(datos), "sigma": sigma_red}
+        todos_sigma["regresion"].append(np.full(len(real), cursos[m["id"]]["sigma"]))
+        todos_sigma["red"].append(np.full(len(real), sigma_red))
+        todos_grupos.append(datos.grupos)
         resumen.append({"materia": m["id"], "n": len(real), **{n: np.mean(np.abs(real - p)) for n, p in preds.items()}})
         todos_real.append(real)
         for n, p in preds.items():
@@ -145,7 +156,25 @@ def entrenar(df: pd.DataFrame, malla: dict, alpha: float = 1.0) -> tuple[dict, p
 
     real = np.concatenate(todos_real)
     globales = {n: metricas(real, np.concatenate(p), aprobacion) for n, p in todos_pred.items()}
-    sigma_global = float(np.sqrt(np.mean((real - np.concatenate(todos_pred["baseline"])) ** 2)))
+    pred = {n: np.concatenate(p) for n, p in todos_pred.items()}
+    grupos = np.concatenate(todos_grupos)
+    sigma_global = float(np.sqrt(np.mean((real - pred["baseline"]) ** 2)))
+
+    # La red solo se recomienda si mejora a la regresión de forma clara: todo el intervalo
+    # del 95 % de la diferencia de MAE debe quedar por debajo de cero.
+    red_vs_regresion = diferencia_mae(real, pred["red"], pred["regresion"], grupos)
+    validacion = {
+        "tipo": "cruzada por estudiante (5 particiones)",
+        "notas_evaluadas": int(len(real)),
+        "diferencia_mae": {
+            "regresion_vs_baseline": diferencia_mae(real, pred["regresion"], pred["baseline"], grupos),
+            "red_vs_regresion": red_vs_regresion,
+        },
+        "calibracion": {
+            n: calibracion(real, pred[n], np.concatenate(todos_sigma[n]), aprobacion) for n in ("regresion", "red")
+        },
+        "recomendado": "red" if red_vs_regresion["ic95"][1] < 0 else "regresion",
+    }
 
     pesos = {
         "tipo": "regresion_lineal",
@@ -154,7 +183,9 @@ def entrenar(df: pd.DataFrame, malla: dict, alpha: float = 1.0) -> tuple[dict, p
         "n_estudiantes": int(df["estudiante"].nunique()),
         "sigma_global": sigma_global,
         "metricas": globales,
+        "validacion": validacion,
         "cursos": cursos,
+        "red": {"activacion": "tanh", "cursos": redes},
     }
     return pesos, pd.DataFrame(resumen)
 
@@ -184,6 +215,12 @@ def main() -> None:
     print("\nGlobal:")
     for nombre, m in pesos["metricas"].items():
         print(f"  {nombre:10s} MAE {m['mae']:.3f}  precision {m['precision_riesgo']:.2f}  recall {m['recall_riesgo']:.2f}")
+    v = pesos["validacion"]
+    for nombre, d in v["diferencia_mae"].items():
+        print(f"  {nombre.replace('_', ' ')}: {d['diferencia']:+.3f}  IC 95 % [{d['ic95'][0]:+.3f}, {d['ic95'][1]:+.3f}]")
+    cal = v["calibracion"][v["recomendado"]]
+    print(f"  Modelo recomendado: {v['recomendado']}. El rango ŷ ± σ contiene la nota real el "
+          f"{cal['cobertura_rango']:.0%} de las veces; AUC de riesgo {cal['auc_riesgo']:.2f}.")
 
     with open(args.salida, "w", encoding="utf-8") as f:
         json.dump(pesos, f, ensure_ascii=False, indent=2)

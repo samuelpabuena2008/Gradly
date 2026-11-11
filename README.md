@@ -17,6 +17,7 @@ docs/    Plan, documento LaTeX y diapositivas
 ```
 
 El plan completo y las decisiones están en [docs/PLAN.md](docs/PLAN.md).
+Decisiones y hallazgos del modelo: [docs/modelo/DECISIONES.md](docs/modelo/DECISIONES.md).
 
 ## Requisitos
 
@@ -49,6 +50,7 @@ cd model
 python -m gradly_model.train                   # simula 300 estudiantes, entrena y exporta ../data/pesos.json
 python -m gradly_model.train --notas notas.csv # con datos reales: estudiante,materia,periodo,nota
 python -m gradly_model.simulate --n 300        # solo genera ../data/simulados.csv
+python -m gradly_model.experimentos            # docs/modelo/: reporte, curva de aprendizaje y figuras (≈1 min)
 pytest
 ```
 
@@ -87,6 +89,8 @@ donde ȳ es el promedio del estudiante en materias anteriores.
 | Predicción, rango y semáforo con pesos fijos | `web/src/lib/model/predict.test.ts` |
 | Lectura del CSV | `web/src/lib/import/csv.test.ts` |
 | El modelo recupera pesos simulados y le gana al promedio | `model/tests/test_modelo.py` |
+| Retropropagación de la red igual a la derivada numérica; la red aprende una relación en V | `model/tests/test_red.py` |
+| La red da lo mismo en TypeScript y en Python (caso de `data/fixtures/red_caso_conocido.json`) | `web/src/lib/model/red.test.ts`, `model/tests/test_red.py` |
 | La fórmula da lo mismo en TypeScript y en Python (caso de `data/fixtures/`) | `web/src/lib/model/contrato.test.ts`, `model/tests/test_contrato_prediccion.py` |
 | Los archivos de `data/` cumplen los esquemas de `data/schemas/` y usan los mismos códigos | `model/tests/test_contrato_datos.py` |
 | Donaciones sin datos personales y con consentimiento | `api/tests/test_donaciones.py` |

@@ -4,24 +4,113 @@
   "title": "Modelo exportado (pesos.json)",
   "description": "Lo escribe model/ (gradly_model.train) y lo lee web/ para predecir en el navegador.",
   "type": "object",
-  "required": ["tipo", "sigma_global", "cursos"],
+  "required": [
+    "tipo",
+    "sigma_global",
+    "cursos"
+  ],
   "properties": {
-    "tipo": { "type": "string", "minLength": 1 },
-    "sigma_global": { "type": "number", "exclusiveMinimum": 0 },
+    "tipo": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sigma_global": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
     "cursos": {
       "type": "object",
       "description": "Una entrada por materia objetivo (clave = id de la materia).",
       "additionalProperties": {
         "type": "object",
-        "required": ["b", "sigma", "pesos"],
+        "required": [
+          "b",
+          "sigma",
+          "pesos"
+        ],
         "additionalProperties": false,
         "properties": {
-          "b": { "type": "number", "description": "Dificultad respecto al promedio del estudiante." },
-          "sigma": { "type": "number", "exclusiveMinimum": 0, "description": "Error típico de la predicción." },
+          "b": {
+            "type": "number",
+            "description": "Dificultad respecto al promedio del estudiante."
+          },
+          "sigma": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "Error típico de la predicción."
+          },
           "pesos": {
             "type": "object",
             "description": "Peso de cada materia previa (clave = id).",
-            "additionalProperties": { "type": "number" }
+            "additionalProperties": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "red": {
+      "type": "object",
+      "description": "Opcional. Red neuronal por materia (gradly_model.red). ŷ = ȳ + tanh(x·W1 + b1)·W2 + b2, con x = nota previa − ȳ en el orden de `previas`.",
+      "required": [
+        "activacion",
+        "cursos"
+      ],
+      "properties": {
+        "activacion": {
+          "const": "tanh"
+        },
+        "cursos": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "previas",
+              "W1",
+              "b1",
+              "W2",
+              "b2",
+              "sigma"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "previas": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Materias previas, en el orden de las filas de W1."
+              },
+              "W1": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                "description": "previas × neuronas ocultas."
+              },
+              "b1": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "W2": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "b2": {
+                "type": "number"
+              },
+              "sigma": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              }
+            }
           }
         }
       }

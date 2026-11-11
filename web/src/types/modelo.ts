@@ -14,6 +14,8 @@ export interface Modelo {
   tipo: string
   sigma_global: number
   cursos: Record<string, ModeloCurso>
+  /** Opcional: red neuronal por materia (alternativa a la regresión). */
+  red?: { activacion: string; cursos: Record<string, RedCurso> }
 }
 
 export type Semaforo = 'verde' | 'amarillo' | 'rojo'
@@ -33,4 +35,16 @@ export interface Prediccion {
   porQue: Contribucion[]
   /** false si no hay pesos para esta materia y se usó el promedio (baseline). */
   usaModelo: boolean
+}
+
+/** Red neuronal de una materia: ŷ = ȳ + tanh(x·W1 + b1)·W2 + b2, con x = nota previa − ȳ. */
+export interface RedCurso {
+  /** Materias previas, en el orden de las filas de W1. */
+  previas: string[]
+  /** previas × neuronas ocultas. */
+  W1: number[][]
+  b1: number[]
+  W2: number[]
+  b2: number
+  sigma: number
 }
