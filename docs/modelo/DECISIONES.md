@@ -26,6 +26,11 @@ validación cruzada por estudiante).
 4. **La red ya corre en TypeScript** (`web/src/lib/model/red.ts`, paso 8 del plan), con el mismo caso de prueba
    que Python. No está conectada a la interfaz: eso lo decide el frente web.
 
+5. **Se conserva la fórmula de Gradly** (ŷ = ȳ + b + Σ w · (nota previa − ȳ), con los prerrequisitos directos).
+   Se comparó con una variante más compleja (media por materia, nivel del estudiante encogido y todos los
+   ancestros en la malla) en 8 escenarios simulados: empatan en 4 y la variante gana por 0,005 a 0,008 puntos
+   de nota en los otros 4. Esa diferencia no justifica cambiar el contrato, la web y las pruebas.
+
 ## Límites
 
 - Todo sale de **datos simulados sobre la malla de ejemplo**: prueba que el método funciona, no qué tan bien
