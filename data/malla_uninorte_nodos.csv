@@ -1,0 +1,41 @@
+id,codigo,nombre,creditos,semestre,area,dificultad_base
+CALC1,MAT1101,Cálculo 1,4,1,Ciencias Básicas,-0.15
+ALG_LIN,MAT1111,Álgebra Lineal,3,1,Ciencias Básicas,-0.1
+PROG1,IST2101,Algoritmos y Programación 1,3,1,Computación,0.0
+INTRO_SIS,IST1001,Introducción a la Ing. de Sistemas,2,1,Computación,0.2
+COMP_COM1,ESP1001,Competencias Comunicativas 1,3,1,Humanidades,0.15
+QUIMICA,QUI1010,Química General,3,1,Ciencias Básicas,-0.05
+CALC2,MAT1102,Cálculo 2,4,2,Ciencias Básicas,-0.25
+MAT_DISC,MAT1121,Matemáticas Discretas,3,2,Matemáticas,-0.1
+PROG2,IST2102,Algoritmos y Programación 2,3,2,Computación,-0.1
+FISICA1,FIS1011,Física 1 (Mecánica),4,2,Ciencias Básicas,-0.2
+COMP_COM2,ESP1002,Competencias Comunicativas 2,3,2,Humanidades,0.15
+CALC3,MAT1103,Cálculo 3,3,3,Ciencias Básicas,-0.15
+EDO,MAT1104,Ecuaciones Diferenciales,3,3,Ciencias Básicas,-0.2
+ESTR_DAT,IST2103,Estructuras de Datos,3,3,Computación,-0.15
+FISICA2,FIS1012,Física 2 (Electricidad y Magnetismo),4,3,Ciencias Básicas,-0.2
+AUT_LENG,IST2104,Autómatas y Lenguajes Formales,3,3,Computación,-0.1
+PROB_EST,MAT1131,Probabilidad y Estadística,3,4,Matemáticas,-0.15
+DIS_ALG,IST2105,Análisis y Diseño de Algoritmos,3,4,Computación,-0.2
+ARQ_COMP,IST3101,Arquitectura de Computadores,3,4,Sistemas,-0.1
+BD1,IST3102,Bases de Datos 1,3,4,Computación,0.0
+ECONOMIA,ECO1001,Fundamentos de Economía,3,4,Económico-Adm,0.1
+ING_SOFT1,IST3103,Ingeniería de Software 1,3,5,Software,0.05
+SIS_OPER,IST3104,Sistemas Operativos,3,5,Sistemas,-0.15
+REDES,IST3105,Redes de Computadores,3,5,Sistemas,-0.1
+OPTIMIZ,IST3106,Optimización y Modelado,3,5,Matemáticas,-0.15
+HUMANID,HUM1001,Humanidades y Filosofía,2,5,Humanidades,0.2
+ING_SOFT2,IST3107,Ingeniería de Software 2,3,6,Software,0.05
+SEG_INFO,IST4101,Seguridad de la Información,3,6,Sistemas,-0.1
+SIS_DIST,IST4102,Sistemas Distribuidos,3,6,Sistemas,-0.15
+IA,IST4103,Inteligencia Artificial,3,6,Computación,-0.1
+CIENC_SOC,CSO1001,Ciencias Sociales,2,6,Humanidades,0.2
+PROY_GRAD1,IST5101,Proyecto de Grado 1,3,7,Integración,0.0
+GEST_TI,IST4104,Gestión de Proyectos TI,3,7,Gestión,0.1
+ANALITICA,IST4105,Minería de Datos y Analítica,3,7,Computación,-0.05
+ELECT_PROF1,IST5001,Electiva Profesional 1,3,7,Profesional,0.1
+ETICA,HUM1002,Ética Profesional,2,7,Humanidades,0.2
+PROY_GRAD2,IST5102,Proyecto de Grado 2,4,8,Integración,0.0
+CLOUD,IST4106,Computación en la Nube,3,8,Sistemas,0.0
+ELECT_PROF2,IST5002,Electiva Profesional 2,3,8,Profesional,0.1
+PRACTICA,IST5103,Práctica Profesional,6,8,Integración,0.15

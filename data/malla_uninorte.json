@@ -1,0 +1,431 @@
+{
+  "programa": "Ingeniería de Sistemas",
+  "universidad": "Universidad del Norte",
+  "departamento": "Departamento de Ingeniería de Sistemas",
+  "asignaturas": [
+    {
+      "id": "CALC1",
+      "codigo": "MAT1101",
+      "nombre": "Cálculo 1",
+      "creditos": 4,
+      "semestre": 1,
+      "area": "Ciencias Básicas",
+      "dificultad_base": -0.15
+    },
+    {
+      "id": "ALG_LIN",
+      "codigo": "MAT1111",
+      "nombre": "Álgebra Lineal",
+      "creditos": 3,
+      "semestre": 1,
+      "area": "Ciencias Básicas",
+      "dificultad_base": -0.10
+    },
+    {
+      "id": "PROG1",
+      "codigo": "IST2101",
+      "nombre": "Algoritmos y Programación 1",
+      "creditos": 3,
+      "semestre": 1,
+      "area": "Computación",
+      "dificultad_base": 0.00
+    },
+    {
+      "id": "INTRO_SIS",
+      "codigo": "IST1001",
+      "nombre": "Introducción a la Ing. de Sistemas",
+      "creditos": 2,
+      "semestre": 1,
+      "area": "Computación",
+      "dificultad_base": 0.20
+    },
+    {
+      "id": "COMP_COM1",
+      "codigo": "ESP1001",
+      "nombre": "Competencias Comunicativas 1",
+      "creditos": 3,
+      "semestre": 1,
+      "area": "Humanidades",
+      "dificultad_base": 0.15
+    },
+    {
+      "id": "QUIMICA",
+      "codigo": "QUI1010",
+      "nombre": "Química General",
+      "creditos": 3,
+      "semestre": 1,
+      "area": "Ciencias Básicas",
+      "dificultad_base": -0.05
+    },
+
+    {
+      "id": "CALC2",
+      "codigo": "MAT1102",
+      "nombre": "Cálculo 2",
+      "creditos": 4,
+      "semestre": 2,
+      "area": "Ciencias Básicas",
+      "dificultad_base": -0.25
+    },
+    {
+      "id": "MAT_DISC",
+      "codigo": "MAT1121",
+      "nombre": "Matemáticas Discretas",
+      "creditos": 3,
+      "semestre": 2,
+      "area": "Matemáticas",
+      "dificultad_base": -0.10
+    },
+    {
+      "id": "PROG2",
+      "codigo": "IST2102",
+      "nombre": "Algoritmos y Programación 2",
+      "creditos": 3,
+      "semestre": 2,
+      "area": "Computación",
+      "dificultad_base": -0.10
+    },
+    {
+      "id": "FISICA1",
+      "codigo": "FIS1011",
+      "nombre": "Física 1 (Mecánica)",
+      "creditos": 4,
+      "semestre": 2,
+      "area": "Ciencias Básicas",
+      "dificultad_base": -0.20
+    },
+    {
+      "id": "COMP_COM2",
+      "codigo": "ESP1002",
+      "nombre": "Competencias Comunicativas 2",
+      "creditos": 3,
+      "semestre": 2,
+      "area": "Humanidades",
+      "dificultad_base": 0.15
+    },
+
+    {
+      "id": "CALC3",
+      "codigo": "MAT1103",
+      "nombre": "Cálculo 3",
+      "creditos": 3,
+      "semestre": 3,
+      "area": "Ciencias Básicas",
+      "dificultad_base": -0.15
+    },
+    {
+      "id": "EDO",
+      "codigo": "MAT1104",
+      "nombre": "Ecuaciones Diferenciales",
+      "creditos": 3,
+      "semestre": 3,
+      "area": "Ciencias Básicas",
+      "dificultad_base": -0.20
+    },
+    {
+      "id": "ESTR_DAT",
+      "codigo": "IST2103",
+      "nombre": "Estructuras de Datos",
+      "creditos": 3,
+      "semestre": 3,
+      "area": "Computación",
+      "dificultad_base": -0.15
+    },
+    {
+      "id": "FISICA2",
+      "codigo": "FIS1012",
+      "nombre": "Física 2 (Electricidad y Magnetismo)",
+      "creditos": 4,
+      "semestre": 3,
+      "area": "Ciencias Básicas",
+      "dificultad_base": -0.20
+    },
+    {
+      "id": "AUT_LENG",
+      "codigo": "IST2104",
+      "nombre": "Autómatas y Lenguajes Formales",
+      "creditos": 3,
+      "semestre": 3,
+      "area": "Computación",
+      "dificultad_base": -0.10
+    },
+
+    {
+      "id": "PROB_EST",
+      "codigo": "MAT1131",
+      "nombre": "Probabilidad y Estadística",
+      "creditos": 3,
+      "semestre": 4,
+      "area": "Matemáticas",
+      "dificultad_base": -0.15
+    },
+    {
+      "id": "DIS_ALG",
+      "codigo": "IST2105",
+      "nombre": "Análisis y Diseño de Algoritmos",
+      "creditos": 3,
+      "semestre": 4,
+      "area": "Computación",
+      "dificultad_base": -0.20
+    },
+    {
+      "id": "ARQ_COMP",
+      "codigo": "IST3101",
+      "nombre": "Arquitectura de Computadores",
+      "creditos": 3,
+      "semestre": 4,
+      "area": "Sistemas",
+      "dificultad_base": -0.10
+    },
+    {
+      "id": "BD1",
+      "codigo": "IST3102",
+      "nombre": "Bases de Datos 1",
+      "creditos": 3,
+      "semestre": 4,
+      "area": "Computación",
+      "dificultad_base": 0.00
+    },
+    {
+      "id": "ECONOMIA",
+      "codigo": "ECO1001",
+      "nombre": "Fundamentos de Economía",
+      "creditos": 3,
+      "semestre": 4,
+      "area": "Económico-Adm",
+      "dificultad_base": 0.10
+    },
+
+    {
+      "id": "ING_SOFT1",
+      "codigo": "IST3103",
+      "nombre": "Ingeniería de Software 1",
+      "creditos": 3,
+      "semestre": 5,
+      "area": "Software",
+      "dificultad_base": 0.05
+    },
+    {
+      "id": "SIS_OPER",
+      "codigo": "IST3104",
+      "nombre": "Sistemas Operativos",
+      "creditos": 3,
+      "semestre": 5,
+      "area": "Sistemas",
+      "dificultad_base": -0.15
+    },
+    {
+      "id": "REDES",
+      "codigo": "IST3105",
+      "nombre": "Redes de Computadores",
+      "creditos": 3,
+      "semestre": 5,
+      "area": "Sistemas",
+      "dificultad_base": -0.10
+    },
+    {
+      "id": "OPTIMIZ",
+      "codigo": "IST3106",
+      "nombre": "Optimización y Modelado",
+      "creditos": 3,
+      "semestre": 5,
+      "area": "Matemáticas",
+      "dificultad_base": -0.15
+    },
+    {
+      "id": "HUMANID",
+      "codigo": "HUM1001",
+      "nombre": "Humanidades y Filosofía",
+      "creditos": 2,
+      "semestre": 5,
+      "area": "Humanidades",
+      "dificultad_base": 0.20
+    },
+
+    {
+      "id": "ING_SOFT2",
+      "codigo": "IST3107",
+      "nombre": "Ingeniería de Software 2",
+      "creditos": 3,
+      "semestre": 6,
+      "area": "Software",
+      "dificultad_base": 0.05
+    },
+    {
+      "id": "SEG_INFO",
+      "codigo": "IST4101",
+      "nombre": "Seguridad de la Información",
+      "creditos": 3,
+      "semestre": 6,
+      "area": "Sistemas",
+      "dificultad_base": -0.10
+    },
+    {
+      "id": "SIS_DIST",
+      "codigo": "IST4102",
+      "nombre": "Sistemas Distribuidos",
+      "creditos": 3,
+      "semestre": 6,
+      "area": "Sistemas",
+      "dificultad_base": -0.15
+    },
+    {
+      "id": "IA",
+      "codigo": "IST4103",
+      "nombre": "Inteligencia Artificial",
+      "creditos": 3,
+      "semestre": 6,
+      "area": "Computación",
+      "dificultad_base": -0.10
+    },
+    {
+      "id": "CIENC_SOC",
+      "codigo": "CSO1001",
+      "nombre": "Ciencias Sociales",
+      "creditos": 2,
+      "semestre": 6,
+      "area": "Humanidades",
+      "dificultad_base": 0.20
+    },
+
+    {
+      "id": "PROY_GRAD1",
+      "codigo": "IST5101",
+      "nombre": "Proyecto de Grado 1",
+      "creditos": 3,
+      "semestre": 7,
+      "area": "Integración",
+      "dificultad_base": 0.00
+    },
+    {
+      "id": "GEST_TI",
+      "codigo": "IST4104",
+      "nombre": "Gestión de Proyectos TI",
+      "creditos": 3,
+      "semestre": 7,
+      "area": "Gestión",
+      "dificultad_base": 0.10
+    },
+    {
+      "id": "ANALITICA",
+      "codigo": "IST4105",
+      "nombre": "Minería de Datos y Analítica",
+      "creditos": 3,
+      "semestre": 7,
+      "area": "Computación",
+      "dificultad_base": -0.05
+    },
+    {
+      "id": "ELECT_PROF1",
+      "codigo": "IST5001",
+      "nombre": "Electiva Profesional 1",
+      "creditos": 3,
+      "semestre": 7,
+      "area": "Profesional",
+      "dificultad_base": 0.10
+    },
+    {
+      "id": "ETICA",
+      "codigo": "HUM1002",
+      "nombre": "Ética Profesional",
+      "creditos": 2,
+      "semestre": 7,
+      "area": "Humanidades",
+      "dificultad_base": 0.20
+    },
+
+    {
+      "id": "PROY_GRAD2",
+      "codigo": "IST5102",
+      "nombre": "Proyecto de Grado 2",
+      "creditos": 4,
+      "semestre": 8,
+      "area": "Integración",
+      "dificultad_base": 0.00
+    },
+    {
+      "id": "CLOUD",
+      "codigo": "IST4106",
+      "nombre": "Computación en la Nube",
+      "creditos": 3,
+      "semestre": 8,
+      "area": "Sistemas",
+      "dificultad_base": 0.00
+    },
+    {
+      "id": "ELECT_PROF2",
+      "codigo": "IST5002",
+      "nombre": "Electiva Profesional 2",
+      "creditos": 3,
+      "semestre": 8,
+      "area": "Profesional",
+      "dificultad_base": 0.10
+    },
+    {
+      "id": "PRACTICA",
+      "codigo": "IST5103",
+      "nombre": "Práctica Profesional",
+      "creditos": 6,
+      "semestre": 8,
+      "area": "Integración",
+      "dificultad_base": 0.15
+    }
+  ],
+  "aristas": [
+    {"source": "CALC1", "target": "CALC2", "tipo": "oficial", "peso": 0.65},
+    {"source": "CALC1", "target": "MAT_DISC", "tipo": "oficial", "peso": 0.45},
+    {"source": "CALC1", "target": "FISICA1", "tipo": "oficial", "peso": 0.55},
+    {"source": "PROG1", "target": "PROG2", "tipo": "oficial", "peso": 0.70},
+    {"source": "COMP_COM1", "target": "COMP_COM2", "tipo": "oficial", "peso": 0.50},
+
+    {"source": "CALC2", "target": "CALC3", "tipo": "oficial", "peso": 0.60},
+    {"source": "CALC2", "target": "EDO", "tipo": "oficial", "peso": 0.60},
+    {"source": "CALC2", "target": "FISICA2", "tipo": "oficial", "peso": 0.40},
+    {"source": "CALC2", "target": "PROB_EST", "tipo": "oficial", "peso": 0.50},
+    {"source": "FISICA1", "target": "FISICA2", "tipo": "oficial", "peso": 0.50},
+    {"source": "PROG2", "target": "ESTR_DAT", "tipo": "oficial", "peso": 0.65},
+    {"source": "MAT_DISC", "target": "ESTR_DAT", "tipo": "oficial", "peso": 0.45},
+    {"source": "MAT_DISC", "target": "AUT_LENG", "tipo": "oficial", "peso": 0.55},
+
+    {"source": "ESTR_DAT", "target": "DIS_ALG", "tipo": "oficial", "peso": 0.65},
+    {"source": "ESTR_DAT", "target": "ARQ_COMP", "tipo": "oficial", "peso": 0.40},
+    {"source": "ESTR_DAT", "target": "BD1", "tipo": "oficial", "peso": 0.55},
+    {"source": "FISICA2", "target": "ARQ_COMP", "tipo": "oficial", "peso": 0.35},
+
+    {"source": "BD1", "target": "ING_SOFT1", "tipo": "oficial", "peso": 0.40},
+    {"source": "DIS_ALG", "target": "ING_SOFT1", "tipo": "oficial", "peso": 0.45},
+    {"source": "ARQ_COMP", "target": "SIS_OPER", "tipo": "oficial", "peso": 0.60},
+    {"source": "ARQ_COMP", "target": "REDES", "tipo": "oficial", "peso": 0.50},
+    {"source": "PROB_EST", "target": "OPTIMIZ", "tipo": "oficial", "peso": 0.45},
+
+    {"source": "ING_SOFT1", "target": "ING_SOFT2", "tipo": "oficial", "peso": 0.65},
+    {"source": "ING_SOFT1", "target": "GEST_TI", "tipo": "oficial", "peso": 0.45},
+    {"source": "ING_SOFT1", "target": "ELECT_PROF1", "tipo": "oficial", "peso": 0.40},
+    {"source": "REDES", "target": "SEG_INFO", "tipo": "oficial", "peso": 0.50},
+    {"source": "REDES", "target": "SIS_DIST", "tipo": "oficial", "peso": 0.50},
+    {"source": "SIS_OPER", "target": "SEG_INFO", "tipo": "oficial", "peso": 0.40},
+    {"source": "SIS_OPER", "target": "SIS_DIST", "tipo": "oficial", "peso": 0.45},
+    {"source": "DIS_ALG", "target": "IA", "tipo": "oficial", "peso": 0.55},
+    {"source": "PROB_EST", "target": "IA", "tipo": "oficial", "peso": 0.45},
+
+    {"source": "ING_SOFT2", "target": "PROY_GRAD1", "tipo": "oficial", "peso": 0.55},
+    {"source": "SIS_DIST", "target": "PROY_GRAD1", "tipo": "oficial", "peso": 0.40},
+    {"source": "BD1", "target": "ANALITICA", "tipo": "oficial", "peso": 0.40},
+    {"source": "IA", "target": "ANALITICA", "tipo": "oficial", "peso": 0.55},
+    {"source": "PROB_EST", "target": "ANALITICA", "tipo": "oficial", "peso": 0.35},
+
+    {"source": "PROY_GRAD1", "target": "PROY_GRAD2", "tipo": "oficial", "peso": 0.70},
+    {"source": "PROY_GRAD1", "target": "PRACTICA", "tipo": "oficial", "peso": 0.50},
+    {"source": "SIS_DIST", "target": "CLOUD", "tipo": "oficial", "peso": 0.50},
+    {"source": "SEG_INFO", "target": "CLOUD", "tipo": "oficial", "peso": 0.40},
+    {"source": "ELECT_PROF1", "target": "ELECT_PROF2", "tipo": "oficial", "peso": 0.50},
+
+    {"source": "ALG_LIN", "target": "EDO", "tipo": "blanda", "peso": 0.35},
+    {"source": "ALG_LIN", "target": "OPTIMIZ", "tipo": "blanda", "peso": 0.45},
+    {"source": "ALG_LIN", "target": "IA", "tipo": "blanda", "peso": 0.40},
+    {"source": "MAT_DISC", "target": "BD1", "tipo": "blanda", "peso": 0.30},
+    {"source": "PROG2", "target": "ARQ_COMP", "tipo": "blanda", "peso": 0.30},
+    {"source": "BD1", "target": "SIS_DIST", "tipo": "blanda", "peso": 0.30},
+    {"source": "DIS_ALG", "target": "OPTIMIZ", "tipo": "blanda", "peso": 0.30}
+  ]
+}
