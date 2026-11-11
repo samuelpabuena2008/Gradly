@@ -1,7 +1,10 @@
 // Inferencia en el navegador: las notas del estudiante nunca salen de su computador.
 //
-// Fórmula (row-centering), con ȳ = promedio del estudiante en materias anteriores:
-//   ŷ(s,c) = ȳ(s) + b(c) + Σ w(p→c) · (y(s,p) − ȳ(s))
+// Fórmula:
+//   ŷ(s,c) = μ(c) + b(c) + β(c)·a(s) + Σ w(p→c) · z(s,p)
+//   μ(c)   media de la materia c (modelo.medias)
+//   a(s)   nivel del estudiante: Σ (y_p − μ_p) / (n + k_nivel)
+//   z(s,p) cómo le fue en p frente a su nivel: (y_p − μ_p) − a(s)
 
 import type { Contribucion, Malla, Modelo, Nota, Prediccion, Semaforo } from '../../types'
 import { predecesores } from '../graph/dag'
@@ -36,6 +39,19 @@ export function promedio(notas: Map<string, number>): number {
   return valores.reduce((a, b) => a + b, 0) / valores.length
 }
 
+/** a(s): desviación media del estudiante frente a la media de cada materia, encogida hacia 0. */
+export function nivel(modelo: Modelo, notas: Map<string, number>): number {
+  let suma = 0
+  let n = 0
+  for (const [materia, nota] of notas) {
+    const media = modelo.medias[materia]
+    if (media === undefined) continue
+    suma += nota - media
+    n += 1
+  }
+  return suma / (n + modelo.k_nivel)
+}
+
 /** Materias que el estudiante puede inscribir: no aprobadas y con todos sus prerrequisitos aprobados. */
 export function materiasDisponibles(malla: Malla, notas: Map<string, number>): string[] {
   const aprobada = (id: string) => (notas.get(id) ?? -1) >= malla.nota_aprobacion
@@ -55,7 +71,7 @@ const limitar = (x: number) => Math.min(5, Math.max(0, x))
 
 /**
  * Predice la nota de una materia. Si el modelo no tiene pesos para ella,
- * usa el baseline: el promedio del estudiante.
+ * usa la media de la materia más el nivel del estudiante.
  */
 export function predecirMateria(
   materia: string,
@@ -64,20 +80,20 @@ export function predecirMateria(
   notas: Map<string, number>,
 ): Prediccion | null {
   if (notas.size === 0) return null
-  const ybar = promedio(notas)
+  const a = nivel(modelo, notas)
   const curso = modelo.cursos[materia]
 
-  let nota = ybar
+  let nota = (modelo.medias[materia] ?? promedio(notas)) + a
   let sigma = modelo.sigma_global
   const contribuciones: Contribucion[] = []
 
   if (curso) {
-    nota += curso.b
+    nota = modelo.medias[materia] + curso.b + curso.beta * a
     sigma = curso.sigma
     for (const [previa, w] of Object.entries(curso.pesos)) {
       const y = notas.get(previa)
       if (y === undefined) continue // materia previa sin nota: no aporta
-      const aporte = w * (y - ybar)
+      const aporte = w * (y - modelo.medias[previa] - a)
       nota += aporte
       contribuciones.push({ materia: previa, aporte })
     }

@@ -3,11 +3,15 @@
 Sirve para revisar en Python lo que verá el estudiante en la web. Las dos versiones
 se comparan con el caso de data/fixtures/prediccion_caso_conocido.json.
 
-    ŷ(s,c) = ȳ(s) + b(c) + Σ w(p→c) · (y(s,p) − ȳ(s))
+    ŷ(s,c) = μ(c) + b(c) + β(c)·a(s) + Σ w(p→c) · z(s,p)
+
+    μ(c)   media de la materia c (modelo["medias"])
+    a(s)   nivel del estudiante: Σ (y_p − μ_p) / (n + k_nivel)
+    z(s,p) cómo le fue en p frente a su nivel: (y_p − μ_p) − a(s)
 """
 
 from dataclasses import dataclass, field
-from math import erf, sqrt
+from math import erf, sqrt, tanh
 
 # Probabilidad de no aprobar a partir de la cual cambia el color del semáforo.
 UMBRALES = {"amarillo": 0.2, "rojo": 0.5}
@@ -50,20 +54,30 @@ def _limitar(x: float) -> float:
     return min(5.0, max(0.0, x))
 
 
+def nivel(modelo: dict, notas: dict[str, float]) -> float:
+    """a(s): desviación media del estudiante frente a la media de cada materia, encogida hacia 0."""
+    medias = modelo["medias"]
+    desviaciones = [nota - medias[m] for m, nota in notas.items() if m in medias]
+    return sum(desviaciones) / (len(desviaciones) + modelo["k_nivel"])
+
+
 def predecir_materia(materia: str, malla: dict, modelo: dict, notas: dict[str, float]) -> Prediccion | None:
     if not notas:
         return None
-    ybar = sum(notas.values()) / len(notas)
+    medias = modelo["medias"]
+    a = nivel(modelo, notas)
     curso = modelo["cursos"].get(materia)
 
-    nota, sigma, contribuciones = ybar, modelo["sigma_global"], []
+    # Sin pesos para la materia: su media más el nivel del estudiante.
+    nota = medias.get(materia, sum(notas.values()) / len(notas)) + a
+    sigma, contribuciones = modelo["sigma_global"], []
     if curso:
-        nota += curso["b"]
+        nota = medias[materia] + curso["b"] + curso["beta"] * a
         sigma = curso["sigma"]
         for previa, w in curso["pesos"].items():
             if previa not in notas:
                 continue  # materia previa sin nota: no aporta
-            aporte = w * (notas[previa] - ybar)
+            aporte = w * (notas[previa] - medias[previa] - a)
             nota += aporte
             contribuciones.append((previa, aporte))
 
@@ -79,4 +93,45 @@ def predecir_materia(materia: str, malla: dict, modelo: dict, notas: dict[str, f
         semaforo=_semaforo(prob),
         por_que=por_que,
         usa_modelo=curso is not None,
+    )
+
+
+def salida_red(red: dict, x: list[float]) -> float:
+    """Propagación hacia adelante de la red exportada: o = tanh(x·W1 + b1)·W2 + b2."""
+    oculta = [
+        tanh(sum(x[i] * red["W1"][i][j] for i in range(len(x))) + red["b1"][j]) for j in range(len(red["b1"]))
+    ]
+    return sum(h * w for h, w in zip(oculta, red["W2"])) + red["b2"]
+
+
+def predecir_materia_red(materia: str, malla: dict, modelo: dict, notas: dict[str, float]) -> Prediccion | None:
+    """Igual que `predecir_materia`, pero con la red neuronal: ŷ = ȳ + red(y_p − ȳ).
+
+    El "por qué" se calcula por oclusión: cuánto cambia la predicción si se "olvida" la nota
+    de una materia previa (se pone su desviación en 0, como si no la hubiera cursado).
+    Si no hay red para la materia, usa la regresión.
+    """
+    red = modelo.get("red", {}).get("cursos", {}).get(materia)
+    if not notas or red is None:
+        return predecir_materia(materia, malla, modelo, notas)
+    ybar = sum(notas.values()) / len(notas)
+    x = [notas[p] - ybar if p in notas else 0.0 for p in red["previas"]]
+    salida = salida_red(red, x)
+
+    contribuciones = []
+    for i, previa in enumerate(red["previas"]):
+        if previa in notas:
+            contribuciones.append((previa, salida - salida_red(red, x[:i] + [0.0] + x[i + 1 :])))
+
+    nota = _limitar(ybar + salida)
+    prob = normal_cdf((malla["nota_aprobacion"] - nota) / red["sigma"])
+    por_que = sorted((c for c in contribuciones if abs(c[1]) > 0.005), key=lambda c: -abs(c[1]))[:3]
+    return Prediccion(
+        materia=materia,
+        nota=nota,
+        rango=(_limitar(nota - red["sigma"]), _limitar(nota + red["sigma"])),
+        prob_no_aprobar=prob,
+        semaforo=_semaforo(prob),
+        por_que=por_que,
+        usa_modelo=True,
     )
