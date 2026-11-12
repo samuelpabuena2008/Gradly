@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gradly · Donar notas anónimamente</title>
+    <style>
+      :root {
+        --fondo: #f6f7f9;
+        --tarjeta: #ffffff;
+        --texto: #1d2330;
+        --suave: #5d6677;
+        --borde: #dde1e8;
+        --acento: #2f5fd0;
+        --acento-suave: #eef3ff;
+        --verde: #2e9d5b;
+        --verde-suave: #eaf7ef;
+        --rojo: #d2453c;
+        --rojo-suave: #fdf0ef;
+        --amarillo: #d79b12;
+        --amarillo-suave: #fef8e7;
+        font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+        color: var(--texto);
+      }
+
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--fondo); line-height: 1.45; }
+
+      header {
+        background: var(--tarjeta);
+        border-bottom: 1px solid var(--borde);
+        padding: 14px 20px;
+      }
+      .contenedor { max-width: 920px; margin: 0 auto; }
+      .header-flex { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 10px; }
+      header h1 { margin: 0; font-size: 22px; color: var(--acento); }
+      header p { margin: 4px 0 0; color: var(--suave); font-size: 14px; }
+
+      .badges { display: flex; flex-wrap: wrap; gap: 8px; }
+      .badge {
+        font-size: 12px;
+        padding: 3px 10px;
+        border-radius: 999px;
+        background: var(--acento-suave);
+        color: var(--acento);
+        border: 1px solid #d4e0ff;
+        font-weight: 600;
+      }
+
+      main { padding: 18px 20px 40px; }
+      .tarjeta {
+        background: var(--tarjeta);
+        border: 1px solid var(--borde);
+        border-radius: 10px;
+        padding: 16px;
+        margin-bottom: 14px;
+      }
+      .tarjeta h2 { margin: 0 0 8px; font-size: 17px; }
+      .ayuda { color: var(--suave); font-size: 13px; margin: 4px 0; }
+
+      .tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+      .tab {
+        padding: 7px 14px;
+        border: 1px solid var(--borde);
+        border-radius: 8px;
+        background: var(--fondo);
+        cursor: pointer;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .tab.activo { background: var(--acento); color: #fff; border-color: var(--acento); }
+
+      .semestre-card {
+        border: 1px solid var(--borde);
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 12px;
+        background: #fcfcfd;
+      }
+      .semestre-head {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--borde);
+      }
+      .semestre-head strong { font-size: 15px; }
+
+      .materia-row {
+        display: grid;
+        grid-template-columns: 1fr 110px 95px auto;
+        gap: 8px;
+        align-items: center;
+        padding: 6px 0;
+        border-bottom: 1px dashed #eceef2;
+      }
+      .materia-row:last-child { border-bottom: none; }
+      @media (max-width: 640px) {
+        .materia-row { grid-template-columns: 1fr 1fr; }
+        .materia-nombre { grid-column: 1 / -1; }
+      }
+
+      .materia-codigo { font-family: ui-monospace, monospace; font-size: 12px; color: var(--suave); }
+      input, textarea, select {
+        font: inherit;
+        font-size: 13px;
+        padding: 6px 8px;
+        border: 1px solid var(--borde);
+        border-radius: 6px;
+        background: #fff;
+        color: var(--texto);
+      }
+      input:focus, textarea:focus { outline: 2px solid #bfd2ff; border-color: var(--acento); }
+      input.invalido { border-color: var(--rojo); background: var(--rojo-suave); }
+      textarea { width: 100%; font-family: ui-monospace, monospace; }
+
+      button {
+        font: inherit;
+        font-size: 13px;
+        padding: 7px 12px;
+        border: 1px solid var(--borde);
+        border-radius: 6px;
+        background: var(--tarjeta);
+        cursor: pointer;
+      }
+      button:hover:not(:disabled) { border-color: var(--acento); }
+      button.primario {
+        background: var(--acento);
+        color: #fff;
+        border-color: var(--acento);
+        font-weight: 600;
+        padding: 10px 18px;
+        font-size: 14px;
+      }
+      button.primario:disabled { opacity: 0.55; cursor: not-allowed; }
+      button.mini { padding: 4px 8px; font-size: 12px; }
+
+      .fila { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+      .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        background: var(--acento-suave);
+        border: 1px solid #d4e0ff;
+      }
+      .chip button { border: none; background: transparent; padding: 0 2px; color: var(--suave); font-weight: bold; }
+
+      .consentimiento {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        background: var(--acento-suave);
+        border: 1px solid #d4e0ff;
+        border-radius: 8px;
+        padding: 12px;
+        margin: 12px 0;
+        font-size: 13px;
+      }
+      .consentimiento input { margin-top: 3px; width: 16px; height: 16px; flex-shrink: 0; }
+
+      .alerta {
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        margin-top: 10px;
+      }
+      .alerta-ok { background: var(--verde-suave); border: 1px solid #b6e3c8; color: #165e33; }
+      .alerta-error { background: var(--rojo-suave); border: 1px solid #f0c0bc; color: #8c221b; }
+      .alerta-aviso { background: var(--amarillo-suave); border: 1px solid #f4dc9c; color: #7a5403; }
+
+      pre {
+        background: #f3f5f8;
+        border: 1px solid var(--borde);
+        border-radius: 6px;
+        padding: 10px;
+        font-size: 12px;
+        overflow-x: auto;
+        max-height: 220px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="contenedor header-flex">
+        <div>
+          <h1>Gradly · Donación anónima de notas</h1>
+          <p>Proyecto académico de Matemáticas Discretas (MAT 4021) · Universidad del Norte</p>
+        </div>
+        <div class="badges">
+          <span class="badge" id="badge-malla">Cargando malla…</span>
+          <span class="badge" id="badge-resumen">… donaciones</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="contenedor">
+      <section class="tarjeta">
+        <h2>1. Ingresa tus notas cursadas</h2>
+        <p class="ayuda">
+          No pedimos nombre, código estudiantil ni correo. Solo guardamos qué materia viste, el periodo
+          (<code>AAAA-S</code>) y la nota (<code>0.0</code> a <code>5.0</code>) bajo un identificador aleatorio.
+        </p>
+
+        <div class="tabs">
+          <button type="button" class="tab activo" id="tab-btn-malla">Llenar por semestre</button>
+          <button type="button" class="tab" id="tab-btn-csv">Pegar o subir CSV</button>
+        </div>
+
+        <div id="panel-malla">
+          <div id="lista-semestres">Cargando materias…</div>
+        </div>
+
+        <div id="panel-csv" hidden>
+          <p class="ayuda">
+            Acepta formato <code>materia,periodo,nota</code> (separado por coma o punto y coma) o líneas simples tipo
+            <code>CAL1 2025-1 3.8</code>. El procesamiento ocurre en tu navegador antes de enviar nada.
+          </p>
+          <div class="fila" style="margin-bottom: 8px">
+            <input type="file" id="archivo-csv" accept=".csv,.txt,text/csv" />
+          </div>
+          <textarea id="texto-csv" rows="6" placeholder="materia,periodo,nota&#10;CAL1,2024-1,3.8&#10;CAL2,2024-2,3.4"></textarea>
+          <div class="fila">
+            <button type="button" id="btn-cargar-csv">Cargar al resumen</button>
+          </div>
+          <div id="csv-feedback"></div>
+        </div>
+      </section>
+
+      <section class="tarjeta">
+        <h2>2. Revisa y autoriza el envío anónimo</h2>
+        <p class="ayuda" id="conteo-notas">Aún no has agregado notas.</p>
+        <div class="chips" id="chips-notas"></div>
+
+        <details style="margin-top: 10px">
+          <summary class="ayuda" style="cursor: pointer">Ver exactamente qué JSON se enviará (0 datos personales)</summary>
+          <pre id="preview-json">{}</pre>
+        </details>
+
+        <label class="consentimiento">
+          <input type="checkbox" id="chk-consentimiento" />
+          <span>
+            <strong>Autorización de tratamiento de datos (Ley 1581 de 2012):</strong> Autorizo de manera previa,
+            expresa e informada el uso anónimo de estas calificaciones exclusivamente para entrenar y validar los
+            modelos académicos del proyecto Gradly (MAT 4021, Uninorte). Entiendo que no se recopila mi nombre,
+            código estudiantil ni dirección IP, y que la donación es completamente voluntaria.
+          </span>
+        </label>
+
+        <div class="fila">
+          <button type="button" class="primario" id="btn-enviar">Donar notas anónimamente</button>
+          <button type="button" id="btn-limpiar">Limpiar todo</button>
+        </div>
+        <div id="estado-envio"></div>
+      </section>
+    </main>
+
+    <script>
+      const estado = {
+        meta: null,
+        validas: new Set(),
+        semestresPeriodos: new Map(),
+        filas: [], // { uid, materia, periodo, nota, origen }
+        enviado: false,
+      };
+      let nextUid = 1;
+
+      const elMalla = document.getElementById('badge-malla');
+      const elResumen = document.getElementById('badge-resumen');
+      const elSemestres = document.getElementById('lista-semestres');
+      const elConteo = document.getElementById('conteo-notas');
+      const elChips = document.getElementById('chips-notas');
+      const elPreview = document.getElementById('preview-json');
+      const elConsent = document.getElementById('chk-consentimiento');
+      const elEstadoEnvio = document.getElementById('estado-envio');
+      const elCsvFeedback = document.getElementById('csv-feedback');
+      const btnEnviar = document.getElementById('btn-enviar');
+
+      function periodoPorDefectoSemestre(semestre) {
+        const anioBase = 2024;
+        const anio = anioBase + Math.floor((semestre - 1) / 2);
+        const term = ((semestre - 1) % 2) + 1;
+        return `${anio}-${term}`;
+      }
+
+      function esPeriodoValido(p) {
+        return /^\d{4}-[123]$/.test(p);
+      }
+
+      function parsearNota(valor) {
+        if (valor === '' || valor === null || valor === undefined) return null;
+        const num = Number(String(valor).trim().replace(',', '.'));
+        if (!Number.isFinite(num) || num < 0 || num > 5) return NaN;
+        return Math.round(num * 100) / 100;
+      }
+
+      function limpiarAlertas(contenedor) {
+        contenedor.replaceChildren();
+      }
+
+      function mostrarAlerta(contenedor, tipo, texto) {
+        const div = document.createElement('div');
+        div.className = `alerta alerta-${tipo}`;
+        div.textContent = texto;
+        contenedor.appendChild(div);
+      }
+
+      function payloadActual() {
+        const notasValidas = estado.filas
+          .filter((f) => f.materia && esPeriodoValido(f.periodo) && typeof f.nota === 'number' && Number.isFinite(f.nota))
+          .map((f) => ({ materia: f.materia, periodo: f.periodo, nota: f.nota }));
+        return {
+          consentimiento: elConsent.checked,
+          programa: estado.meta ? estado.meta.programa : '',
+          version_malla: estado.meta ? estado.meta.version : '',
+          notas: notasValidas,
+        };
+      }
+
+      function actualizarVistaPrevia() {
+        const payload = payloadActual();
+        const n = payload.notas.length;
+        elConteo.textContent = n === 0
+          ? 'Aún no has agregado notas válidas.'
+          : `${n} nota${n === 1 ? '' : 's'} lista${n === 1 ? '' : 's'} para donar anónimamente.`;
+
+        elChips.replaceChildren();
+        estado.filas.forEach((f) => {
+          if (!f.materia || typeof f.nota !== 'number' || !Number.isFinite(f.nota) || !esPeriodoValido(f.periodo)) return;
+          const chip = document.createElement('span');
+          chip.className = 'chip';
+          const txt = document.createElement('span');
+          txt.textContent = `${f.materia} · ${f.periodo} · ${f.nota.toFixed(1)}`;
+          const btnX = document.createElement('button');
+          btnX.type = 'button';
+          btnX.title = 'Quitar';
+          btnX.textContent = '×';
+          btnX.addEventListener('click', () => {
+            estado.filas = estado.filas.filter((x) => x.uid !== f.uid);
+            renderSemestres();
+            actualizarVistaPrevia();
+          });
+          chip.append(txt, btnX);
+          elChips.appendChild(chip);
+        });
+
+        elPreview.textContent = JSON.stringify(payload, null, 2);
+      }
+
+      function crearFila(materia, periodo, nota = null) {
+        return { uid: nextUid++, materia, periodo, nota };
+      }
+
+      function renderSemestres() {
+        if (!estado.meta) return;
+        const grupos = new Map();
+        estado.meta.materias.forEach((m) => {
+          if (!grupos.has(m.semestre)) grupos.set(m.semestre, []);
+          grupos.get(m.semestre).push(m);
+        });
+
+        elSemestres.replaceChildren();
+        for (const [semestre, materias] of grupos.entries()) {
+          if (!estado.semestresPeriodos.has(semestre)) {
+            estado.semestresPeriodos.set(semestre, periodoPorDefectoSemestre(semestre));
+          }
+          const card = document.createElement('div');
+          card.className = 'semestre-card';
+
+          const head = document.createElement('div');
+          head.className = 'semestre-head';
+          const titulo = document.createElement('strong');
+          titulo.textContent = `Semestre ${semestre}`;
+
+          const ctrl = document.createElement('label');
+          ctrl.className = 'ayuda fila';
+          ctrl.textContent = 'Periodo por defecto: ';
+          const inpDefault = document.createElement('input');
+          inpDefault.size = 7;
+          inpDefault.placeholder = '2024-1';
+          inpDefault.value = estado.semestresPeriodos.get(semestre);
+          inpDefault.addEventListener('input', () => {
+            const anterior = estado.semestresPeriodos.get(semestre);
+            const nuevo = inpDefault.value.trim();
+            inpDefault.classList.toggle('invalido', nuevo !== '' && !esPeriodoValido(nuevo));
+            estado.semestresPeriodos.set(semestre, nuevo);
+            materias.forEach((m) => {
+              estado.filas
+                .filter((f) => f.materia === m.id && f.periodo === anterior)
+                .forEach((f) => { f.periodo = nuevo; });
+            });
+            card.querySelectorAll('input[data-rol="periodo"]').forEach((el) => {
+              if (el.value === anterior) el.value = nuevo;
+            });
+            actualizarVistaPrevia();
+          });
+          ctrl.appendChild(inpDefault);
+          head.append(titulo, ctrl);
+          card.appendChild(head);
+
+          materias.forEach((m) => {
+            let filasMateria = estado.filas.filter((f) => f.materia === m.id);
+            if (filasMateria.length === 0) {
+              const nueva = crearFila(m.id, estado.semestresPeriodos.get(semestre), null);
+              estado.filas.push(nueva);
+              filasMateria = [nueva];
+            }
+
+            filasMateria.forEach((fila, idx) => {
+              const row = document.createElement('div');
+              row.className = 'materia-row';
+
+              const info = document.createElement('div');
+              info.className = 'materia-nombre';
+              const nom = document.createElement('span');
+              nom.textContent = idx === 0 ? m.nombre : `${m.nombre} (intento ${idx + 1})`;
+              const cod = document.createElement('span');
+              cod.className = 'materia-codigo';
+              cod.textContent = ` · ${m.id}`;
+              info.append(nom, cod);
+
+              const inpPeriodo = document.createElement('input');
+              inpPeriodo.dataset.rol = 'periodo';
+              inpPeriodo.placeholder = 'AAAA-S';
+              inpPeriodo.value = fila.periodo;
+              inpPeriodo.addEventListener('input', () => {
+                fila.periodo = inpPeriodo.value.trim();
+                inpPeriodo.classList.toggle('invalido', !esPeriodoValido(fila.periodo));
+                actualizarVistaPrevia();
+              });
+
+              const inpNota = document.createElement('input');
+              inpNota.placeholder = 'Nota 0-5';
+              inpNota.inputMode = 'decimal';
+              inpNota.value = typeof fila.nota === 'number' ? String(fila.nota) : '';
+              inpNota.addEventListener('input', () => {
+                const parsed = parsearNota(inpNota.value);
+                fila.nota = parsed;
+                inpNota.classList.toggle('invalido', Number.isNaN(parsed));
+                estado.enviado = false;
+                actualizarVistaPrevia();
+              });
+
+              const acciones = document.createElement('div');
+              if (idx === 0) {
+                const btnMas = document.createElement('button');
+                btnMas.type = 'button';
+                btnMas.className = 'mini';
+                btnMas.textContent = '+ intento';
+                btnMas.title = 'Agregar otro periodo si repetiste esta materia';
+                btnMas.addEventListener('click', () => {
+                  estado.filas.push(crearFila(m.id, estado.semestresPeriodos.get(semestre), null));
+                  renderSemestres();
+                  actualizarVistaPrevia();
+                });
+                acciones.appendChild(btnMas);
+              } else {
+                const btnDel = document.createElement('button');
+                btnDel.type = 'button';
+                btnDel.className = 'mini';
+                btnDel.textContent = 'Quitar';
+                btnDel.addEventListener('click', () => {
+                  estado.filas = estado.filas.filter((x) => x.uid !== fila.uid);
+                  renderSemestres();
+                  actualizarVistaPrevia();
+                });
+                acciones.appendChild(btnDel);
+              }
+
+              row.append(info, inpPeriodo, inpNota, acciones);
+              card.appendChild(row);
+            });
+          });
+
+          elSemestres.appendChild(card);
+        }
+      }
+
+      function parsearTextoNotas(contenido) {
+        const lineas = contenido
+          .replace(/^\uFEFF/, '')
+          .split(/\r?\n/)
+          .map((l) => l.trim())
+          .filter((l) => l.length > 0);
+        if (lineas.length === 0) return { notas: [], errores: ['No hay texto para cargar.'] };
+
+        const primera = lineas[0].toLowerCase();
+        const tieneHeader = primera.includes('materia') && primera.includes('nota');
+        const separador = lineas[0].includes(';') ? ';' : (lineas[0].includes('\t') ? '\t' : ',');
+
+        const notas = [];
+        const errores = [];
+
+        if (tieneHeader) {
+          const cols = lineas[0].split(separador).map((c) => c.trim().toLowerCase());
+          const idxMat = cols.indexOf('materia');
+          const idxPer = cols.indexOf('periodo');
+          const idxNot = cols.indexOf('nota');
+          if (idxMat < 0 || idxPer < 0 || idxNot < 0) {
+            return { notas: [], errores: ['Faltan columnas requeridas: materia, periodo, nota.'] };
+          }
+          lineas.slice(1).forEach((linea, i) => {
+            const c = linea.split(separador).map((x) => x.trim());
+            const fila = i + 2;
+            const materia = (c[idxMat] || '').toUpperCase();
+            const periodo = c[idxPer] || '';
+            const nota = parsearNota(c[idxNot]);
+            if (!estado.validas.has(materia)) {
+              errores.push(`Fila ${fila}: la materia ${materia || '?'} no está en la malla.`);
+            } else if (!esPeriodoValido(periodo)) {
+              errores.push(`Fila ${fila}: periodo inválido (${periodo}), usa AAAA-S.`);
+            } else if (nota === null || Number.isNaN(nota)) {
+              errores.push(`Fila ${fila}: la nota debe estar entre 0 y 5.`);
+            } else {
+              notas.push({ materia, periodo, nota });
+            }
+          });
+        } else {
+          lineas.forEach((linea, i) => {
+            const partes = linea.split(/[;\t,]+|\s{2,}|\s+/).map((x) => x.trim()).filter(Boolean);
+            const fila = i + 1;
+            if (partes.length < 3) {
+              errores.push(`Línea ${fila}: formato esperado CODIGO PERIODO NOTA.`);
+              return;
+            }
+            const materia = partes[0].toUpperCase();
+            const periodo = partes[1];
+            const nota = parsearNota(partes[2]);
+            if (!estado.validas.has(materia)) {
+              errores.push(`Línea ${fila}: la materia ${materia} no está en la malla.`);
+            } else if (!esPeriodoValido(periodo)) {
+              errores.push(`Línea ${fila}: periodo inválido (${periodo}), usa AAAA-S.`);
+            } else if (nota === null || Number.isNaN(nota)) {
+              errores.push(`Línea ${fila}: la nota debe estar entre 0 y 5.`);
+            } else {
+              notas.push({ materia, periodo, nota });
+            }
+          });
+        }
+        return { notas, errores };
+      }
+
+      function aplicarNotasImportadas(notas) {
+        notas.forEach((n) => {
+          const existente = estado.filas.find((f) => f.materia === n.materia && (f.nota === null || f.periodo === n.periodo));
+          if (existente) {
+            existente.periodo = n.periodo;
+            existente.nota = n.nota;
+          } else {
+            estado.filas.push(crearFila(n.materia, n.periodo, n.nota));
+          }
+        });
+        renderSemestres();
+        actualizarVistaPrevia();
+      }
+
+      document.getElementById('tab-btn-malla').addEventListener('click', () => {
+        document.getElementById('tab-btn-malla').classList.add('activo');
+        document.getElementById('tab-btn-csv').classList.remove('activo');
+        document.getElementById('panel-malla').hidden = false;
+        document.getElementById('panel-csv').hidden = true;
+      });
+
+      document.getElementById('tab-btn-csv').addEventListener('click', () => {
+        document.getElementById('tab-btn-csv').classList.add('activo');
+        document.getElementById('tab-btn-malla').classList.remove('activo');
+        document.getElementById('panel-csv').hidden = false;
+        document.getElementById('panel-malla').hidden = true;
+      });
+
+      document.getElementById('archivo-csv').addEventListener('change', async (e) => {
+        const archivo = e.target.files?.[0];
+        if (!archivo) return;
+        document.getElementById('texto-csv').value = await archivo.text();
+      });
+
+      document.getElementById('btn-cargar-csv').addEventListener('click', () => {
+        limpiarAlertas(elCsvFeedback);
+        const r = parsearTextoNotas(document.getElementById('texto-csv').value);
+        if (r.notas.length > 0) {
+          aplicarNotasImportadas(r.notas);
+          mostrarAlerta(elCsvFeedback, 'ok', `Se cargaron ${r.notas.length} notas válidas.`);
+        }
+        r.errores.forEach((err) => mostrarAlerta(elCsvFeedback, 'error', err));
+      });
+
+      elConsent.addEventListener('change', actualizarVistaPrevia);
+
+      document.getElementById('btn-limpiar').addEventListener('click', () => {
+        estado.filas = [];
+        estado.enviado = false;
+        elConsent.checked = false;
+        document.getElementById('texto-csv').value = '';
+        limpiarAlertas(elEstadoEnvio);
+        limpiarAlertas(elCsvFeedback);
+        renderSemestres();
+        actualizarVistaPrevia();
+      });
+
+      btnEnviar.addEventListener('click', async () => {
+        limpiarAlertas(elEstadoEnvio);
+        const invalidos = document.querySelectorAll('input.invalido');
+        if (invalidos.length > 0) {
+          mostrarAlerta(elEstadoEnvio, 'error', 'Corrige las notas o periodos marcados en rojo antes de enviar.');
+          return;
+        }
+        const payload = payloadActual();
+        if (payload.notas.length === 0) {
+          mostrarAlerta(elEstadoEnvio, 'error', 'Ingresa al menos una nota antes de donar.');
+          return;
+        }
+        if (!payload.consentimiento) {
+          mostrarAlerta(elEstadoEnvio, 'error', 'Debes marcar la autorización (Ley 1581 de 2012) para poder enviar tus notas.');
+          return;
+        }
+
+        btnEnviar.disabled = true;
+        try {
+          const resp = await fetch('/donaciones', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          const data = await resp.json().catch(() => ({}));
+          if (resp.status === 201) {
+            estado.enviado = true;
+            mostrarAlerta(
+              elEstadoEnvio,
+              'ok',
+              `¡Gracias! Se guardaron ${data.notas_guardadas} notas de forma anónima (ID aleatorio: ${data.id}).`,
+            );
+            cargarResumen();
+          } else if (resp.status === 409) {
+            mostrarAlerta(elEstadoEnvio, 'aviso', data.detail || 'Estas notas ya habían sido registradas anteriormente.');
+          } else {
+            const msg = typeof data.detail === 'string'
+              ? data.detail
+              : 'Revisa los datos ingresados e intenta de nuevo.';
+            mostrarAlerta(elEstadoEnvio, 'error', msg);
+          }
+        } catch {
+          mostrarAlerta(elEstadoEnvio, 'error', 'No se pudo conectar con el servidor de Gradly.');
+        } finally {
+          btnEnviar.disabled = false;
+        }
+      });
+
+      async function cargarResumen() {
+        try {
+          const r = await fetch('/donaciones/resumen');
+          if (!r.ok) return;
+          const d = await r.json();
+          elResumen.textContent = `${d.donaciones} donación${d.donaciones === 1 ? '' : 'es'} · ${d.notas} notas`;
+        } catch {
+          elResumen.textContent = 'Resumen no disponible';
+        }
+      }
+
+      async function iniciar() {
+        try {
+          const r = await fetch('/donaciones/meta');
+          if (!r.ok) throw new Error();
+          estado.meta = await r.json();
+          estado.validas = new Set(estado.meta.materias.map((m) => m.id));
+          elMalla.textContent = `${estado.meta.programa} · malla ${estado.meta.version}`;
+          renderSemestres();
+          actualizarVistaPrevia();
+        } catch {
+          elSemestres.textContent = 'No se pudo cargar la malla desde la API.';
+        }
+        cargarResumen();
+      }
+
+      iniciar();
+    </script>
+  </body>
+</html>
