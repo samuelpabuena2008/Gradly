@@ -1,47 +1,447 @@
 {
-  "programa": "Ingeniería de Sistemas",
-  "universidad": "Uninorte",
-  "version": "ejemplo",
-  "nota": "MALLA DE EJEMPLO. Los IDs y prerrequisitos son ilustrativos: reemplazar con el plan de estudios oficial.",
+  "programa": "Ingeniería de Sistemas y Computación",
+  "universidad": "Universidad del Norte",
+  "version": "oficial",
+  "nota": "Tomada del diagrama oficial del plan de estudios (SNIES 103821; 155 créditos). No se incluyen los requisitos de 0 créditos, que no tienen nota: Exigencia de Idiomas I a VIII (IGL), Exámenes Comprehensivos I y II (IIN4310, IIN4319) y Seminarios de Carrera I y II (IST4370, IST4380). Por eso faltan aquí dos prerrequisitos de Proyecto Final (IIN4319 e IGL7080). Física Electricidad aparece en el diagrama con el código FIS 1043 por una errata; su código es FIS1033. 'correquisitos' es informativo: el modelo no lo usa.",
+  "fuente": "https://www.uninorte.edu.co/web/ingenieria-de-sistemas-y-computacion/plan-de-estudios",
   "nota_aprobacion": 3.0,
   "materias": [
-    { "id": "CAL1", "nombre": "Cálculo I", "semestre": 1, "creditos": 4 },
-    { "id": "PROG1", "nombre": "Programación I", "semestre": 1, "creditos": 3 },
-    { "id": "LOG", "nombre": "Lógica", "semestre": 1, "creditos": 3 },
-    { "id": "CAL2", "nombre": "Cálculo II", "semestre": 2, "creditos": 4 },
-    { "id": "ALGLIN", "nombre": "Álgebra Lineal", "semestre": 2, "creditos": 3 },
-    { "id": "FIS1", "nombre": "Física I", "semestre": 2, "creditos": 4 },
-    { "id": "PROG2", "nombre": "Programación II", "semestre": 2, "creditos": 3 },
-    { "id": "DISC", "nombre": "Matemáticas Discretas", "semestre": 2, "creditos": 3 },
-    { "id": "CAL3", "nombre": "Cálculo III", "semestre": 3, "creditos": 4 },
-    { "id": "ED", "nombre": "Ecuaciones Diferenciales", "semestre": 3, "creditos": 3 },
-    { "id": "FIS2", "nombre": "Física II", "semestre": 3, "creditos": 4 },
-    { "id": "ESTR", "nombre": "Estructuras de Datos", "semestre": 3, "creditos": 3 },
-    { "id": "PROB", "nombre": "Probabilidad y Estadística", "semestre": 3, "creditos": 3 },
-    { "id": "ALGOR", "nombre": "Algoritmos", "semestre": 4, "creditos": 3 },
-    { "id": "MET", "nombre": "Métodos Numéricos", "semestre": 4, "creditos": 3 },
-    { "id": "BD", "nombre": "Bases de Datos", "semestre": 4, "creditos": 3 }
+    {
+      "id": "MAT1031",
+      "nombre": "Álgebra Lineal",
+      "semestre": 1,
+      "creditos": 3
+    },
+    {
+      "id": "MAT1101",
+      "nombre": "Cálculo I - Diferencial",
+      "semestre": 1,
+      "creditos": 5
+    },
+    {
+      "id": "IST0010",
+      "nombre": "Introducción a la Ingeniería de Sistemas",
+      "semestre": 1,
+      "creditos": 1
+    },
+    {
+      "id": "IST2088",
+      "nombre": "Algoritmia y Programación I",
+      "semestre": 1,
+      "creditos": 3
+    },
+    {
+      "id": "CAS3020",
+      "nombre": "Competencias Comunicativas I",
+      "semestre": 1,
+      "creditos": 3
+    },
+    {
+      "id": "ELG1140",
+      "nombre": "Electiva en Historia",
+      "semestre": 2,
+      "creditos": 3
+    },
+    {
+      "id": "MAT1111",
+      "nombre": "Cálculo II - Integral",
+      "semestre": 2,
+      "creditos": 4
+    },
+    {
+      "id": "FIS1023",
+      "nombre": "Física Mecánica",
+      "semestre": 2,
+      "creditos": 4
+    },
+    {
+      "id": "IST2089",
+      "nombre": "Algoritmia y Programación II",
+      "semestre": 2,
+      "creditos": 3
+    },
+    {
+      "id": "CAS3030",
+      "nombre": "Competencias Comunicativas II",
+      "semestre": 2,
+      "creditos": 3
+    },
+    {
+      "id": "ELG1130",
+      "nombre": "Electiva en Humanidades",
+      "semestre": 3,
+      "creditos": 3
+    },
+    {
+      "id": "MAT1121",
+      "nombre": "Cálculo III - Vectorial",
+      "semestre": 3,
+      "creditos": 4
+    },
+    {
+      "id": "FIS1043",
+      "nombre": "Física Calor-Ondas",
+      "semestre": 3,
+      "creditos": 4
+    },
+    {
+      "id": "IST4021",
+      "nombre": "Estructura de Datos I",
+      "semestre": 3,
+      "creditos": 3
+    },
+    {
+      "id": "IST2110",
+      "nombre": "Programación Orientada a Objetos",
+      "semestre": 3,
+      "creditos": 3
+    },
+    {
+      "id": "ELG1150",
+      "nombre": "Electiva en Ciencias de la Vida",
+      "semestre": 4,
+      "creditos": 3
+    },
+    {
+      "id": "MAT4011",
+      "nombre": "Ecuaciones Diferenciales",
+      "semestre": 4,
+      "creditos": 3
+    },
+    {
+      "id": "FIS1033",
+      "nombre": "Física Electricidad",
+      "semestre": 4,
+      "creditos": 4
+    },
+    {
+      "id": "IST4031",
+      "nombre": "Estructura de Datos II",
+      "semestre": 4,
+      "creditos": 3
+    },
+    {
+      "id": "MAT4021",
+      "nombre": "Matemáticas Discretas",
+      "semestre": 4,
+      "creditos": 3
+    },
+    {
+      "id": "ELG0007",
+      "nombre": "Electiva en Ciencias Básicas",
+      "semestre": 5,
+      "creditos": 3
+    },
+    {
+      "id": "EST7042",
+      "nombre": "Análisis de Datos en Ingeniería I",
+      "semestre": 5,
+      "creditos": 4
+    },
+    {
+      "id": "IST4310",
+      "nombre": "Algoritmia y Complejidad",
+      "semestre": 5,
+      "creditos": 3
+    },
+    {
+      "id": "IST4330",
+      "nombre": "Estructuras Discretas",
+      "semestre": 5,
+      "creditos": 3
+    },
+    {
+      "id": "IST7072",
+      "nombre": "Diseño Digital",
+      "semestre": 5,
+      "creditos": 3
+    },
+    {
+      "id": "ELG0008",
+      "nombre": "Electiva Básica Profesional",
+      "semestre": 6,
+      "creditos": 3
+    },
+    {
+      "id": "IST4360",
+      "nombre": "Soluciones Computacionales a Problemas de Ingeniería",
+      "semestre": 6,
+      "creditos": 3
+    },
+    {
+      "id": "IST7111",
+      "nombre": "Bases de Datos",
+      "semestre": 6,
+      "creditos": 3
+    },
+    {
+      "id": "IST7191",
+      "nombre": "Redes de Computación",
+      "semestre": 6,
+      "creditos": 3
+    },
+    {
+      "id": "IST4012",
+      "nombre": "Estructura del Computador I",
+      "semestre": 6,
+      "creditos": 3
+    },
+    {
+      "id": "ELG1170",
+      "nombre": "Electiva en Ética",
+      "semestre": 7,
+      "creditos": 3
+    },
+    {
+      "id": "IST7420",
+      "nombre": "Optimización",
+      "semestre": 7,
+      "creditos": 3
+    },
+    {
+      "id": "IST7121",
+      "nombre": "Diseño de Software I",
+      "semestre": 7,
+      "creditos": 3
+    },
+    {
+      "id": "IST70811",
+      "nombre": "Sistemas Operativos",
+      "semestre": 7,
+      "creditos": 3
+    },
+    {
+      "id": "IST7102",
+      "nombre": "Estructura del Computador II",
+      "semestre": 7,
+      "creditos": 3
+    },
+    {
+      "id": "ELG1190",
+      "nombre": "Electiva en Ciencias Sociales",
+      "semestre": 8,
+      "creditos": 3
+    },
+    {
+      "id": "ELG1301",
+      "nombre": "Electiva Profesional I",
+      "semestre": 8,
+      "creditos": 3
+    },
+    {
+      "id": "IST7122",
+      "nombre": "Diseño de Software II",
+      "semestre": 8,
+      "creditos": 3
+    },
+    {
+      "id": "ELG1302",
+      "nombre": "Electiva en Redes",
+      "semestre": 8,
+      "creditos": 2
+    },
+    {
+      "id": "IST7410",
+      "nombre": "Compiladores",
+      "semestre": 8,
+      "creditos": 3
+    },
+    {
+      "id": "ELG8400",
+      "nombre": "Electiva en Innovación, Desarrollo y Sociedad",
+      "semestre": 8,
+      "creditos": 3
+    },
+    {
+      "id": "ELG1160",
+      "nombre": "Electiva en Filosofía",
+      "semestre": 9,
+      "creditos": 3
+    },
+    {
+      "id": "ELG1305",
+      "nombre": "Electiva Profesional II",
+      "semestre": 9,
+      "creditos": 3
+    },
+    {
+      "id": "ELG1303",
+      "nombre": "Electiva en Ciencias de la Computación",
+      "semestre": 9,
+      "creditos": 3
+    },
+    {
+      "id": "ELG1304",
+      "nombre": "Electiva en Gestión Informática",
+      "semestre": 9,
+      "creditos": 3
+    },
+    {
+      "id": "ELP4030",
+      "nombre": "Electiva de Formación Complementaria I",
+      "semestre": 9,
+      "creditos": 3
+    },
+    {
+      "id": "ELG1180",
+      "nombre": "Electiva en Estudios del Caribe",
+      "semestre": 10,
+      "creditos": 3
+    },
+    {
+      "id": "ELG1306",
+      "nombre": "Electiva Profesional III",
+      "semestre": 10,
+      "creditos": 3
+    },
+    {
+      "id": "INV7363",
+      "nombre": "Proyecto Final",
+      "semestre": 10,
+      "creditos": 3
+    },
+    {
+      "id": "ELP8090",
+      "nombre": "Electiva de Formación Complementaria II",
+      "semestre": 10,
+      "creditos": 3
+    }
   ],
   "prerrequisitos": [
-    { "de": "CAL1", "a": "CAL2" },
-    { "de": "CAL1", "a": "FIS1" },
-    { "de": "LOG", "a": "DISC" },
-    { "de": "PROG1", "a": "PROG2" },
-    { "de": "CAL2", "a": "CAL3" },
-    { "de": "CAL2", "a": "ED" },
-    { "de": "CAL2", "a": "FIS2" },
-    { "de": "FIS1", "a": "FIS2" },
-    { "de": "CAL2", "a": "PROB" },
-    { "de": "PROG2", "a": "ESTR" },
-    { "de": "DISC", "a": "ESTR" },
-    { "de": "ESTR", "a": "ALGOR" },
-    { "de": "ED", "a": "MET" },
-    { "de": "ALGLIN", "a": "MET" },
-    { "de": "PROG2", "a": "BD" }
+    {
+      "de": "MAT1031",
+      "a": "MAT1121"
+    },
+    {
+      "de": "MAT1101",
+      "a": "MAT1111"
+    },
+    {
+      "de": "MAT1101",
+      "a": "FIS1023"
+    },
+    {
+      "de": "MAT1101",
+      "a": "FIS1043"
+    },
+    {
+      "de": "MAT1111",
+      "a": "MAT1121"
+    },
+    {
+      "de": "MAT1111",
+      "a": "MAT4011"
+    },
+    {
+      "de": "MAT1111",
+      "a": "EST7042"
+    },
+    {
+      "de": "MAT1111",
+      "a": "FIS1033"
+    },
+    {
+      "de": "FIS1023",
+      "a": "FIS1043"
+    },
+    {
+      "de": "FIS1023",
+      "a": "FIS1033"
+    },
+    {
+      "de": "MAT4011",
+      "a": "IST4360"
+    },
+    {
+      "de": "IST2088",
+      "a": "IST4360"
+    },
+    {
+      "de": "IST4360",
+      "a": "IST7420"
+    },
+    {
+      "de": "EST7042",
+      "a": "IST7420"
+    },
+    {
+      "de": "IST2088",
+      "a": "IST2089"
+    },
+    {
+      "de": "IST2089",
+      "a": "IST4021"
+    },
+    {
+      "de": "IST2089",
+      "a": "IST2110"
+    },
+    {
+      "de": "IST4021",
+      "a": "IST4031"
+    },
+    {
+      "de": "CAS3020",
+      "a": "CAS3030"
+    },
+    {
+      "de": "IST4031",
+      "a": "IST4310"
+    },
+    {
+      "de": "IST4031",
+      "a": "IST7410"
+    },
+    {
+      "de": "IST2110",
+      "a": "IST7410"
+    },
+    {
+      "de": "MAT4021",
+      "a": "IST4330"
+    },
+    {
+      "de": "MAT4021",
+      "a": "IST7072"
+    },
+    {
+      "de": "IST4310",
+      "a": "IST7111"
+    },
+    {
+      "de": "IST7111",
+      "a": "IST7121"
+    },
+    {
+      "de": "IST7121",
+      "a": "IST7122"
+    },
+    {
+      "de": "IST7122",
+      "a": "INV7363"
+    },
+    {
+      "de": "IST7072",
+      "a": "IST4012"
+    },
+    {
+      "de": "IST4012",
+      "a": "IST7102"
+    },
+    {
+      "de": "IST4012",
+      "a": "IST70811"
+    },
+    {
+      "de": "IST7191",
+      "a": "ELG1302"
+    }
   ],
-  "aristas_blandas": [
-    { "de": "ALGLIN", "a": "ED" },
-    { "de": "DISC", "a": "PROB" },
-    { "de": "DISC", "a": "ALGOR" }
-  ]
+  "correquisitos": [
+    {
+      "de": "MAT1111",
+      "a": "FIS1023"
+    }
+  ],
+  "aristas_blandas": []
 }

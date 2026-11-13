@@ -68,8 +68,8 @@ def reporte(pesos: dict) -> str:
          f"Fuente de datos: {pesos.get('fuente', '—')}. Malla: versión «{pesos['version_malla']}». "
          f"Validación {v['tipo']}, {v['notas_evaluadas']} notas evaluadas.", ""]
     if str(pesos.get("fuente", "")).startswith("simulado"):
-        L += ["> Estos números salen de datos **simulados** sobre una malla de ejemplo: muestran que el método "
-              "funciona y recupera pesos conocidos, no qué tan bien predice notas reales.", ""]
+        L += ["> Estos números salen de datos **simulados** sobre la malla: muestran que el método funciona y "
+              "recupera pesos conocidos, no qué tan bien predice notas reales.", ""]
     L += ["| Modelo | MAE (puntos de nota) | Precisión de riesgo | Recall de riesgo |", "| --- | --- | --- | --- |"]
     L += [f"| {NOMBRES[k]} | {num(x['mae'])} | {num(x['precision_riesgo'], 2)} | {num(x['recall_riesgo'], 2)} |"
           for k, x in m.items()]

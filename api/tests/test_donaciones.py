@@ -10,13 +10,17 @@ from app.db import crear_engine, init_db, normalizar_database_url
 from app.main import create_app
 from scripts.verificar_export import validar_csv
 
+MALLA_EJEMPLO = Path(__file__).resolve().parents[2] / "data" / "malla_ejemplo.json"
 TOKEN = "token-de-prueba"
 SECRETO_HASH = "secreto-prueba"
 
 
 @pytest.fixture
 def client():
-    settings = Settings(database_url="sqlite://", admin_token=TOKEN, anon_hash_secret=SECRETO_HASH)
+    # Las pruebas usan la malla de ejemplo (16 materias), no la oficial.
+    settings = Settings(
+        database_url="sqlite://", admin_token=TOKEN, anon_hash_secret=SECRETO_HASH, malla_path=MALLA_EJEMPLO
+    )
     with TestClient(create_app(settings)) as c:
         yield c
 
@@ -207,7 +211,9 @@ def test_formulario_donar_sirve_html(client):
 
 
 def test_rate_limit_bloquea_rafaga():
-    settings = Settings(database_url="sqlite://", admin_token=TOKEN, rate_limit_max=2, rate_limit_window_sec=60)
+    settings = Settings(
+        database_url="sqlite://", admin_token=TOKEN, rate_limit_max=2, rate_limit_window_sec=60, malla_path=MALLA_EJEMPLO
+    )
     with TestClient(create_app(settings)) as c:
         assert c.post("/donaciones", json=donacion()).status_code == 201
         assert c.post("/donaciones", json=donacion()).status_code == 201

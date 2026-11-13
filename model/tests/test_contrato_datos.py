@@ -24,6 +24,7 @@ def leer(nombre: str) -> dict:
 
 MALLAS = {
     "malla_sistemas.json": leer("malla_sistemas.json"),
+    "malla_ejemplo.json": leer("malla_ejemplo.json"),
     "malla_prueba.json": leer("malla_prueba.json"),
     "fixture (malla)": FIXTURE["malla"],
 }

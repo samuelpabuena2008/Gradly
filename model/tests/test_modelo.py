@@ -3,11 +3,11 @@
 import numpy as np
 import pandas as pd
 
-from gradly_model.malla import ancestros, cargar_malla
+from gradly_model.malla import DATA, ancestros, cargar_malla
 from gradly_model.simulate import simular
 from gradly_model.train import K_NIVEL, entrenar, entrenar_regresion, medias_por_materia, preparar, rasgos, validar
 
-MALLA = cargar_malla()
+MALLA = cargar_malla(DATA / "malla_ejemplo.json")  # malla pequeña de 16 materias, estable para las pruebas
 
 
 def test_recupera_los_pesos_simulados():

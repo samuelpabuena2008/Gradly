@@ -124,7 +124,7 @@ Fórmula, **solo con materias anteriores** (cambiada el 10 nov; ver `docs/modelo
 | 4 | Simulador + entrenamiento (baseline, ridge, MLP) | 3 | El modelo recupera los pesos simulados y le gana al promedio |
 | 5 | Inferencia en TS + pantalla (malla, importar, semáforo, por qué) | 4 | Se sube un CSV y se ven predicciones coloreadas |
 | 6 | API de donaciones (FastAPI) | 1/4 | Guarda notas sin datos personales; rechaza si no hay consentimiento |
-| 7 | Reemplazar la malla de ejemplo por la oficial de Sistemas | 1 | IDs y prerrequisitos verificados con el catálogo |
+| 7 | Reemplazar la malla de ejemplo por la oficial de Sistemas (hecho el 13 nov; la de ejemplo queda en `data/malla_ejemplo.json` para las pruebas) | 1 | IDs y prerrequisitos verificados con el catálogo |
 | 8 | Exportar el MLP a JSON y correrlo en TS | 3/4 | La web puede usar lineal o red |
 
 Los pasos 1 a 6 ya están en el código base (10 nov). Los pasos 7 y 8 son lo siguiente.
