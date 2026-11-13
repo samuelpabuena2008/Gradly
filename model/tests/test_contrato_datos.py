@@ -50,6 +50,10 @@ def test_malla_es_coherente(nombre):
     for e in malla["prerrequisitos"] + malla["aristas_blandas"]:
         assert e["de"] in semestre and e["a"] in semestre, f"arista {e} usa una materia que no existe"
         assert semestre[e["de"]] < semestre[e["a"]], f"{e['de']} → {e['a']}: el prerrequisito debe ir en un semestre anterior"
+    for c in malla.get("contenidos_cruzados", []):
+        assert c["de"] in semestre and c["a"] in semestre, f"contenido cruzado {c} usa una materia que no existe"
+        assert semestre[c["de"]] < semestre[c["a"]], f"{c['de']} → {c['a']}: el contenido cruzado debe venir de un semestre anterior"
+        assert c["de"] in ancestros(malla, c["a"]), f"{c['de']} → {c['a']}: no es ancestro ni arista blanda en la malla"
 
 
 @pytest.mark.parametrize("nombre", MALLAS)

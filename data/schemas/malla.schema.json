@@ -27,7 +27,26 @@
       }
     },
     "prerrequisitos": { "type": "array", "items": { "$ref": "#/$defs/arista" } },
-    "aristas_blandas": { "type": "array", "items": { "$ref": "#/$defs/arista" } }
+    "aristas_blandas": { "type": "array", "items": { "$ref": "#/$defs/arista" } },
+    "correquisitos": { "type": "array", "items": { "$ref": "#/$defs/arista" } },
+    "contenidos_cruzados": {
+      "type": "array",
+      "description": "Temas puntuales de una materia previa (`de`) que se necesitan en una materia posterior (`a`).",
+      "items": {
+        "type": "object",
+        "required": ["de", "a", "temas"],
+        "additionalProperties": false,
+        "properties": {
+          "de": { "type": "string" },
+          "a": { "type": "string" },
+          "temas": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    }
   },
   "$defs": {
     "arista": {

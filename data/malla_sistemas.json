@@ -443,5 +443,240 @@
       "a": "FIS1023"
     }
   ],
-  "aristas_blandas": []
+  "aristas_blandas": [
+    {
+      "de": "MAT1031",
+      "a": "FIS1023"
+    },
+    {
+      "de": "MAT1031",
+      "a": "MAT4011"
+    },
+    {
+      "de": "MAT1031",
+      "a": "FIS1033"
+    },
+    {
+      "de": "MAT1031",
+      "a": "EST7042"
+    },
+    {
+      "de": "MAT1031",
+      "a": "IST4360"
+    },
+    {
+      "de": "MAT1031",
+      "a": "IST7420"
+    },
+    {
+      "de": "MAT1121",
+      "a": "FIS1033"
+    },
+    {
+      "de": "MAT4021",
+      "a": "IST4310"
+    }
+  ],
+  "contenidos_cruzados": [
+    {
+      "de": "MAT1031",
+      "a": "FIS1023",
+      "temas": [
+        "Vectores en R2 y R3: descomposición de fuerzas en componentes",
+        "Producto punto (trabajo mecánico) y producto cruz (torque y momento angular)",
+        "Sistemas de ecuaciones lineales para equilibrio estático y leyes de Newton"
+      ]
+    },
+    {
+      "de": "MAT1101",
+      "a": "FIS1023",
+      "temas": [
+        "Derivadas como razón de cambio: posición, velocidad y aceleración instantánea",
+        "Regla de la cadena y análisis de máximos/mínimos en trayectorias"
+      ]
+    },
+    {
+      "de": "MAT1101",
+      "a": "MAT1111",
+      "temas": [
+        "Reglas de derivación y regla de la cadena (base para sustitución e integración por partes)",
+        "Límites y formas indeterminadas (integrales impropias y series)"
+      ]
+    },
+    {
+      "de": "IST2088",
+      "a": "IST2089",
+      "temas": [
+        " Estructuras de control, ciclos anidados y trazado de algoritmos",
+        "Descomposición modular en funciones, paso de parámetros y manejo de arreglos"
+      ]
+    },
+    {
+      "de": "MAT1031",
+      "a": "MAT1121",
+      "temas": [
+        "Rectas y planos en R3, distancias y proyecciones vectoriales",
+        "Matrices, determinantes y matriz jacobiana para cambio de variables"
+      ]
+    },
+    {
+      "de": "MAT1111",
+      "a": "MAT1121",
+      "temas": [
+        "Técnicas de integración (sustitución, por partes, trigonométricas) aplicadas a integrales múltiples",
+        "Coordenadas polares y parametrización de curvas"
+      ]
+    },
+    {
+      "de": "MAT1101",
+      "a": "FIS1043",
+      "temas": [
+        "Derivadas de funciones trigonométricas para movimiento armónico simple y ondas",
+        "Tasas de variación en transferencia de calor y dilatación térmica"
+      ]
+    },
+    {
+      "de": "FIS1023",
+      "a": "FIS1043",
+      "temas": [
+        "Conservación de la energía mecánica y teorema trabajo-energía",
+        "Dinámica de fuerzas restauradoras (ley de Hooke y osciladores)"
+      ]
+    },
+    {
+      "de": "IST2089",
+      "a": "IST4021",
+      "temas": [
+        "Recursividad, manejo de referencias/punteros y arreglos dinámicos",
+        "Búsqueda, ordenamiento básico y análisis empírico de algoritmos"
+      ]
+    },
+    {
+      "de": "IST2089",
+      "a": "IST2110",
+      "temas": [
+        "Abstracción de datos, modularidad y diseño de interfaces entre módulos",
+        "Manejo de colecciones, archivos y control de errores"
+      ]
+    },
+    {
+      "de": "MAT1031",
+      "a": "MAT4011",
+      "temas": [
+        "Valores y vectores propios (autovalores/autovectores) para sistemas de EDOs lineales",
+        "Independencia lineal de funciones, determinante Wronskiano y espacio solución"
+      ]
+    },
+    {
+      "de": "MAT1111",
+      "a": "MAT4011",
+      "temas": [
+        "Integración por partes, sustitución y fracciones parciales (EDOs separables, exactas y Laplace)",
+        "Integrales impropias para transformada de Laplace"
+      ]
+    },
+    {
+      "de": "MAT1031",
+      "a": "FIS1033",
+      "temas": [
+        "Superposición vectorial de campos eléctricos y magnéticos en R3",
+        "Sistemas de ecuaciones lineales para análisis de circuitos (leyes de Kirchhoff)"
+      ]
+    },
+    {
+      "de": "MAT1111",
+      "a": "FIS1033",
+      "temas": [
+        "Integrales de distribuciones continuas de carga (campo y potencial eléctrico)",
+        "Cálculo de flujo eléctrico y magnético (ley de Gauss y ley de Ampère)"
+      ]
+    },
+    {
+      "de": "MAT1121",
+      "a": "FIS1033",
+      "temas": [
+        "Campos vectoriales, gradiente (potencial eléctrico) y divergencia/rotacional",
+        "Integrales de línea y de superficie para trabajo eléctrico y flujo de Gauss"
+      ]
+    },
+    {
+      "de": "FIS1023",
+      "a": "FIS1033",
+      "temas": [
+        "Equilibrio de fuerzas, energía potencial y trabajo conservativo sobre cargas en movimiento"
+      ]
+    },
+    {
+      "de": "IST4021",
+      "a": "IST4031",
+      "temas": [
+        "Listas enlazadas, pilas, colas y recursión sobre estructuras dinámicas",
+        "Complejidad temporal Big-O en operaciones de inserción y búsqueda"
+      ]
+    },
+    {
+      "de": "MAT1031",
+      "a": "EST7042",
+      "temas": [
+        "Operaciones matriciales y proyecciones para regresión lineal múltiple y covarianza"
+      ]
+    },
+    {
+      "de": "MAT1111",
+      "a": "EST7042",
+      "temas": [
+        "Integrales definidas e impropias para funciones de densidad de probabilidad continua (valor esperado y varianza)"
+      ]
+    },
+    {
+      "de": "IST4031",
+      "a": "IST4310",
+      "temas": [
+        "Árboles, grafos (BFS, DFS) y tablas hash",
+        "Relaciones de recurrencia y cotas asintóticas"
+      ]
+    },
+    {
+      "de": "MAT4021",
+      "a": "IST4310",
+      "temas": [
+        "Demostraciones por inducción matemática, conteo combinatorio y teoría de grafos"
+      ]
+    },
+    {
+      "de": "MAT4021",
+      "a": "IST4330",
+      "temas": [
+        "Lógica proposicional y de predicados, conjuntos, relaciones y grafos"
+      ]
+    },
+    {
+      "de": "MAT4021",
+      "a": "IST7072",
+      "temas": [
+        "Álgebra booleana, tablas de verdad y simplificación de funciones lógicas"
+      ]
+    },
+    {
+      "de": "MAT1031",
+      "a": "IST4360",
+      "temas": [
+        "Factorización de matrices (LU, Gauss-Seidel), normas vectoriales y condicionamiento de sistemas lineales"
+      ]
+    },
+    {
+      "de": "MAT4011",
+      "a": "IST4360",
+      "temas": [
+        "Problemas de valor inicial en EDOs para métodos numéricos (Euler y Runge-Kutta)"
+      ]
+    },
+    {
+      "de": "MAT1031",
+      "a": "IST7420",
+      "temas": [
+        "Sistemas lineales, espacios convexos y operaciones matriciales para programación lineal (método Simplex)"
+      ]
+    }
+  ]
 }

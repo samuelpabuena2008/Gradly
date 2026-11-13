@@ -7,7 +7,7 @@
 //   z(s,p) cómo le fue en p frente a su nivel: (y_p − μ_p) − a(s)
 
 import type { Contribucion, Malla, Modelo, Nota, Prediccion, Semaforo } from '../../types'
-import { predecesores } from '../graph/dag'
+import { gradoSalida, intermediacion, predecesores } from '../graph/dag'
 
 /** Probabilidad de no aprobar a partir de la cual cambia el color del semáforo. */
 export const UMBRALES = { amarillo: 0.2, rojo: 0.5 }
@@ -127,18 +127,57 @@ export function predecirSiguientes(malla: Malla, modelo: Modelo, notas: Nota[]):
 
 /**
  * Qué repasar: materias previas que más bajan las predicciones en amarillo o rojo.
+ * Si se pasa `malla`, pondera el impacto por la centralidad del nodo objetivo
+ * (intermediación y grado de salida en el DAG), dando prioridad a los cuellos de botella.
  * El mensaje es "enfócate en esto", nunca "vas a perder".
  */
-export function recomendarEnfoque(predicciones: Prediccion[]): { materia: string; impacto: number }[] {
+export function recomendarEnfoque(
+  predicciones: Prediccion[],
+  malla?: Malla,
+): { materia: string; impacto: number }[] {
+  const inter = malla ? intermediacion(malla) : null
+  const salida = malla ? gradoSalida(malla) : null
+  const maxInter = inter ? Math.max(1, ...Object.values(inter)) : 1
+  const maxSalida = salida ? Math.max(1, ...Object.values(salida)) : 1
+
   const impacto = new Map<string, number>()
   for (const p of predicciones) {
     if (p.semaforo === 'verde') continue
+    const factorCentralidad =
+      malla && inter && salida
+        ? 1 + 0.5 * ((inter[p.materia] ?? 0) / maxInter) + 0.5 * ((salida[p.materia] ?? 0) / maxSalida)
+        : 1
     for (const c of p.porQue) {
-      if (c.aporte < 0) impacto.set(c.materia, (impacto.get(c.materia) ?? 0) + c.aporte)
+      if (c.aporte < 0) {
+        impacto.set(c.materia, (impacto.get(c.materia) ?? 0) + c.aporte * factorCentralidad)
+      }
     }
   }
   return [...impacto]
     .map(([materia, total]) => ({ materia, impacto: total }))
     .sort((a, b) => a.impacto - b.impacto)
     .slice(0, 3)
+}
+
+/**
+ * Contenidos cruzados para reforzar una materia en riesgo (amarillo o rojo):
+ * devuelve los temas puntuales de las materias previas que están bajando la predicción
+ * (aporte < 0) y tienen contenidos puente hacia la materia objetivo.
+ */
+export function recomendarContenidosCruzados(
+  prediccion: Prediccion,
+  malla: Malla,
+): { previa: string; aporte: number; temas: string[] }[] {
+  if (prediccion.semaforo === 'verde' || !malla.contenidos_cruzados?.length) return []
+  const negativos = new Map(
+    prediccion.porQue.filter((c) => c.aporte < 0).map((c) => [c.materia, c.aporte]),
+  )
+  return malla.contenidos_cruzados
+    .filter((cc) => cc.a === prediccion.materia && negativos.has(cc.de))
+    .map((cc) => ({
+      previa: cc.de,
+      aporte: negativos.get(cc.de)!,
+      temas: cc.temas,
+    }))
+    .sort((a, b) => a.aporte - b.aporte)
 }

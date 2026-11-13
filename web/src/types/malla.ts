@@ -13,6 +13,13 @@ export interface Arista {
   a: string
 }
 
+/** Temas puntuales de una materia previa (`de`) que se necesitan en una materia posterior (`a`). */
+export interface ContenidoCruzado {
+  de: string
+  a: string
+  temas: string[]
+}
+
 export interface Malla {
   programa: string
   version: string
@@ -21,4 +28,6 @@ export interface Malla {
   prerrequisitos: Arista[]
   /** Relaciones entre materias del mismo área que no son prerrequisito oficial. */
   aristas_blandas: Arista[]
+  /** Temas de materias previas que se aplican directamente en materias posteriores. */
+  contenidos_cruzados?: ContenidoCruzado[]
 }

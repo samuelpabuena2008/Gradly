@@ -10,3 +10,12 @@
 .chip-verde { background: var(--verde); }
 .chip-amarillo { background: var(--amarillo); }
 .chip-rojo { background: var(--rojo); }
+
+/* Temas puntuales de materias previas que conviene repasar para esta materia. */
+.contenidos { margin-top: 6px; padding: 6px 8px; background: #fbf7ec; border-radius: 6px; border-left: 3px solid var(--amarillo); }
+.contenidos-titulo { font-size: 12px; font-weight: 600; color: var(--suave); text-transform: uppercase; letter-spacing: 0.02em; margin-bottom: 3px; }
+.contenidos ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
+.contenidos li { font-size: 13px; line-height: 1.35; }
+.contenidos-previa { font-weight: 600; }
+.contenidos-previa::after { content: ': '; font-weight: 400; }
+.contenidos-temas { color: var(--suave); }
