@@ -2,6 +2,7 @@
 // Lenguaje: "enfócate en esto", nunca "vas a perder".
 
 import type { Malla, Prediccion } from '../../types'
+import type { TipoModelo } from '../../lib/model/predict'
 import { recomendarContenidosCruzados, recomendarEnfoque } from '../../lib/model/predict'
 import './prediccion.css'
 
@@ -9,6 +10,11 @@ interface Props {
   malla: Malla
   predicciones: Prediccion[]
   onSeleccionar: (id: string) => void
+  /** Modelo con el que se calcularon las predicciones. */
+  tipoModelo: TipoModelo
+  /** Modelo que recomienda la validación cruzada de model/. */
+  recomendado: TipoModelo
+  onCambiarTipo: (tipo: TipoModelo) => void
 }
 
 const TEXTO_SEMAFORO = {
@@ -17,14 +23,47 @@ const TEXTO_SEMAFORO = {
   rojo: 'Dale prioridad',
 } as const
 
-export function PanelPrediccion({ malla, predicciones, onSeleccionar }: Props) {
+const NOMBRE_MODELO: Record<TipoModelo, string> = {
+  regresion: 'Regresión',
+  red: 'Red neuronal (MLP)',
+}
+
+export function PanelPrediccion({
+  malla,
+  predicciones,
+  onSeleccionar,
+  tipoModelo,
+  recomendado,
+  onCambiarTipo,
+}: Props) {
   const nombre = (id: string) => malla.materias.find((m) => m.id === id)?.nombre ?? id
   const enfoque = recomendarEnfoque(predicciones, malla)
+
+  // Selector compacto: dos botones con el modelo activo marcado.
+  const selector = (
+    <div className="selector-modelo" role="group" aria-label="Modelo de predicción">
+      {(['regresion', 'red'] as const).map((tipo) => (
+        <button
+          key={tipo}
+          type="button"
+          className={tipo === tipoModelo ? 'activo' : undefined}
+          aria-pressed={tipo === tipoModelo}
+          onClick={() => onCambiarTipo(tipo)}
+        >
+          {NOMBRE_MODELO[tipo]}
+          {tipo === recomendado ? ' (recomendado)' : ''}
+        </button>
+      ))}
+    </div>
+  )
 
   if (predicciones.length === 0) {
     return (
       <section className="tarjeta">
-        <h2>Próximo semestre</h2>
+        <div className="fila-entre">
+          <h2>Próximo semestre</h2>
+          {selector}
+        </div>
         <p className="ayuda">Carga tus notas para ver cómo te puede ir en las materias que vienen.</p>
       </section>
     )
@@ -32,7 +71,14 @@ export function PanelPrediccion({ malla, predicciones, onSeleccionar }: Props) {
 
   return (
     <section className="tarjeta">
-      <h2>Próximo semestre</h2>
+      <div className="fila-entre">
+        <h2>Próximo semestre</h2>
+        {selector}
+      </div>
+      <p className="ayuda modelo-activo">
+        Predicciones con {NOMBRE_MODELO[tipoModelo].toLowerCase()}. Cambia de modelo para comparar notas,
+        rangos y explicaciones.
+      </p>
       {enfoque.length > 0 && (
         <div className="enfoque">
           <strong>Enfócate en repasar:</strong> {enfoque.map((e) => nombre(e.materia)).join(', ')}

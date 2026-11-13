@@ -34,6 +34,39 @@ def ancestros(malla: dict, materia: str, incluir_blandas: bool = True) -> list[s
     return [m["id"] for m in malla["materias"] if m["id"] in vistos]
 
 
+def distancias_ancestros(malla: dict, materia: str, incluir_blandas: bool = True) -> dict[str, int]:
+    """Cuántas aristas separan a cada ancestro de `materia` (camino más corto, BFS hacia atrás).
+
+    Un prerrequisito directo queda a distancia 1 y el prerrequisito de un prerrequisito a 2.
+    Se devuelven en el orden en que aparecen en la malla, igual que `ancestros`.
+    """
+    aristas = malla["prerrequisitos"] + (malla["aristas_blandas"] if incluir_blandas else [])
+    previas_de: dict[str, list[str]] = {}
+    for e in aristas:
+        previas_de.setdefault(e["a"], []).append(e["de"])
+
+    distancia: dict[str, int] = {}
+    frontera = [materia]
+    while frontera:
+        siguiente = []
+        for nodo in frontera:
+            for p in previas_de.get(nodo, []):
+                if p not in distancia:
+                    distancia[p] = distancia.get(nodo, 0) + 1
+                    siguiente.append(p)
+        frontera = siguiente
+    return {m["id"]: distancia[m["id"]] for m in malla["materias"] if m["id"] in distancia}
+
+
+def tipo_arista(malla: dict, previa: str, materia: str) -> str | None:
+    """'oficial' si `previa` es prerrequisito de `materia`, 'blanda' si solo es arista blanda."""
+    if any(e["de"] == previa and e["a"] == materia for e in malla["prerrequisitos"]):
+        return "oficial"
+    if any(e["de"] == previa and e["a"] == materia for e in malla["aristas_blandas"]):
+        return "blanda"
+    return None
+
+
 def materias_por_semestre(malla: dict) -> dict[int, list[str]]:
     semestres: dict[int, list[str]] = {}
     for m in malla["materias"]:

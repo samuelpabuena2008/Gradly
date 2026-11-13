@@ -9,6 +9,7 @@ import {
   importarCertificadoPdf,
   parsearTextoCertificado,
 } from '../../lib/import/certificado'
+import { notasVigentes } from '../../lib/model/predict'
 import plantilla from '../../../../data/plantilla_notas.csv?raw'
 
 interface Props {
@@ -22,6 +23,9 @@ export function ImportarNotas({ malla, notas, onCambiar }: Props) {
   const [errores, setErrores] = useState<string[]>([])
   const [avisos, setAvisos] = useState<string[]>([])
   const [manual, setManual] = useState({ materia: malla.materias[0].id, periodo: '2025-1', nota: '' })
+  // Texto en edición de cada nota simulada; se descarta al salir del campo.
+  const [borradores, setBorradores] = useState<Record<string, string>>({})
+  const [simuladorAbierto, setSimuladorAbierto] = useState(true)
 
   /** Deja solo las notas de materias que existen en la malla y reporta el resto. */
   function filtrar(notasLeidas: Nota[], erroresPrevios: string[], avisosPrevios: string[]) {
@@ -72,6 +76,47 @@ export function ImportarNotas({ malla, notas, onCambiar }: Props) {
     setManual({ ...manual, nota: '' })
   }
 
+  /** Notas que cuenta el modelo: un intento por materia, el más reciente. */
+  const vigentes = notasVigentes(notas)
+  // En el simulador las materias siguen el orden de la malla, como en el grafo.
+  const orden = new Map(malla.materias.map((m, i) => [m.id, i]))
+  const simulables = [...vigentes.values()].sort(
+    (a, b) => (orden.get(a.materia) ?? 0) - (orden.get(b.materia) ?? 0),
+  )
+
+  /**
+   * "¿Qué pasaría si...?": cambia la nota del intento vigente y conserva su periodo,
+   * así el resto de la simulación (nivel, previas, semáforo) se recalcula igual que con
+   * una nota real.
+   */
+  function simular(materia: string, nota: number) {
+    const vigente = vigentes.get(materia)
+    if (!vigente) return
+    const redondeada = Math.round(nota * 10) / 10
+    onCambiar(
+      notas.map((n) =>
+        n.materia === materia && n.periodo === vigente.periodo ? { ...n, nota: redondeada } : n,
+      ),
+    )
+  }
+
+  /** Quita la materia de la simulación (todos sus intentos). */
+  function quitar(materia: string) {
+    setBorradores(({ [materia]: _, ...resto }) => resto)
+    onCambiar(notas.filter((n) => n.materia !== materia))
+  }
+
+  /** Aplica lo escrito solo si ya es una nota válida; si no, espera a que termine de escribir. */
+  function escribirNota(materia: string, valor: string) {
+    setBorradores((previos) => ({ ...previos, [materia]: valor }))
+    const nota = Number(valor.replace(',', '.'))
+    if (valor.trim() !== '' && Number.isFinite(nota) && nota >= 0 && nota <= 5) simular(materia, nota)
+  }
+
+  function terminarEdicion(materia: string) {
+    setBorradores(({ [materia]: _, ...resto }) => resto)
+  }
+
   return (
     <section className="tarjeta">
       <h2>Tus notas</h2>
@@ -120,6 +165,71 @@ export function ImportarNotas({ malla, notas, onCambiar }: Props) {
         />
         <button type="submit">Agregar</button>
       </form>
+
+      {simulables.length > 0 && (
+        <div className="simulador">
+          <div className="fila-entre">
+            <strong className="simulador-titulo">¿Qué pasaría si...?</strong>
+            <button
+              type="button"
+              aria-expanded={simuladorAbierto}
+              onClick={() => setSimuladorAbierto(!simuladorAbierto)}
+            >
+              {simuladorAbierto ? 'Ocultar' : 'Ajustar notas'}
+            </button>
+          </div>
+          {simuladorAbierto && (
+            <>
+              <p className="ayuda">
+                Mueve una nota para simular otro escenario: el grafo y las predicciones se actualizan al
+                instante. Nada se guarda fuera de este navegador.
+              </p>
+              <ul className="simulador-lista">
+                {simulables.map((n) => {
+                  const nombre = malla.materias.find((m) => m.id === n.materia)?.nombre ?? n.materia
+                  const valor = borradores[n.materia] ?? n.nota.toFixed(1)
+                  return (
+                    <li key={n.materia} className="simulador-fila">
+                      <span className="simulador-materia" title={n.materia}>
+                        {nombre}
+                      </span>
+                      <input
+                        type="range"
+                        min={0}
+                        max={5}
+                        step={0.1}
+                        value={n.nota}
+                        aria-label={`Nota de ${nombre}`}
+                        onChange={(e) => simular(n.materia, Number(e.target.value))}
+                      />
+                      <input
+                        type="number"
+                        className="simulador-nota"
+                        min={0}
+                        max={5}
+                        step={0.1}
+                        value={valor}
+                        aria-label={`Nota simulada de ${nombre}`}
+                        onChange={(e) => escribirNota(n.materia, e.target.value)}
+                        onBlur={() => terminarEdicion(n.materia)}
+                      />
+                      <button
+                        type="button"
+                        className="simulador-quitar"
+                        aria-label={`Quitar ${nombre}`}
+                        title={`Quitar ${nombre} de la simulación`}
+                        onClick={() => quitar(n.materia)}
+                      >
+                        ×
+                      </button>
+                    </li>
+                  )
+                })}
+              </ul>
+            </>
+          )}
+        </div>
+      )}
 
       {avisos.length > 0 && (
         <ul className="ayuda">

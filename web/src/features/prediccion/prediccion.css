@@ -1,5 +1,11 @@
 /* Panel de predicción: semáforo, "por qué" y recomendación de enfoque. */
 
+/* Selector de modelo (regresión vs. red neuronal) en el encabezado. */
+.selector-modelo { display: flex; gap: 4px; flex-shrink: 0; }
+.selector-modelo button { font-size: 12px; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+.selector-modelo button.activo { background: var(--acento); border-color: var(--acento); color: #fff; }
+.modelo-activo { margin-top: 0 !important; }
+
 .enfoque { background: #eef3ff; border-radius: 8px; padding: 8px 10px; font-size: 14px; margin-bottom: 10px; }
 .predicciones { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .prediccion { border: 1px solid var(--borde); border-left-width: 5px; border-radius: 8px; padding: 8px 10px; font-size: 14px; cursor: pointer; }

@@ -2,8 +2,8 @@
 
 Predictor de rendimiento académico por estudiante. Proyecto final de Matemáticas Discretas (MAT 4021), Uninorte.
 
-El estudiante importa sus notas y ve, sobre la malla de su carrera, cómo le puede ir en las materias que vienen,
-con un semáforo de riesgo, el "por qué" de cada predicción y qué conviene repasar.
+El estudiante importa sus notas (desde el **PDF oficial de Certificado de Notas de Uninorte**, un CSV o el simulador interactivo) y ve, sobre la malla de su carrera, cómo le puede ir en las materias que vienen,
+con un semáforo de riesgo, el "por qué" de cada predicción, **los contenidos cruzados puntuales que conviene reforzar** y un simulador **«¿Qué pasaría si...?»** en vivo.
 **Las notas se procesan en el navegador y no salen del computador del estudiante.**
 
 ## Estructura
@@ -67,15 +67,15 @@ para producción basta poner la URL de un Postgres (por ejemplo, Supabase).
 
 ## Formato de los datos
 
-**Notas** (`data/plantilla_notas.csv`): `materia,periodo,nota`, escala 0–5, periodo `AAAA-S`.
-Si una materia se repite, cuenta el intento más reciente.
+**Notas** (`data/plantilla_notas.csv` o Certificado PDF de Uninorte): `materia,periodo,nota`, escala 0–5, periodo `AAAA-S`.
+Si una materia se repite, cuenta el intento más reciente. La web también lee directamente el PDF oficial de Certificado de Notas de Uninorte en el navegador (mapeando electivas a sus casillas `ELG*` e ignorando exigencias de inglés de 0 créditos).
 
-**Malla** (`data/malla_sistemas.json`): materias con su semestre, prerrequisitos (aristas dirigidas) y
-aristas blandas (relaciones del mismo área que no son prerrequisito oficial).
-`data/malla_sistemas.json` es la malla oficial de Ingeniería de Sistemas y Computación (50 materias, 32 prerrequisitos), tomada del diagrama del plan de estudios. `data/malla_ejemplo.json` es una malla pequeña de 16 materias que usan las pruebas.
+**Malla** (`data/malla_sistemas.json`): materias con su semestre, prerrequisitos (aristas dirigidas),
+aristas blandas (relaciones transversales entre áreas como Álgebra Lineal → Física / EDO) y `contenidos_cruzados` (temas específicos de una materia previa que se aplican en una materia posterior cuando está en riesgo).
+`data/malla_sistemas.json` es la malla oficial de Ingeniería de Sistemas y Computación (50 materias, 32 prerrequisitos, 8 aristas blandas y 26 puentes de contenidos cruzados), tomada del diagrama del plan de estudios. `data/malla_ejemplo.json` es una malla pequeña de 16 materias que usan las pruebas.
 
 **Modelo** (`data/pesos.json`): `medias` (μ de cada materia) y, para cada materia objetivo, `b`, `beta`,
-`sigma` (error típico) y el peso de cada materia de la que depende en la malla (sus ancestros). La predicción es
+`sigma` (error típico) y el peso de cada materia de la que depende en la malla (sus ancestros, entrenados con regularización Ridge ponderada por distancia en el DAG), además de los pesos de la red neuronal (`red.cursos`). En la interfaz el estudiante puede alternar en vivo entre **Regresión** y **Red neuronal (MLP)**. La predicción de regresión es
 
 ŷ = μ + b + β · a + Σ w · z
 
@@ -87,9 +87,9 @@ donde `a` es el nivel del estudiante, Σ (nota − μ) / (n + 1) sobre sus n mat
 | Prueba | Dónde |
 |---|---|
 | Malla de 6 materias calculada a mano (orden topológico, camino más largo, centralidad, descendientes) | `web/src/lib/graph/dag.test.ts` |
-| Predicción, rango y semáforo con pesos fijos | `web/src/lib/model/predict.test.ts` |
-| Lectura del CSV | `web/src/lib/import/csv.test.ts` |
-| El modelo recupera pesos simulados y le gana al promedio | `model/tests/test_modelo.py` |
+| Predicción, rango, semáforo, enfoque por centralidad y contenidos cruzados | `web/src/lib/model/predict.test.ts` |
+| Lectura del CSV y del Certificado de Notas en PDF de Uninorte | `web/src/lib/import/csv.test.ts`, `web/src/lib/import/certificado.test.ts` |
+| El modelo recupera pesos simulados, regulariza por distancia en el DAG y le gana al promedio | `model/tests/test_modelo.py` |
 | Retropropagación de la red igual a la derivada numérica; la red aprende una relación en V | `model/tests/test_red.py` |
 | La red da lo mismo en TypeScript y en Python (caso de `data/fixtures/red_caso_conocido.json`) | `web/src/lib/model/red.test.ts`, `model/tests/test_red.py` |
 | La fórmula da lo mismo en TypeScript y en Python (caso de `data/fixtures/`) | `web/src/lib/model/contrato.test.ts`, `model/tests/test_contrato_prediccion.py` |

@@ -44,3 +44,15 @@ aside { overflow-y: auto; padding: 12px; display: flex; flex-direction: column; 
 textarea { width: 100%; font: inherit; font-size: 13px; margin-bottom: 6px; }
 button { font: inherit; font-size: 13px; padding: 5px 10px; border: 1px solid var(--borde); border-radius: 6px; background: var(--tarjeta); cursor: pointer; }
 button:hover:not(:disabled) { border-color: var(--acento); }
+
+/* "¿Qué pasaría si...?": lista compacta de notas cargadas que se pueden simular. */
+.simulador { margin-top: 10px; border-top: 1px solid var(--borde); padding-top: 10px; }
+.simulador-titulo { font-size: 14px; }
+.simulador .ayuda { margin-top: 0; }
+.simulador-lista { list-style: none; margin: 0; padding: 0; max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+.simulador-fila { display: grid; grid-template-columns: minmax(0, 1fr) 56px 24px; grid-template-areas: 'materia materia materia' 'rango nota quitar'; gap: 4px 6px; align-items: center; font-size: 13px; }
+.simulador-materia { grid-area: materia; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.simulador-fila input[type='range'] { grid-area: rango; width: 100%; margin: 0; accent-color: var(--acento); }
+.simulador-nota { grid-area: nota; width: 100%; font: inherit; font-size: 13px; padding: 2px 4px; border: 1px solid var(--borde); border-radius: 4px; text-align: right; }
+.simulador-quitar { grid-area: quitar; padding: 0; width: 24px; height: 24px; line-height: 1; color: var(--suave); }
+.simulador-quitar:hover:not(:disabled) { color: var(--rojo); border-color: var(--rojo); }

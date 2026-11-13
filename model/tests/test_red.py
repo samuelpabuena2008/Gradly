@@ -75,6 +75,31 @@ def test_sin_red_para_la_materia_usa_la_regresion():
     )
 
 
+def test_el_reajuste_final_usa_todos_los_datos():
+    """La validación elige las épocas, pero el ajuste final no desperdicia el 15 % apartado.
+
+    Con `reajuste=0` el modelo se queda con la foto de la mejor época sobre el 85 % de las filas;
+    con `reajuste > 0` vuelve a pasar por TODAS. Los dos son deterministas y la red sigue
+    aprendiendo la relación no lineal.
+    """
+    rng = np.random.default_rng(3)
+    X = rng.uniform(-1.5, 1.5, size=(600, 1))
+    y = np.abs(X[:, 0])
+
+    sin_reajuste = RedNeuronal(oculta=8, epocas=600, paciencia=80, reajuste=0).fit(X[:400], y[:400])
+    con_reajuste = RedNeuronal(oculta=8, epocas=600, paciencia=80, reajuste=40).fit(X[:400], y[:400])
+    error = lambda r: np.mean(np.abs(r.predict(X[400:]) - y[400:]))
+
+    # Las dos versiones son deterministas y siguen ajustando la V mejor que una recta.
+    pendiente, corte = np.polyfit(X[:400, 0], y[:400], 1)
+    error_recta = np.mean(np.abs(pendiente * X[400:, 0] + corte - y[400:]))
+    assert error(con_reajuste) < 0.25 * error_recta
+    repetida = RedNeuronal(oculta=8, epocas=600, paciencia=80, reajuste=40).fit(X[:400], y[:400])
+    assert np.array_equal(con_reajuste.predict(X), repetida.predict(X))
+    # El reajuste mueve los pesos (no es un no-op), así que la foto final sí cambió.
+    assert not np.array_equal(sin_reajuste.params["W1"], con_reajuste.params["W1"])
+
+
 def test_la_red_exportada_predice_igual_que_la_entrenada():
     malla = cargar_malla(DATA / "malla_ejemplo.json")
     df, _ = simular(malla, n_estudiantes=80)

@@ -8,9 +8,30 @@
 
 import type { Contribucion, Malla, Modelo, Nota, Prediccion, Semaforo } from '../../types'
 import { gradoSalida, intermediacion, predecesores } from '../graph/dag'
+// predict.ts ↔ red.ts se importan mutuamente porque la red reutiliza la regresión como
+// respaldo y aquí se elige entre las dos. Es seguro: los dos módulos solo se llaman entre
+// funciones declaradas (elevadas), nunca durante la evaluación del módulo.
+import { predecirMateriaRed } from './red'
 
 /** Probabilidad de no aprobar a partir de la cual cambia el color del semáforo. */
 export const UMBRALES = { amarillo: 0.2, rojo: 0.5 }
+
+/** Modelo de predicción que el estudiante puede usar en la web. */
+export type TipoModelo = 'regresion' | 'red'
+
+/** Validación cruzada que exporta model/ en data/pesos.json (opcional). */
+interface Validacion {
+  recomendado?: string
+}
+
+/**
+ * Modelo que recomienda la validación cruzada de model/ (`validacion.recomendado`).
+ * Si el archivo no la trae o trae un valor desconocido, se usa la regresión.
+ */
+export function tipoRecomendado(modelo: Modelo): TipoModelo {
+  const validacion = (modelo as Modelo & { validacion?: Validacion }).validacion
+  return validacion?.recomendado === 'red' ? 'red' : 'regresion'
+}
 
 /** Función de distribución de la normal estándar (aproximación de Abramowitz y Stegun 7.1.26). */
 export function normalCdf(x: number): number {
@@ -22,16 +43,24 @@ export function normalCdf(x: number): number {
 }
 
 /**
- * Deja una nota por materia. Si una materia se repitió, cuenta el intento más reciente
+ * El intento que cuenta por materia: el más reciente
  * (los periodos tienen formato AAAA-S, así que se comparan como texto).
  */
-export function ultimasNotas(notas: Nota[]): Map<string, number> {
+export function notasVigentes(notas: Nota[]): Map<string, Nota> {
   const ultima = new Map<string, Nota>()
   for (const n of notas) {
     const previa = ultima.get(n.materia)
     if (!previa || n.periodo >= previa.periodo) ultima.set(n.materia, n)
   }
-  return new Map([...ultima].map(([id, n]) => [id, n.nota]))
+  return ultima
+}
+
+/**
+ * Deja una nota por materia. Si una materia se repitió, cuenta el intento más reciente
+ * (los periodos tienen formato AAAA-S, así que se comparan como texto).
+ */
+export function ultimasNotas(notas: Nota[]): Map<string, number> {
+  return new Map([...notasVigentes(notas)].map(([id, n]) => [id, n.nota]))
 }
 
 export function promedio(notas: Map<string, number>): number {
@@ -117,11 +146,22 @@ export function predecirMateria(
   }
 }
 
-/** Predicciones para todas las materias que el estudiante puede inscribir. */
-export function predecirSiguientes(malla: Malla, modelo: Modelo, notas: Nota[]): Prediccion[] {
+/**
+ * Predicciones para todas las materias que el estudiante puede inscribir.
+ *
+ * `tipo` elige el modelo: `'regresion'` (por defecto) usa `predecirMateria` y `'red'` usa
+ * `predecirMateriaRed`, que a su vez cae en la regresión si la materia no tiene red.
+ */
+export function predecirSiguientes(
+  malla: Malla,
+  modelo: Modelo,
+  notas: Nota[],
+  tipo: TipoModelo = 'regresion',
+): Prediccion[] {
   const mapa = ultimasNotas(notas)
+  const predecir = tipo === 'red' ? predecirMateriaRed : predecirMateria
   return materiasDisponibles(malla, mapa)
-    .map((id) => predecirMateria(id, malla, modelo, mapa))
+    .map((id) => predecir(id, malla, modelo, mapa))
     .filter((p): p is Prediccion => p !== null)
 }
 

@@ -9,6 +9,9 @@ Niveles (del PDF):
      μ(c)   media de la materia c
      a(s)   nivel del estudiante: Σ (y_p − μ_p) / (n + K_NIVEL) sobre sus n materias anteriores
      z(s,p) cómo le fue en p frente a su propio nivel: (y_p − μ_p) − a(s)
+
+     La penalización L2 de cada peso crece con la distancia en la malla (ver `penalizaciones`):
+     los prerrequisitos oficiales directos dominan y los ancestros lejanos se encogen a cero.
   3. Red neuronal pequeña (1 capa oculta, escrita en NumPy: ver red.py): misma entrada, puede
      captar efectos no lineales.
 
@@ -29,11 +32,10 @@ from datetime import date
 
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import Ridge
 from sklearn.model_selection import GroupKFold
 
 from .evaluacion import calibracion, diferencia_mae
-from .malla import DATA, ancestros, cargar_malla, predecesores
+from .malla import DATA, ancestros, cargar_malla, distancias_ancestros, predecesores, tipo_arista
 from .red import RedNeuronal
 from .simulate import simular
 
@@ -118,18 +120,44 @@ def preparar(df: pd.DataFrame, malla: dict, materia: str) -> DatosCurso | None:
                       np.array(filas_g), ancestros(malla, materia), np.array(filas_H, dtype=float))
 
 
-def ajustar_regresion(datos: DatosCurso, malla: dict, mu: dict[str, float], alpha: float, filas=slice(None)) -> dict:
-    """Ridge sobre el residuo de "materia + nivel": r = y − μ(c) − a.
+def penalizaciones(datos: DatosCurso, malla: dict, alpha: float) -> np.ndarray:
+    """Penalización L2 de cada columna de `[a, Z]`, creciente con la distancia en la malla.
 
-    Así la regularización encoge hacia esa línea base (β → 1, pesos → 0) y no hacia la media.
+    El nivel `a` casi no se penaliza (es la señal principal). Un prerrequisito directo oficial
+    paga `alpha`; una arista blanda directa paga el doble; y un ancestro indirecto (distancia
+    ≥ 2) paga `alpha·4^(dist−1)`, que lo empuja a cero salvo que aporte información real.
+    """
+    distancias = distancias_ancestros(malla, datos.materia)
+    alphas = [alpha * 0.25]
+    for p in datos.ancestros:
+        d = distancias.get(p, 1)
+        if d == 1:
+            alphas.append(alpha * (1.0 if tipo_arista(malla, p, datos.materia) == "oficial" else 2.0))
+        else:
+            alphas.append(alpha * 4.0 ** (d - 1))
+    return np.array(alphas)
+
+
+def ajustar_regresion(datos: DatosCurso, malla: dict, mu: dict[str, float], alpha: float, filas=slice(None)) -> dict:
+    """Ridge con penalización por distancia en la malla sobre el residuo r = y − μ(c) − a.
+
+    Se resuelve la forma cerrada con intercepto no penalizado: se centran X y r, se resuelve
+    (XᵀX + diag(α_j)) w = Xᵀr sobre las columnas centradas y el intercepto absorbe las medias.
+    Así la regularización encoge hacia la línea base (β → 1, pesos → 0) y no hacia la media,
+    y cada ancestro paga según su distancia a la materia objetivo.
     """
     a, Z = rasgos(datos, malla, mu)
     real = (datos.y + datos.ybar)[filas]
-    modelo = Ridge(alpha=alpha).fit(np.column_stack([a[filas], Z[filas]]), real - mu[datos.materia] - a[filas])
+    X = np.column_stack([a[filas], Z[filas]])
+    r = real - mu[datos.materia] - a[filas]
+    alphas = penalizaciones(datos, malla, alpha)
+    # Intercepto no penalizado: centrar X y r equivale a eliminarlo del sistema.
+    medias_X = X.mean(axis=0)
+    w = np.linalg.solve((X - medias_X).T @ (X - medias_X) + np.diag(alphas), (X - medias_X).T @ (r - r.mean()))
     return {
-        "b": float(modelo.intercept_),
-        "beta": float(1.0 + modelo.coef_[0]),
-        "pesos": {p: float(w) for p, w in zip(datos.ancestros, modelo.coef_[1:])},
+        "b": float(r.mean() - medias_X @ w),
+        "beta": float(1.0 + w[0]),
+        "pesos": {p: float(v) for p, v in zip(datos.ancestros, w[1:])},
     }
 
 
