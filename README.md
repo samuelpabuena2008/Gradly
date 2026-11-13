@@ -72,7 +72,7 @@ Si una materia se repite, cuenta el intento más reciente.
 
 **Malla** (`data/malla_sistemas.json`): materias con su semestre, prerrequisitos (aristas dirigidas) y
 aristas blandas (relaciones del mismo área que no son prerrequisito oficial).
-⚠️ La malla actual es **de ejemplo**: hay que reemplazarla por el plan de estudios oficial.
+`data/malla_sistemas.json` es la malla oficial de Ingeniería de Sistemas y Computación (50 materias, 32 prerrequisitos), tomada del diagrama del plan de estudios. `data/malla_ejemplo.json` es una malla pequeña de 16 materias que usan las pruebas.
 
 **Modelo** (`data/pesos.json`): `medias` (μ de cada materia) y, para cada materia objetivo, `b`, `beta`,
 `sigma` (error típico) y el peso de cada materia de la que depende en la malla (sus ancestros). La predicción es

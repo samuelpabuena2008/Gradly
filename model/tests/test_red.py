@@ -76,7 +76,7 @@ def test_sin_red_para_la_materia_usa_la_regresion():
 
 
 def test_la_red_exportada_predice_igual_que_la_entrenada():
-    malla = cargar_malla()
+    malla = cargar_malla(DATA / "malla_ejemplo.json")
     df, _ = simular(malla, n_estudiantes=80)
     pesos, _ = entrenar(df, malla)
     assert set(pesos["red"]["cursos"]) == set(pesos["cursos"])
