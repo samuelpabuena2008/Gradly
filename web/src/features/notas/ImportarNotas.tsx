@@ -1,9 +1,14 @@
-// Importar notas: subir un CSV, pegar texto o agregar una por una.
+// Importar notas: subir un CSV o el certificado de notas en PDF, pegar texto o agregar una por una.
 // Todo se procesa en el navegador.
 
 import { useState, type ChangeEvent, type FormEvent } from 'react'
 import type { Malla, Nota } from '../../types'
 import { parsearNotasCsv } from '../../lib/import/csv'
+import {
+  esTextoCertificado,
+  importarCertificadoPdf,
+  parsearTextoCertificado,
+} from '../../lib/import/certificado'
 import plantilla from '../../../../data/plantilla_notas.csv?raw'
 
 interface Props {
@@ -15,21 +20,43 @@ interface Props {
 export function ImportarNotas({ malla, notas, onCambiar }: Props) {
   const [texto, setTexto] = useState('')
   const [errores, setErrores] = useState<string[]>([])
+  const [avisos, setAvisos] = useState<string[]>([])
   const [manual, setManual] = useState({ materia: malla.materias[0].id, periodo: '2025-1', nota: '' })
 
-  function cargar(contenido: string) {
-    const r = parsearNotasCsv(contenido)
-    const desconocidas = r.notas.filter((n) => !malla.materias.some((m) => m.id === n.materia))
+  /** Deja solo las notas de materias que existen en la malla y reporta el resto. */
+  function filtrar(notasLeidas: Nota[], erroresPrevios: string[], avisosPrevios: string[]) {
+    const desconocidas = notasLeidas.filter((n) => !malla.materias.some((m) => m.id === n.materia))
     setErrores([
-      ...r.errores,
+      ...erroresPrevios,
       ...desconocidas.map((n) => `La materia ${n.materia} no está en la malla`),
     ])
-    onCambiar(r.notas.filter((n) => !desconocidas.includes(n)))
+    setAvisos(avisosPrevios)
+    onCambiar(notasLeidas.filter((n) => !desconocidas.includes(n)))
+  }
+
+  function cargar(contenido: string) {
+    if (esTextoCertificado(contenido)) {
+      const r = parsearTextoCertificado(contenido, malla)
+      filtrar(r.notas, r.errores, r.avisos)
+      return
+    }
+    const r = parsearNotasCsv(contenido)
+    filtrar(r.notas, r.errores, [])
+  }
+
+  async function cargarPdf(archivo: File) {
+    const r = await importarCertificadoPdf(await archivo.arrayBuffer(), malla)
+    filtrar(r.notas, r.errores, r.avisos)
   }
 
   async function subirArchivo(e: ChangeEvent<HTMLInputElement>) {
     const archivo = e.target.files?.[0]
-    if (archivo) cargar(await archivo.text())
+    if (!archivo) return
+    if (archivo.name.toLowerCase().endsWith('.pdf') || archivo.type === 'application/pdf') {
+      await cargarPdf(archivo)
+      return
+    }
+    cargar(await archivo.text())
   }
 
   function agregarManual(e: FormEvent) {
@@ -40,6 +67,7 @@ export function ImportarNotas({ malla, notas, onCambiar }: Props) {
       return
     }
     setErrores([])
+    setAvisos([])
     onCambiar([...notas, { materia: manual.materia, periodo: manual.periodo, nota }])
     setManual({ ...manual, nota: '' })
   }
@@ -48,7 +76,7 @@ export function ImportarNotas({ malla, notas, onCambiar }: Props) {
     <section className="tarjeta">
       <h2>Tus notas</h2>
       <div className="fila">
-        <input type="file" accept=".csv,text/csv" onChange={subirArchivo} />
+        <input type="file" accept=".csv,text/csv,.pdf,application/pdf" onChange={subirArchivo} />
         <button type="button" onClick={() => cargar(plantilla)}>
           Usar notas de ejemplo
         </button>
@@ -61,7 +89,7 @@ export function ImportarNotas({ malla, notas, onCambiar }: Props) {
 
       <textarea
         rows={3}
-        placeholder="O pega aquí: materia,periodo,nota"
+        placeholder="O pega aquí: materia,periodo,nota o el texto del certificado de notas"
         value={texto}
         onChange={(e) => setTexto(e.target.value)}
       />
@@ -93,6 +121,13 @@ export function ImportarNotas({ malla, notas, onCambiar }: Props) {
         <button type="submit">Agregar</button>
       </form>
 
+      {avisos.length > 0 && (
+        <ul className="ayuda">
+          {avisos.map((a) => (
+            <li key={a}>{a}</li>
+          ))}
+        </ul>
+      )}
       {errores.length > 0 && (
         <ul className="errores">
           {errores.map((e) => (
