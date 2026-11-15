@@ -1,0 +1,14 @@
+# Vercel solo construye la web: sube web/ y data/ (la web importa la malla y los pesos).
+# Las rutas con "/" al inicio son solo de la raíz (web/src/lib/model sí se sube).
+/.venv
+/api
+/model
+/docs
+/web/dist
+/web/test-results
+/web/playwright-report
+**/node_modules
+**/__pycache__
+**/.pytest_cache
+*.db
+.env

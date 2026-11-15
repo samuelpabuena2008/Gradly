@@ -22,3 +22,5 @@ data/donaciones/
 .DS_Store
 Thumbs.db
 .env
+
+.vercel
