@@ -6,7 +6,10 @@ import {
   BrainCircuit,
   CircleHelp,
   Download,
+  Expand,
   FilePenLine,
+  ImageDown,
+  Route,
   FlaskConical,
   Network,
   PanelLeft,
@@ -19,6 +22,7 @@ import {
 import type { Datos } from '../../lib/ui/arranque'
 import type { Vista } from '../../lib/ui/ruta'
 import { useApp } from '../../store/app'
+import { useGrafo, type SolicitudGrafo } from '../../store/grafo'
 import {
   abrirMateria,
   alternarModelo,
@@ -50,6 +54,12 @@ export const VISTAS_RIBBON: { vista: Vista; etiqueta: string; icono: LucideIcon;
   { vista: 'laboratorio', etiqueta: 'Laboratorio de grafos', icono: FlaskConical, atajo: 'Alt+4' },
   { vista: 'modelo', etiqueta: 'Modelo', icono: BrainCircuit, atajo: 'Alt+5' },
 ]
+
+/** Lleva a la malla y deja el pedido para que el grafo lo atienda en cuanto esté montado. */
+function pedirAlGrafo(s: SolicitudGrafo): void {
+  irA({ tipo: 'vista', vista: 'malla' })
+  useGrafo.getState().solicitar(s)
+}
 
 export function construirComandos(datos: Datos, tipoModelo: 'regresion' | 'red'): Comando[] {
   const materias: Comando[] = datos.malla.materias.map((m) => ({
@@ -116,6 +126,58 @@ export function construirComandos(datos: Datos, tipoModelo: 'regresion' | 'red')
       icono: PanelRight,
       palabras: 'panel derecho detalle',
       ejecutar: () => useApp.getState().alternarInspector(),
+    },
+    {
+      id: 'grafo:ajustar',
+      titulo: 'Ajustar el grafo a la pantalla',
+      grupo: 'Acciones',
+      atajo: 'F',
+      icono: Expand,
+      palabras: 'encuadrar centrar zoom malla',
+      ejecutar: () => pedirAlGrafo('ajustar'),
+    },
+    {
+      id: 'grafo:disposicion',
+      titulo: 'Cambiar disposición del grafo (semestres / orgánico)',
+      grupo: 'Acciones',
+      detalle: useGrafo.getState().disposicion === 'organico' ? 'Ahora: Orgánico' : 'Ahora: Por semestre',
+      icono: Network,
+      palabras: 'layout organico fuerzas columnas',
+      ejecutar: () => {
+        const g = useGrafo.getState()
+        g.fijar('disposicion', g.disposicion === 'organico' ? 'semestre' : 'organico')
+        irA({ tipo: 'vista', vista: 'malla' })
+      },
+    },
+    {
+      id: 'grafo:cadena',
+      titulo: 'Resaltar la cadena crítica',
+      grupo: 'Acciones',
+      icono: Route,
+      palabras: 'camino mas largo prerrequisitos',
+      ejecutar: () => {
+        useGrafo.getState().alternar('cadena')
+        irA({ tipo: 'vista', vista: 'malla' })
+      },
+    },
+    {
+      id: 'grafo:cuellos',
+      titulo: 'Resaltar cuellos de botella',
+      grupo: 'Acciones',
+      icono: Waypoints,
+      palabras: 'intermediacion centralidad',
+      ejecutar: () => {
+        useGrafo.getState().alternar('cuellos')
+        irA({ tipo: 'vista', vista: 'malla' })
+      },
+    },
+    {
+      id: 'grafo:png',
+      titulo: 'Exportar el grafo como imagen (PNG)',
+      grupo: 'Acciones',
+      icono: ImageDown,
+      palabras: 'descargar captura imagen malla',
+      ejecutar: () => pedirAlGrafo('exportar'),
     },
     {
       id: 'accion:exportar',

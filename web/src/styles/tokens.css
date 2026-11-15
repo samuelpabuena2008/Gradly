@@ -12,6 +12,10 @@
   --bg-raised: #1e1a2e;
   --bg-hover: #262140;
   --bg-overlay: rgb(8 6 14 / 0.72);
+  /* Paneles flotantes translúcidos (con backdrop-filter) y máscara del minimapa */
+  --bg-vidrio: rgb(23 20 36 / 0.82);
+  --bg-vidrio-tenue: rgb(18 16 27 / 0.75);
+  --bg-mascara: rgb(13 11 20 / 0.65);
 
   /* Líneas */
   --line: #2b2644;
@@ -38,6 +42,19 @@
   --ok-bg: rgb(52 211 153 / 0.12);
   --warn-bg: rgb(251 191 36 / 0.12);
   --risk-bg: rgb(251 113 133 / 0.12);
+
+  /* Rampa secuencial por semestre (violeta → cian), para «colorear por semestre» en el grafo.
+     Es ordinal: el tono avanza con el semestre, sin saltos de arcoíris. */
+  --sem-1: #7c5ce8;
+  --sem-2: #8a67f2;
+  --sem-3: #9677f7;
+  --sem-4: #9488f7;
+  --sem-5: #8798f5;
+  --sem-6: #77a8f2;
+  --sem-7: #67b7ee;
+  --sem-8: #5ac5e7;
+  --sem-9: #52d1dc;
+  --sem-10: #5bdcd0;
 
   /* Radios */
   --radius-sm: 4px;

@@ -29,6 +29,20 @@ const ATAJOS: { grupo: string; filas: [string, string][] }[] = [
     ],
   },
   {
+    grupo: 'Grafo de la malla',
+    filas: [
+      ['Tab', 'Entrar al grafo'],
+      ['←  ·  →', 'Ir a un prerrequisito o a una materia que depende de ella'],
+      ['↑ ↓', 'Moverse dentro del semestre'],
+      ['Enter', 'Abrir la materia seleccionada'],
+      ['Esc', 'Quitar la selección'],
+      ['F', 'Ajustar el grafo a la pantalla'],
+      ['+  ·  −', 'Acercar o alejar'],
+      ['/', 'Buscar en el grafo'],
+      ['Doble clic', 'Abrir la página de la materia'],
+    ],
+  },
+  {
     grupo: 'Explorador de materias',
     filas: [
       ['↑ ↓', 'Moverse por la lista'],

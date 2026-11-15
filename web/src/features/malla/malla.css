@@ -1,34 +1,536 @@
-/* Malla interactiva (React Flow). Versión provisional: la Fase 3 la reemplaza por nodos y aristas propios. */
+/* Vista de grafo de la malla — «observatorio violeta». Solo tokens de tokens.css. */
 
-.malla { height: 100%; background: var(--bg-canvas); }
+.malla {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 40%, var(--accent-bg), transparent 70%),
+    var(--bg-canvas);
+  --grosor: 1.25px;
+}
+.malla:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 0; }
+.malla:fullscreen { background: var(--bg-canvas); }
 
 .malla .react-flow {
-  --xy-background-color: var(--bg-canvas);
+  --xy-background-color: transparent;
+  --xy-background-pattern-dots-color-default: var(--line);
   --xy-edge-stroke: var(--line-strong);
-  --xy-controls-button-background-color: var(--bg-raised);
-  --xy-controls-button-background-color-hover: var(--bg-hover);
-  --xy-controls-button-color: var(--text);
-  --xy-controls-button-border-color: var(--line);
+  --xy-minimap-background-color-default: var(--bg-panel);
+  --xy-minimap-mask-background-color-default: var(--bg-mascara);
+  --xy-minimap-mask-stroke-color-default: var(--accent-deep);
+  --xy-minimap-mask-stroke-width-default: 1.5;
   --xy-attribution-background-color: transparent;
+  background: transparent;
 }
-.malla .react-flow__attribution { color: var(--text-faint); }
+.malla .react-flow__attribution { font-size: 10px; color: var(--text-faint); }
 .malla .react-flow__attribution a { color: var(--text-faint); }
+.malla .react-flow__node { cursor: pointer; }
+.malla-organico .react-flow__node.draggable { cursor: grab; }
+.malla-organico .react-flow__node.dragging { cursor: grabbing; }
 
-.react-flow__node.nodo {
-  width: 180px;
+/* ---- Nodo ---- */
+
+.nodo-materia {
+  --c-nodo: var(--line-strong);
+  --c-trazo: var(--line-strong);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   font-size: var(--fs-xs);
+  color: var(--text);
+  transition: opacity var(--dur) var(--ease);
+}
+.nodo-handle {
+  /* Puntos de anclaje invisibles: las aristas calculan su propio borde del círculo. */
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  pointer-events: none;
+  left: 50% !important;
+  right: auto !important;
+}
+.nodo-figura { position: relative; flex: none; }
+.nodo-figura svg { display: block; overflow: visible; }
+
+.nodo-circulo {
+  fill: var(--bg-raised);
+  stroke: var(--c-trazo);
+  stroke-width: 1.5;
+  transition: fill var(--dur-slow) var(--ease), stroke var(--dur-slow) var(--ease), stroke-width var(--dur) var(--ease);
+}
+.nodo-brillo {
+  fill: var(--c-nodo);
+  opacity: 0.16;
+  transition: fill var(--dur-slow) var(--ease);
+}
+.nodo-glifo {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--c-nodo);
+  pointer-events: none;
+  transition: color var(--dur-slow) var(--ease);
+}
+
+/* Aprobada: relleno violeta sólido con ✓ */
+.nodo-aprobada { --c-nodo: var(--accent); --c-trazo: var(--accent-soft); }
+.nodo-aprobada .nodo-circulo { fill: var(--accent-deep); stroke: var(--accent-soft); }
+.nodo-aprobada .nodo-glifo { color: var(--on-accent); }
+
+/* Por repetir: aro discontinuo */
+.nodo-reprobada { --c-nodo: var(--risk); --c-trazo: var(--risk); }
+.nodo-reprobada .nodo-circulo { fill: var(--risk-bg); stroke-dasharray: 3.5 3; stroke-width: 2; }
+
+/* Disponible con predicción: aro del semáforo y brillo interior */
+.nodo-disponible .nodo-circulo { stroke-width: 2.25; fill: var(--bg-panel); }
+.nodo-verde { --c-nodo: var(--ok); --c-trazo: var(--ok); }
+.nodo-amarillo { --c-nodo: var(--warn); --c-trazo: var(--warn); }
+.nodo-rojo { --c-nodo: var(--risk); --c-trazo: var(--risk); }
+
+/* Bloqueada: gris violeta atenuado, sin brillo */
+.nodo-bloqueada { --c-nodo: var(--text-faint); }
+.nodo-bloqueada .nodo-figura { opacity: 0.45; }
+.nodo-bloqueada .nodo-etiqueta { opacity: 0.6; }
+
+/* Colorear por semestre: el tono es del semestre; la forma sigue indicando el estado. */
+.nodo-por-semestre { --c-trazo: var(--c-sem); }
+.nodo-por-semestre.nodo-aprobada .nodo-circulo { fill: var(--c-sem); stroke: var(--c-sem); }
+.nodo-por-semestre.nodo-aprobada .nodo-glifo { color: var(--bg-canvas); }
+.nodo-por-semestre.nodo-bloqueada .nodo-circulo { stroke: var(--c-sem); }
+.nodo-por-semestre:not(.nodo-aprobada) .nodo-circulo { stroke: var(--c-sem); }
+.nodo-por-semestre .nodo-brillo { fill: var(--c-sem); }
+
+/* Seleccionada: aro blanco-violeta + resplandor */
+.nodo-aro-sel {
+  fill: none;
+  stroke: var(--text);
+  stroke-width: 2;
+  filter: drop-shadow(0 0 6px var(--accent-glow)) drop-shadow(0 0 12px var(--accent-glow));
+}
+.nodo-seleccionada .nodo-nombre { color: var(--text); font-weight: 600; }
+
+/* Cuello de botella: halo discontinuo violeta y una insignia rómbica */
+.nodo-halo { fill: none; stroke: var(--accent-soft); stroke-width: 1.25; stroke-dasharray: 2 3; opacity: 0.9; }
+.nodo-insignia {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 8px;
+  height: 8px;
+  background: var(--accent-soft);
+  transform: rotate(45deg);
+  border-radius: 1px;
+  box-shadow: 0 0 0 2px var(--bg-canvas);
+}
+
+/* En la cadena crítica: trazo de acento más grueso */
+.nodo-en-cadena:not(.nodo-aprobada) .nodo-circulo { stroke: var(--accent-soft); stroke-width: 2.5; }
+.nodo-en-cadena.nodo-aprobada .nodo-circulo { stroke: var(--text); }
+
+/* Etiqueta */
+.nodo-etiqueta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 100%;
+  padding: 0 4px;
+  line-height: 1.25;
+  text-align: center;
+  transition: opacity var(--dur) var(--ease);
+}
+.nodo-nombre {
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--text-muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 3px var(--bg-canvas), 0 0 6px var(--bg-canvas);
+}
+.nodo-valor {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--c-nodo);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 3px var(--bg-canvas);
+}
+.nodo-aprobada .nodo-valor { color: var(--accent-soft); }
+.nodo-por-semestre .nodo-valor { color: var(--c-sem); }
+.malla-sin-texto .nodo-etiqueta { opacity: 0; }
+.malla-sin-texto .nodo-enfocada .nodo-etiqueta,
+.malla-sin-texto .nodo-seleccionada .nodo-etiqueta { opacity: 1; }
+
+/* Exportando PNG: etiquetas siempre visibles y sin transiciones. */
+.malla-exportando .nodo-etiqueta { opacity: 1 !important; }
+.malla-exportando * { transition: none !important; }
+
+/* Foco (hover, búsqueda, descendientes): lo demás baja a 0.15 */
+.nodo-atenuada { opacity: 0.15; }
+.nodo-enfocada .nodo-circulo { stroke-width: 3; }
+
+/* Tarjeta con el nombre completo al pasar el puntero */
+.nodo-tarjeta {
+  position: absolute;
+  bottom: calc(100% - 4px);
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: max-content;
+  max-width: 260px;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--fs-xs);
+  line-height: 1.35;
   color: var(--text);
   background: var(--bg-raised);
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-md);
-  padding: 6px 8px;
+  box-shadow: var(--shadow-md);
+  /* Se contrarresta el zoom del lienzo: la tarjeta siempre se lee a tamaño real. */
+  transform: translateX(-50%) scale(calc(1 / var(--zoom, 1)));
+  transform-origin: 50% 100%;
+  pointer-events: none;
+  animation: tarjeta-entra var(--dur) var(--ease);
 }
-.nodo .detalle { color: var(--text-muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
-.react-flow__node.nodo-cursada { background: var(--accent-bg); border-color: var(--accent-deep); }
-.react-flow__node.nodo-reprobada { background: var(--risk-bg); border: 1px dashed var(--risk); }
-.react-flow__node.nodo-bloqueada { background: var(--bg-panel); color: var(--text-muted); opacity: 0.6; }
-.react-flow__node.nodo-verde { border: 2px solid var(--ok); }
-.react-flow__node.nodo-amarillo { border: 2px solid var(--warn); }
-.react-flow__node.nodo-rojo { border: 2px solid var(--risk); }
-.react-flow__node.nodo-seleccionado { box-shadow: var(--glow); }
-.arista-blanda path { stroke-dasharray: 5 4; opacity: 0.6; }
+.nodo-tarjeta-nombre { font-weight: 600; font-size: var(--fs-sm); }
+.nodo-tarjeta-meta { color: var(--text-muted); }
+.nodo-tarjeta-meta code { color: var(--accent-soft); }
+.nodo-tarjeta-estado { color: var(--c-nodo); }
+.nodo-bloqueada .nodo-tarjeta-estado { color: var(--text-muted); }
+@keyframes tarjeta-entra { from { opacity: 0; } }
+
+/* Encendido escalonado por semestre al cargar notas */
+.nodo-encender .nodo-figura { animation: nodo-enciende var(--dur-slow) var(--ease) both; animation-delay: var(--retraso, 0ms); }
+@keyframes nodo-enciende {
+  from { opacity: 0.2; transform: scale(0.82); filter: brightness(0.6); }
+  60% { filter: brightness(1.4); }
+  to { opacity: 1; transform: scale(1); filter: none; }
+}
+
+/* ---- Aristas ---- */
+
+.malla .arista {
+  stroke: var(--line-strong);
+  stroke-width: var(--grosor);
+  transition: opacity var(--dur) var(--ease), stroke var(--dur) var(--ease);
+}
+.malla .arista-blanda { stroke: var(--line-strong); stroke-dasharray: 4 4; opacity: 0.55; }
+.malla .arista-critica { stroke: var(--accent-soft); stroke-width: calc(var(--grosor) + 0.75px); }
+.malla .arista-flujo { stroke-dasharray: 6 5; animation: arista-fluye 0.9s linear infinite; }
+@keyframes arista-fluye { to { stroke-dashoffset: -11; } }
+.malla .arista-resaltada { stroke: var(--accent-soft); opacity: 1; stroke-width: calc(var(--grosor) + 0.5px); }
+.malla .arista-atenuada { opacity: 0.08; }
+
+/* ---- Encabezados de semestre ---- */
+
+.malla-semestres {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 4;
+  height: 36px;
+  pointer-events: none;
+  background: linear-gradient(var(--bg-canvas), transparent);
+}
+.malla-semestre {
+  position: absolute;
+  top: var(--space-2);
+  left: 0;
+  padding: 2px var(--space-2);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--text-muted);
+  background: var(--bg-app);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+}
+
+/* ---- Paneles flotantes ---- */
+
+.malla .react-flow__panel { margin: var(--space-3); }
+/* El panel nunca sobresale del lienzo (si no, enfocar un control desplazaría la página). */
+.malla-panel-ajustes {
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100% - 2 * var(--space-3));
+}
+
+.panel-grafo {
+  width: 268px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  color: var(--text);
+  background: var(--bg-vidrio);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+.pg-cabecera {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 36px;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.pg-cabecera:hover { background: var(--bg-hover); }
+/* Colapsado es solo un botón con ícono, para no tapar los encabezados de semestre. */
+.panel-grafo:not(.panel-grafo-abierto) { width: auto; }
+.panel-grafo:not(.panel-grafo-abierto) .pg-cabecera { width: 36px; padding: 0; justify-content: center; }
+.panel-grafo:not(.panel-grafo-abierto) .pg-cabecera > span,
+.panel-grafo:not(.panel-grafo-abierto) .pg-chevron { display: none; }
+.pg-cabecera:focus-visible { outline-offset: -2px; }
+.pg-cabecera span { flex: 1; text-align: left; }
+.pg-chevron { color: var(--text-muted); transition: transform var(--dur) var(--ease); }
+.panel-grafo-abierto .pg-chevron { transform: rotate(180deg); }
+
+.pg-cuerpo {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-1) var(--space-3) var(--space-3);
+  overflow-y: auto;
+  border-top: 1px solid var(--line);
+  animation: pg-entra var(--dur) var(--ease);
+}
+@keyframes pg-entra { from { opacity: 0; transform: translateY(-4px); } }
+
+.pg-buscador {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-top: var(--space-2);
+  color: var(--text-muted);
+}
+.pg-buscador > svg { position: absolute; left: 9px; pointer-events: none; }
+.pg-buscador input { width: 100%; padding-left: 28px; padding-right: 28px; }
+.pg-limpiar {
+  position: absolute;
+  right: 4px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  color: var(--text-muted);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.pg-limpiar:hover { color: var(--text); background: var(--bg-hover); }
+.pg-resultado { margin-top: calc(var(--space-2) * -1); }
+
+.pg-seccion { display: flex; flex-direction: column; gap: var(--space-2); }
+.pg-titulo-seccion {
+  margin: var(--space-1) 0 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.pg-fila { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.pg-fila-off { opacity: 0.5; }
+.pg-fila-entre { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-2); }
+.pg-etiqueta { display: flex; flex-direction: column; font-size: var(--fs-sm); color: var(--text); cursor: pointer; }
+.pg-ayuda { font-size: var(--fs-xs); color: var(--text-muted); line-height: 1.35; }
+.pg-salida { font-size: var(--fs-xs); color: var(--accent-soft); }
+
+/* Interruptor */
+.pg-switch {
+  appearance: none;
+  flex: none;
+  position: relative;
+  width: 30px;
+  height: 18px;
+  margin: 0;
+  background: var(--bg-canvas);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.pg-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  background: var(--text-muted);
+  border-radius: 50%;
+  transition: transform var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.pg-switch:checked { background: var(--accent-deep); border-color: var(--accent); }
+.pg-switch:checked::after { transform: translateX(12px); background: var(--on-accent); }
+.pg-switch:disabled { cursor: not-allowed; }
+
+/* Control segmentado */
+.pg-segmentado { margin: 0; padding: 0; border: 0; min-width: 0; }
+.pg-segmentado legend { padding: 0; margin-bottom: var(--space-1); }
+.pg-seg-opciones {
+  display: flex;
+  padding: 2px;
+  background: var(--bg-canvas);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+.pg-seg {
+  position: relative;
+  flex: 1;
+  padding: 3px var(--space-1);
+  font-size: var(--fs-xs);
+  text-align: center;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.pg-seg input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.pg-seg:hover { color: var(--text); }
+.pg-seg-activa { color: var(--text); background: var(--bg-hover); box-shadow: inset 0 0 0 1px var(--accent-deep); }
+.pg-seg:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.pg-rango { display: flex; flex-direction: column; gap: 2px; }
+.pg-rango input { width: 100%; margin: 0; }
+.pg-acciones { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+/* Barra de cámara */
+.barra-camara {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 3px;
+  background: var(--bg-vidrio);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(10px);
+}
+.cam-btn {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  color: var(--text-muted);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.cam-btn:hover:not(:disabled) { color: var(--text); background: var(--bg-hover); }
+.cam-btn[aria-pressed='true'] { color: var(--accent-soft); background: var(--accent-bg); }
+.cam-btn:disabled { opacity: 0.5; cursor: progress; }
+.cam-separador { height: 1px; margin: 2px 4px; background: var(--line); }
+
+/* Leyenda */
+.malla-panel-leyenda { pointer-events: none; }
+.leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-1) var(--space-3);
+  max-width: min(720px, calc(100vw - 520px));
+  margin: 0;
+  padding: var(--space-1) var(--space-3);
+  list-style: none;
+  font-size: 11px;
+  color: var(--text-muted);
+  background: var(--bg-vidrio-tenue);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+}
+.leyenda li { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.ley-muestra { position: relative; display: inline-grid; place-items: center; width: 18px; height: 18px; }
+.ley-muestra svg { position: absolute; inset: 0; }
+.ley-muestra circle { fill: var(--bg-panel); stroke: var(--line-strong); stroke-width: 1.5; }
+.ley-glifo { position: relative; display: grid; place-items: center; }
+.ley-aprobada circle { fill: var(--accent-deep); stroke: var(--accent-soft); }
+.ley-aprobada .ley-glifo { color: var(--on-accent); }
+.ley-reprobada circle { fill: var(--risk-bg); stroke: var(--risk); stroke-dasharray: 3 2.5; }
+.ley-reprobada .ley-glifo { color: var(--risk); }
+.ley-verde circle { stroke: var(--ok); stroke-width: 2; }
+.ley-verde .ley-glifo { color: var(--ok); }
+.ley-amarillo circle { stroke: var(--warn); stroke-width: 2; }
+.ley-amarillo .ley-glifo { color: var(--warn); }
+.ley-rojo circle { stroke: var(--risk); stroke-width: 2; }
+.ley-rojo .ley-glifo { color: var(--risk); }
+.ley-bloqueada { opacity: 0.55; }
+.ley-bloqueada .ley-glifo { color: var(--text-faint); }
+.ley-cuello circle { fill: none; stroke: var(--accent-soft); stroke-dasharray: 2 2.5; }
+.ley-linea { display: inline-block; width: 18px; height: 0; border-top: 1.5px solid var(--line-strong); }
+.ley-linea-blanda { border-top-style: dashed; }
+.ley-linea-critica { border-top: 2px solid var(--accent-soft); }
+
+/* Minimapa */
+.malla .malla-minimapa {
+  width: 168px;
+  height: 112px;
+  margin-bottom: 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.malla .malla-minimapa svg { width: 100%; height: 100%; }
+
+/* Sin nodos a la vista */
+.malla-vacia {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-6);
+  text-align: center;
+  color: var(--text-muted);
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  transform: translate(-50%, -50%);
+}
+
+/* Pantallas estrechas: la leyenda y el minimapa estorban más de lo que ayudan. */
+@media (max-width: 1100px) {
+  .malla-panel-leyenda { display: none; }
+}
+@media (max-width: 700px) {
+  .malla .malla-minimapa { display: none; }
+  .panel-grafo { width: min(268px, calc(100vw - 32px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .malla .arista-flujo { animation: none; }
+  .nodo-encender .nodo-figura { animation: none; }
+}
+
+@media (forced-colors: active) {
+  .nodo-circulo { stroke: CanvasText; }
+  .nodo-aprobada .nodo-circulo { fill: Highlight; }
+  .nodo-aro-sel { stroke: Highlight; filter: none; }
+  .malla .arista { stroke: CanvasText; }
+  .panel-grafo, .barra-camara, .leyenda { border: 1px solid CanvasText; }
+}

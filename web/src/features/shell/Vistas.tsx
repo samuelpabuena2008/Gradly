@@ -10,24 +10,6 @@ import { PanelPrediccion } from '../prediccion/PanelPrediccion'
 import type { Ruta } from '../../lib/ui/ruta'
 import { useApp } from '../../store/app'
 import { useDatos, useEscenario } from '../../store/escenario'
-import { abrirMateria } from './acciones'
-
-function VistaMalla() {
-  const { malla } = useDatos()
-  const escenario = useEscenario()
-  const seleccionada = useApp((s) => s.seleccionada)
-  const seleccionar = useApp((s) => s.seleccionar)
-  return (
-    <MallaGrafo
-      malla={malla}
-      notas={escenario.mapaNotas}
-      predicciones={escenario.predicciones}
-      seleccionada={seleccionada}
-      onSeleccionar={seleccionar}
-      onAbrir={abrirMateria}
-    />
-  )
-}
 
 function Desplazable({ children }: { children: ReactNode }) {
   return (
@@ -93,7 +75,7 @@ export function ContenidoCentro({ ruta }: { ruta: Ruta }) {
   if (ruta.tipo === 'materia') return <Desplazable><PaginaMateria id={ruta.id} /></Desplazable>
   switch (ruta.vista) {
     case 'malla':
-      return <VistaMalla />
+      return <MallaGrafo />
     case 'notas':
       return <VistaNotas />
     case 'predicciones':
