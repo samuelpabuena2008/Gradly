@@ -28,12 +28,16 @@ interface Prefs {
   tabInspector: TabInspector
 }
 
-const PREFS_INICIALES: Prefs = {
-  exploradorAbierto: true,
-  inspectorAbierto: true,
-  anchoExplorador: LIMITES_PANEL.explorador.inicial,
-  anchoInspector: LIMITES_PANEL.inspector.inicial,
-  tabInspector: 'detalle',
+/** En pantallas estrechas los paneles laterales empiezan cerrados (son cajones superpuestos). */
+function prefsIniciales(): Prefs {
+  const ancho = typeof window === 'undefined' ? 1440 : window.innerWidth
+  return {
+    exploradorAbierto: ancho >= 900,
+    inspectorAbierto: ancho >= 1280,
+    anchoExplorador: LIMITES_PANEL.explorador.inicial,
+    anchoInspector: LIMITES_PANEL.inspector.inicial,
+    tabInspector: 'detalle',
+  }
 }
 
 export function limitarAncho(panel: keyof typeof LIMITES_PANEL, ancho: number): number {
@@ -44,11 +48,12 @@ export function limitarAncho(panel: keyof typeof LIMITES_PANEL, ancho: number): 
 
 /** Lee las preferencias guardadas validando cada campo (un valor corrupto no rompe nada). */
 export function leerPrefs(): Prefs {
+  const base = prefsIniciales()
   const g = leerJson<Partial<Record<keyof Prefs, unknown>>>(CLAVE_PREFS, {})
   const tabs: TabInspector[] = ['detalle', 'simulador', 'analisis']
   return {
-    exploradorAbierto: typeof g.exploradorAbierto === 'boolean' ? g.exploradorAbierto : PREFS_INICIALES.exploradorAbierto,
-    inspectorAbierto: typeof g.inspectorAbierto === 'boolean' ? g.inspectorAbierto : PREFS_INICIALES.inspectorAbierto,
+    exploradorAbierto: typeof g.exploradorAbierto === 'boolean' ? g.exploradorAbierto : base.exploradorAbierto,
+    inspectorAbierto: typeof g.inspectorAbierto === 'boolean' ? g.inspectorAbierto : base.inspectorAbierto,
     anchoExplorador: limitarAncho('explorador', Number(g.anchoExplorador ?? NaN)),
     anchoInspector: limitarAncho('inspector', Number(g.anchoInspector ?? NaN)),
     tabInspector: tabs.includes(g.tabInspector as TabInspector) ? (g.tabInspector as TabInspector) : 'detalle',

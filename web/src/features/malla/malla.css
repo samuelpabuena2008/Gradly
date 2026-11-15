@@ -1,10 +1,6 @@
 /* Malla interactiva (React Flow). Versión provisional: la Fase 3 la reemplaza por nodos y aristas propios. */
 
-.malla { height: 100%; min-height: 400px; background: var(--bg-canvas); }
-
-@media (max-width: 900px) {
-  .malla { height: 60vh; }
-}
+.malla { height: 100%; background: var(--bg-canvas); }
 
 .malla .react-flow {
   --xy-background-color: var(--bg-canvas);

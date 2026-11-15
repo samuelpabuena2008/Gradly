@@ -3,62 +3,13 @@ import { ErrorBoundary } from './components/ErrorBoundary'
 import { PantallaError } from './features/arranque/PantallaError'
 import { Splash } from './features/arranque/Splash'
 import { useArranque } from './features/arranque/useArranque'
-import { AnalisisMalla } from './features/malla/AnalisisMalla'
-import { MallaGrafo } from './features/malla/MallaGrafo'
-import { ImportarNotas } from './features/notas/ImportarNotas'
-import { PanelPrediccion } from './features/prediccion/PanelPrediccion'
+import { Workspace } from './features/shell/Workspace'
 import { ETAPAS } from './lib/ui/arranque'
-import { useApp } from './store/app'
-import { EscenarioProvider, useDatos, useEscenario } from './store/escenario'
-import './app.css'
+import { EscenarioProvider } from './store/escenario'
 
 const DURACION_SALIDA_SPLASH = 360
 
 const prefiereMovimientoReducido = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
-
-// Distribución provisional: el espacio de trabajo tipo Obsidian (Fase 2) la reemplaza.
-function Principal() {
-  const { malla } = useDatos()
-  const escenario = useEscenario()
-  const notasReales = useApp((s) => s.notasReales)
-  const reemplazarNotas = useApp((s) => s.reemplazarNotas)
-  const seleccionada = useApp((s) => s.seleccionada)
-  const seleccionar = useApp((s) => s.seleccionar)
-  const elegirModelo = useApp((s) => s.elegirModelo)
-  const { recomendado } = useDatos()
-
-  return (
-    <div className="app-provisional">
-      <header>
-        <h1>Gradly</h1>
-        <p>
-          {malla.programa} · malla {malla.version}
-        </p>
-      </header>
-      <main id="contenido">
-        <MallaGrafo
-          malla={malla}
-          notas={escenario.mapaNotas}
-          predicciones={escenario.predicciones}
-          seleccionada={seleccionada}
-          onSeleccionar={seleccionar}
-        />
-        <aside>
-          <ImportarNotas malla={malla} notas={notasReales} onCambiar={reemplazarNotas} />
-          <PanelPrediccion
-            malla={malla}
-            predicciones={escenario.predicciones}
-            onSeleccionar={seleccionar}
-            tipoModelo={escenario.tipoModelo}
-            recomendado={recomendado}
-            onCambiarTipo={elegirModelo}
-          />
-          <AnalisisMalla malla={malla} seleccionada={seleccionada} />
-        </aside>
-      </main>
-    </div>
-  )
-}
 
 export default function App() {
   const { estado, reintentar } = useArranque()
@@ -82,7 +33,7 @@ export default function App() {
       </a>
       {estado.fase === 'listo' && (
         <EscenarioProvider datos={estado.datos}>
-          <Principal />
+          <Workspace />
         </EscenarioProvider>
       )}
       {splashVisible && (

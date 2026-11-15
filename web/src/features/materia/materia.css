@@ -1,0 +1,23 @@
+.materia { max-width: 720px; margin: 0 auto; padding: var(--space-8) var(--space-6); }
+.materia-vacia { text-align: center; }
+.materia-titulo { margin: 0 0 var(--space-4); font-size: var(--fs-2xl); line-height: 1.2; }
+.materia-propiedades { width: 100%; margin-bottom: var(--space-6); border-collapse: collapse; font-size: var(--fs-md); }
+.materia-propiedades th { width: 140px; padding: var(--space-2) 0; font-weight: 500; text-align: left; color: var(--text-muted); }
+.materia-propiedades td { padding: var(--space-2) 0; }
+.materia-propiedades tr { border-top: 1px solid var(--line); }
+.materia-seccion { margin: var(--space-6) 0 var(--space-2); font-size: var(--fs-lg); }
+.materia-lista { display: flex; flex-direction: column; gap: var(--space-1); margin: 0; padding: 0; list-style: none; }
+.materia-enlace {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  padding: 2px 0;
+  font-size: var(--fs-md);
+  color: var(--accent-soft);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+.materia-enlace:hover { text-decoration: underline; }
+.materia-codigo { font-size: var(--fs-xs); color: var(--text-muted); }

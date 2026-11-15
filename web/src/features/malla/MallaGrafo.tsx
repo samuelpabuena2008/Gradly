@@ -13,6 +13,8 @@ interface Props {
   predicciones: Prediccion[]
   seleccionada: string | null
   onSeleccionar: (id: string) => void
+  /** Abre la página de la materia (doble clic). */
+  onAbrir?: (id: string) => void
 }
 
 const ANCHO_COLUMNA = 230
@@ -81,6 +83,7 @@ export function MallaGrafo(props: Props) {
         nodes={nodes}
         edges={edges}
         onNodeClick={(_, n) => onSeleccionar(n.id)}
+        onNodeDoubleClick={(_, n) => props.onAbrir?.(n.id)}
         nodesDraggable={false}
         nodesConnectable={false}
         fitView
