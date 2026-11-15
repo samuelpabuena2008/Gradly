@@ -1,0 +1,157 @@
+/* Estilos globales: base, foco, controles compartidos. Los estilos de cada pantalla viven junto a ella
+   (features/<pantalla>/<pantalla>.css) y solo usan los tokens de tokens.css. */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root { height: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: var(--fs-md);
+  line-height: 1.45;
+  color: var(--text);
+  background: var(--bg-canvas);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* Sin scroll horizontal de página: cada panel gestiona el suyo. */
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4 { font-weight: 600; letter-spacing: -0.01em; }
+p { margin: 0; }
+a { color: var(--accent-soft); }
+
+code, kbd, samp, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.num { font-variant-numeric: tabular-nums; }
+
+::selection { background: var(--accent-deep); color: var(--on-accent); }
+
+/* Foco visible: anillo violeta de 2 px con separación. */
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Barras de desplazamiento sobrias */
+* { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: var(--radius-pill); border: 2px solid transparent; background-clip: content-box; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-deep); background-clip: content-box; border: 2px solid transparent; }
+
+/* Enlace «Saltar al contenido» */
+.saltar {
+  position: fixed;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: 200;
+  padding: var(--space-2) var(--space-4);
+  color: var(--on-accent);
+  background: var(--accent-deep);
+  border-radius: var(--radius-md);
+  transform: translateY(-200%);
+  transition: transform var(--dur) var(--ease);
+}
+.saltar:focus { transform: translateY(0); }
+
+/* Solo para lectores de pantalla */
+.solo-lectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---- Controles ---- */
+
+button, input, select, textarea { font: inherit; color: inherit; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 30px;
+  padding: 5px var(--space-3);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--text);
+  background: var(--bg-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.btn:hover:not(:disabled) { background: var(--bg-hover); border-color: var(--accent-deep); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primario { color: var(--on-accent); background: var(--accent-deep); border-color: var(--accent-deep); }
+.btn-primario:hover:not(:disabled) { background: var(--accent); border-color: var(--accent); }
+.btn-fantasma { background: transparent; border-color: transparent; color: var(--text-muted); }
+.btn-fantasma:hover:not(:disabled) { color: var(--text); background: var(--bg-hover); border-color: transparent; }
+.btn-peligro:hover:not(:disabled) { color: var(--risk); border-color: var(--risk); }
+
+/* Compatibilidad: los botones sueltos de las pantallas existentes se ven como .btn. */
+button:not([class]) {
+  min-height: 30px;
+  padding: 5px var(--space-3);
+  font-size: var(--fs-sm);
+  background: var(--bg-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+button:not([class]):hover:not(:disabled) { background: var(--bg-hover); border-color: var(--accent-deep); }
+button:not([class]):disabled { opacity: 0.5; cursor: not-allowed; }
+
+input[type='text'], input[type='number'], input:not([type]), select, textarea {
+  min-height: 30px;
+  padding: 4px var(--space-2);
+  background: var(--bg-canvas);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  color: var(--text);
+}
+input::placeholder, textarea::placeholder { color: var(--text-faint); }
+input:focus-visible, select:focus-visible, textarea:focus-visible { outline-offset: 0; border-color: var(--accent); }
+input[type='range'] { accent-color: var(--accent); }
+input[type='file'] { font-size: var(--fs-sm); color: var(--text-muted); max-width: 100%; }
+input[type='file']::file-selector-button {
+  margin-right: var(--space-2);
+  padding: 5px var(--space-3);
+  color: var(--text);
+  background: var(--bg-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+/* ---- Piezas compartidas ---- */
+
+.tarjeta { padding: var(--space-4); background: var(--bg-panel); border: 1px solid var(--line); border-radius: var(--radius-lg); }
+.tarjeta h2 { margin: 0 0 var(--space-3); font-size: var(--fs-lg); }
+.tarjeta p { margin: 6px 0; font-size: var(--fs-md); }
+.fila { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; margin-bottom: var(--space-2); }
+.fila-entre { display: flex; justify-content: space-between; gap: var(--space-2); align-items: center; }
+.ayuda { color: var(--text-muted); font-size: var(--fs-sm); }
+.errores { color: var(--risk); font-size: var(--fs-sm); padding-left: 18px; }
+textarea { width: 100%; margin-bottom: 6px; font-size: var(--fs-sm); resize: vertical; }
+
+/* Movimiento reducido: sin transiciones ni animaciones. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Alto contraste del sistema: bordes y foco reales. */
+@media (forced-colors: active) {
+  .btn, .tarjeta { border: 1px solid CanvasText; }
+  :focus-visible { outline: 2px solid Highlight; }
+}

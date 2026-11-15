@@ -1,18 +1,38 @@
-/* Malla interactiva (React Flow). */
+/* Malla interactiva (React Flow). Versión provisional: la Fase 3 la reemplaza por nodos y aristas propios. */
 
-.malla { height: 100%; min-height: 400px; }
+.malla { height: 100%; min-height: 400px; background: var(--bg-canvas); }
 
 @media (max-width: 900px) {
   .malla { height: 60vh; }
 }
 
-.react-flow__node.nodo { width: 180px; font-size: 12px; border-radius: 8px; border: 1px solid var(--borde); padding: 6px 8px; }
-.nodo .detalle { color: var(--suave); margin-top: 2px; }
-.react-flow__node.nodo-cursada { background: var(--cursada); }
-.react-flow__node.nodo-reprobada { background: var(--reprobada); }
-.react-flow__node.nodo-bloqueada { background: var(--bloqueada); color: var(--suave); }
-.react-flow__node.nodo-verde { background: #fff; border: 2px solid var(--verde); }
-.react-flow__node.nodo-amarillo { background: #fff; border: 2px solid var(--amarillo); }
-.react-flow__node.nodo-rojo { background: #fff; border: 2px solid var(--rojo); }
-.react-flow__node.nodo-seleccionado { box-shadow: 0 0 0 3px var(--acento); }
+.malla .react-flow {
+  --xy-background-color: var(--bg-canvas);
+  --xy-edge-stroke: var(--line-strong);
+  --xy-controls-button-background-color: var(--bg-raised);
+  --xy-controls-button-background-color-hover: var(--bg-hover);
+  --xy-controls-button-color: var(--text);
+  --xy-controls-button-border-color: var(--line);
+  --xy-attribution-background-color: transparent;
+}
+.malla .react-flow__attribution { color: var(--text-faint); }
+.malla .react-flow__attribution a { color: var(--text-faint); }
+
+.react-flow__node.nodo {
+  width: 180px;
+  font-size: var(--fs-xs);
+  color: var(--text);
+  background: var(--bg-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  padding: 6px 8px;
+}
+.nodo .detalle { color: var(--text-muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
+.react-flow__node.nodo-cursada { background: var(--accent-bg); border-color: var(--accent-deep); }
+.react-flow__node.nodo-reprobada { background: var(--risk-bg); border: 1px dashed var(--risk); }
+.react-flow__node.nodo-bloqueada { background: var(--bg-panel); color: var(--text-muted); opacity: 0.6; }
+.react-flow__node.nodo-verde { border: 2px solid var(--ok); }
+.react-flow__node.nodo-amarillo { border: 2px solid var(--warn); }
+.react-flow__node.nodo-rojo { border: 2px solid var(--risk); }
+.react-flow__node.nodo-seleccionado { box-shadow: var(--glow); }
 .arista-blanda path { stroke-dasharray: 5 4; opacity: 0.6; }

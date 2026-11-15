@@ -1,27 +1,28 @@
 /* Panel de predicción: semáforo, "por qué" y recomendación de enfoque. */
 
 /* Selector de modelo (regresión vs. red neuronal) en el encabezado. */
-.selector-modelo { display: flex; gap: 4px; flex-shrink: 0; }
-.selector-modelo button { font-size: 12px; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
-.selector-modelo button.activo { background: var(--acento); border-color: var(--acento); color: #fff; }
+.selector-modelo { display: flex; gap: var(--space-1); flex-shrink: 0; flex-wrap: wrap; }
+.selector-modelo button { font-size: var(--fs-xs); padding: 3px var(--space-2); border-radius: var(--radius-pill); white-space: nowrap; }
+.selector-modelo button.activo { background: var(--accent-deep); border-color: var(--accent); color: var(--on-accent); }
 .modelo-activo { margin-top: 0 !important; }
 
-.enfoque { background: #eef3ff; border-radius: 8px; padding: 8px 10px; font-size: 14px; margin-bottom: 10px; }
-.predicciones { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-.prediccion { border: 1px solid var(--borde); border-left-width: 5px; border-radius: 8px; padding: 8px 10px; font-size: 14px; cursor: pointer; }
-.borde-verde { border-left-color: var(--verde); }
-.borde-amarillo { border-left-color: var(--amarillo); }
-.borde-rojo { border-left-color: var(--rojo); }
-.chip { font-size: 12px; padding: 1px 8px; border-radius: 10px; color: #fff; white-space: nowrap; }
-.chip-verde { background: var(--verde); }
-.chip-amarillo { background: var(--amarillo); }
-.chip-rojo { background: var(--rojo); }
+.enfoque { background: var(--accent-bg); border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); font-size: var(--fs-md); margin-bottom: var(--space-3); }
+.predicciones { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.prediccion { border: 1px solid var(--line); border-left-width: 4px; border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); font-size: var(--fs-md); cursor: pointer; background: var(--bg-raised); }
+.prediccion:hover { background: var(--bg-hover); }
+.borde-verde { border-left-color: var(--ok); }
+.borde-amarillo { border-left-color: var(--warn); }
+.borde-rojo { border-left-color: var(--risk); }
+.chip { font-size: var(--fs-xs); padding: 1px var(--space-2); border-radius: var(--radius-pill); white-space: nowrap; border: 1px solid transparent; }
+.chip-verde { color: var(--ok); background: var(--ok-bg); border-color: var(--ok); }
+.chip-amarillo { color: var(--warn); background: var(--warn-bg); border-color: var(--warn); }
+.chip-rojo { color: var(--risk); background: var(--risk-bg); border-color: var(--risk); }
 
 /* Temas puntuales de materias previas que conviene repasar para esta materia. */
-.contenidos { margin-top: 6px; padding: 6px 8px; background: #fbf7ec; border-radius: 6px; border-left: 3px solid var(--amarillo); }
-.contenidos-titulo { font-size: 12px; font-weight: 600; color: var(--suave); text-transform: uppercase; letter-spacing: 0.02em; margin-bottom: 3px; }
+.contenidos { margin-top: 6px; padding: 6px var(--space-2); background: var(--warn-bg); border-radius: var(--radius-sm); border-left: 3px solid var(--warn); }
+.contenidos-titulo { font-size: var(--fs-xs); font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.02em; margin-bottom: 3px; }
 .contenidos ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
-.contenidos li { font-size: 13px; line-height: 1.35; }
+.contenidos li { font-size: var(--fs-sm); line-height: 1.35; }
 .contenidos-previa { font-weight: 600; }
 .contenidos-previa::after { content: ': '; font-weight: 400; }
-.contenidos-temas { color: var(--suave); }
+.contenidos-temas { color: var(--text-muted); }

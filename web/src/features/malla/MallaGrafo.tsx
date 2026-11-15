@@ -77,6 +77,7 @@ export function MallaGrafo(props: Props) {
   return (
     <div className="malla">
       <ReactFlow
+        colorMode="dark"
         nodes={nodes}
         edges={edges}
         onNodeClick={(_, n) => onSeleccionar(n.id)}

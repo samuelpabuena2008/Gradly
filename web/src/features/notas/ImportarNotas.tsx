@@ -10,6 +10,7 @@ import {
   parsearTextoCertificado,
 } from '../../lib/import/certificado'
 import { notasVigentes } from '../../lib/model/predict'
+import './notas.css'
 import plantilla from '../../../../data/plantilla_notas.csv?raw'
 
 interface Props {

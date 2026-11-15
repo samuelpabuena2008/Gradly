@@ -1,0 +1,12 @@
+/* "¿Qué pasaría si...?": lista compacta de notas cargadas que se pueden simular. */
+
+.simulador { margin-top: 10px; border-top: 1px solid var(--line); padding-top: 10px; }
+.simulador-titulo { font-size: var(--fs-md); }
+.simulador .ayuda { margin-top: 0; }
+.simulador-lista { list-style: none; margin: 0; padding: 0; max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+.simulador-fila { display: grid; grid-template-columns: minmax(0, 1fr) 56px 24px; grid-template-areas: 'materia materia materia' 'rango nota quitar'; gap: 4px 6px; align-items: center; font-size: var(--fs-sm); }
+.simulador-materia { grid-area: materia; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.simulador-fila input[type='range'] { grid-area: rango; width: 100%; margin: 0; }
+.simulador-nota { grid-area: nota; width: 100%; font-size: var(--fs-sm); text-align: right; font-variant-numeric: tabular-nums; }
+.simulador-quitar { grid-area: quitar; padding: 0; width: 24px; height: 24px; line-height: 1; color: var(--text-muted); }
+.simulador-quitar:hover:not(:disabled) { color: var(--risk); border-color: var(--risk); }
