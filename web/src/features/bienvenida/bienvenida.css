@@ -1,0 +1,34 @@
+/* Bienvenida (sobre la malla en gris) y recorrido guiado. */
+
+.malla-con-bienvenida { position: relative; height: 100%; }
+.malla-con-bienvenida > .malla-fondo { height: 100%; }
+.malla-fondo-atenuado { filter: saturate(0.35) brightness(0.8); pointer-events: none; }
+
+.bienvenida { position: absolute; inset: 0; z-index: 30; display: grid; place-items: center; padding: var(--space-4); overflow: auto; background: radial-gradient(ellipse at center, rgb(13 11 20 / 0.35), rgb(13 11 20 / 0.8)); animation: bienvenida-entra var(--dur-slow) var(--ease) both; }
+.bienvenida-tarjeta { display: flex; flex-direction: column; align-items: center; gap: var(--space-3); width: min(720px, 100%); margin: auto; padding: var(--space-8); text-align: center; background: var(--bg-vidrio); backdrop-filter: blur(10px); border: 1px solid var(--line-strong); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg), 0 0 64px rgb(139 92 246 / 0.12); }
+.bienvenida-titulo { margin: 0; font-size: var(--fs-2xl); line-height: 1.2; }
+.bienvenida-lema { max-width: 52ch; margin: 0 0 var(--space-2); color: var(--text-muted); }
+.bienvenida .zona-importar { width: 100%; align-items: center; }
+.bienvenida .zona-manual { align-self: center; }
+.bienvenida-privacidad { display: flex; align-items: center; gap: var(--space-2); margin: var(--space-2) 0 0; font-size: var(--fs-sm); color: var(--ok); }
+@keyframes bienvenida-entra { from { opacity: 0; transform: translateY(8px); } }
+
+/* Recorrido guiado */
+.recorrido { position: fixed; inset: 0; z-index: 160; pointer-events: none; }
+.recorrido-velo { position: absolute; inset: 0; background: var(--bg-overlay); }
+.recorrido-foco { position: absolute; border: 2px solid var(--accent); border-radius: var(--radius-md); box-shadow: 0 0 0 9999px var(--bg-overlay), 0 0 24px var(--accent-glow); transition: all var(--dur) var(--ease); }
+.recorrido-tarjeta { position: absolute; display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-4); background: var(--bg-panel); border: 1px solid var(--accent-deep); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); pointer-events: auto; animation: recorrido-entra var(--dur) var(--ease) both; }
+.recorrido-cabecera { display: flex; align-items: center; justify-content: space-between; }
+.recorrido-paso { font-size: var(--fs-xs); color: var(--accent-soft); letter-spacing: 0.04em; text-transform: uppercase; }
+.recorrido-cerrar { min-height: 0; padding: 4px; }
+.recorrido-titulo { margin: 0; font-size: var(--fs-lg); }
+.recorrido-texto { margin: 0; font-size: var(--fs-sm); line-height: 1.5; color: var(--text-muted); }
+.recorrido-recordar { display: flex; align-items: center; gap: var(--space-2); font-size: var(--fs-xs); color: var(--text-muted); cursor: pointer; }
+.recorrido-recordar input { accent-color: var(--accent); }
+.recorrido-acciones { display: flex; align-items: center; justify-content: space-between; margin-top: var(--space-1); }
+.recorrido-nav { display: flex; gap: var(--space-2); }
+@keyframes recorrido-entra { from { opacity: 0; transform: translateY(6px); } }
+
+@media (max-width: 560px) {
+  .bienvenida-tarjeta { padding: var(--space-4); }
+}

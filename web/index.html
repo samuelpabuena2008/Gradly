@@ -2,11 +2,50 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#12101b" />
+    <meta name="description" content="Gradly: mira cómo te puede ir en las materias que vienen. Tus notas se procesan en tu navegador y no salen de tu computador." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>Gradly</title>
+    <!-- CSS crítico: el primer pintado ya es oscuro (sin flash blanco) y muestra el splash antes de que cargue React. -->
+    <style>
+      html, body { margin: 0; height: 100%; background: #0d0b14; color-scheme: dark; }
+      body { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; color: #e9e6f5; }
+      #splash-inicial {
+        position: fixed; inset: 0; display: grid; place-items: center;
+        background: radial-gradient(ellipse 60% 50% at 50% 42%, rgb(109 40 217 / 0.18), transparent 70%), #0d0b14;
+      }
+      #splash-inicial .centro { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+      #splash-inicial .espacio-logo { width: 96px; height: 96px; }
+      #splash-inicial .marca { margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+      #splash-inicial .barra { width: 200px; height: 2px; margin-top: 8px; background: #2b2644; border-radius: 999px; }
+      #splash-inicial .etapa { margin: 0; min-height: 20px; font-size: 13px; color: #a39dc0; }
+      noscript .aviso { max-width: 420px; padding: 24px; text-align: center; line-height: 1.5; color: #a39dc0; }
+      noscript .aviso strong { display: block; margin-bottom: 8px; font-size: 20px; color: #e9e6f5; }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Splash en HTML puro: React lo reemplaza apenas pinta el suyo (misma geometría). -->
+      <div id="splash-inicial" role="status">
+        <div class="centro">
+          <div class="espacio-logo" aria-hidden="true"></div>
+          <p class="marca">gradly</p>
+          <div class="barra"></div>
+          <p class="etapa">Cargando malla</p>
+        </div>
+      </div>
+    </div>
+    <noscript>
+      <div id="sin-js" style="position: fixed; inset: 0; display: grid; place-items: center; background: #0d0b14">
+        <div class="aviso">
+          <strong>Gradly necesita JavaScript</strong>
+          Para mostrarte tu malla y tus predicciones, activa JavaScript en tu navegador y recarga la página.
+          Tus notas se procesan en tu navegador y nunca salen de tu computador.
+        </div>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

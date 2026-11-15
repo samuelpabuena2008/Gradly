@@ -1,0 +1,37 @@
+/* Barra de rango 0–5 y anillo de probabilidad. El color del semáforo entra por --c-sem. */
+
+.rango { --c-sem: var(--accent-soft); width: 100%; }
+.rango-verde, .anillo-verde { --c-sem: var(--ok); }
+.rango-amarillo, .anillo-amarillo { --c-sem: var(--warn); }
+.rango-rojo, .anillo-rojo { --c-sem: var(--risk); }
+
+.rango-escala { position: relative; height: 20px; }
+.rango-compacto .rango-escala { height: 14px; }
+.rango-pista, .rango-banda { position: absolute; top: 50%; height: 6px; transform: translateY(-50%); border-radius: var(--radius-pill); }
+.rango-pista { left: 0; right: 0; background: var(--bg-hover); }
+.rango-banda { left: var(--rango-ini); width: var(--rango-ancho); min-width: 4px; background: color-mix(in srgb, var(--c-sem) 45%, transparent); border: 1px solid var(--c-sem); }
+/* Línea de aprobación: discontinua y más alta que la pista */
+.rango-apro { position: absolute; left: var(--rango-apro); top: 1px; bottom: 1px; width: 0; border-left: 2px dashed var(--text-muted); }
+.rango-marca { position: absolute; left: var(--rango-nota); top: 50%; width: 12px; height: 12px; transform: translate(-50%, -50%) rotate(45deg); background: var(--c-sem); border: 2px solid var(--bg-panel); border-radius: 2px; box-shadow: 0 0 8px color-mix(in srgb, var(--c-sem) 60%, transparent); }
+.rango-compacto .rango-marca { width: 10px; height: 10px; }
+
+.rango-ticks { position: relative; height: 14px; margin-top: 2px; font-size: 10px; color: var(--text-muted); }
+.rango-ticks span { position: absolute; transform: translateX(-50%); }
+.rango-ticks span:first-child { transform: none; }
+.rango-ticks span:last-child { transform: translateX(-100%); }
+.rango-vacio { font-size: var(--fs-sm); color: var(--text-muted); }
+
+/* Anillo de probabilidad de no aprobar */
+.anillo { --c-sem: var(--accent-soft); position: relative; display: inline-grid; place-items: center; flex-shrink: 0; }
+.anillo svg { display: block; transform: rotate(-90deg); }
+.anillo-pista { fill: none; stroke: var(--bg-hover); }
+.anillo-arco { fill: none; stroke: var(--c-sem); stroke-linecap: round; transition: stroke-dashoffset var(--dur-slow) var(--ease); }
+.anillo-texto { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; line-height: 1.1; }
+.anillo-valor { font-size: var(--fs-lg); font-weight: 600; color: var(--c-sem); }
+.anillo-pie { font-size: 10px; color: var(--text-muted); }
+
+@media (forced-colors: active) {
+  .rango-banda { border-color: Highlight; }
+  .rango-marca { background: Highlight; }
+  .anillo-arco { stroke: Highlight; }
+}

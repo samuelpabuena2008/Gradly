@@ -1,0 +1,54 @@
+/* Vista Notas: importar, tabla de notas y formulario manual. */
+
+.notas { display: flex; flex-direction: column; gap: var(--space-6); max-width: 860px; margin: 0 auto; padding: var(--space-6); }
+.notas-titulo { margin: 0 0 var(--space-1); font-size: var(--fs-xl); }
+.notas-subtitulo { margin: 0 0 var(--space-3); font-size: var(--fs-md); font-weight: 600; }
+.notas-privacidad { display: flex; align-items: center; gap: var(--space-2); margin: 0; font-size: var(--fs-sm); color: var(--ok); }
+.notas-bloque { display: flex; flex-direction: column; gap: var(--space-2); }
+.notas-vacio { padding: var(--space-4); text-align: center; border: 1px dashed var(--line-strong); border-radius: var(--radius-lg); }
+.notas-acciones { margin: 0; }
+.notas-resumen { padding: var(--space-3) var(--space-4); background: var(--ok-bg); border: 1px solid var(--ok); border-radius: var(--radius-md); font-size: var(--fs-sm); }
+
+/* Zona de importación */
+.zona-importar { display: flex; flex-direction: column; gap: var(--space-3); }
+.zona-opciones { display: grid; gap: var(--space-3); width: 100%; margin: 0; padding: 0; list-style: none; }
+.zona-grande .zona-opciones { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 560px) { .zona-grande .zona-opciones { grid-template-columns: minmax(0, 1fr); } }
+.zona-compacta { flex-direction: row; flex-wrap: wrap; align-items: center; }
+.zona-compacta .zona-opciones { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.zona-opcion { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-1); width: 100%; height: 100%; padding: var(--space-3) var(--space-4); text-align: left; color: var(--text); background: var(--bg-panel); border: 1px solid var(--line-strong); border-radius: var(--radius-lg); cursor: pointer; transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease); }
+.zona-opcion svg { color: var(--accent-soft); }
+.zona-opcion:hover { background: var(--bg-raised); border-color: var(--accent-deep); }
+.zona-opcion:active { transform: translateY(1px); }
+.zona-opcion-principal { border-color: var(--accent-deep); background: var(--accent-bg); }
+.zona-opcion-titulo { font-size: var(--fs-md); font-weight: 600; }
+.zona-opcion-texto { font-size: var(--fs-sm); color: var(--text-muted); }
+.zona-compacta .zona-opcion { flex-direction: row; align-items: center; gap: var(--space-2); width: auto; min-height: 34px; padding: 4px var(--space-3); border-radius: var(--radius-md); }
+.zona-compacta .zona-opcion-titulo { font-size: var(--fs-sm); font-weight: 500; }
+.zona-manual { align-self: flex-start; }
+
+/* Tabla de notas cargadas */
+.tabla-notas-caja { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius-lg); }
+.tabla-notas { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+.tabla-notas th { padding: var(--space-2) var(--space-3); text-align: left; font-weight: 500; color: var(--text-muted); background: var(--bg-panel); border-bottom: 1px solid var(--line-strong); }
+.tabla-notas td { padding: 4px var(--space-3); border-bottom: 1px solid var(--line); }
+.tabla-notas tbody tr:last-child td { border-bottom: none; }
+.tabla-notas tbody tr:hover { background: var(--bg-panel); }
+.tabla-nota { width: 64px; text-align: right; }
+.tabla-etiqueta { margin-left: var(--space-2); padding: 0 6px; font-size: 10px; color: var(--text-muted); border: 1px solid var(--line-strong); border-radius: var(--radius-pill); }
+.tabla-etiqueta-cuenta { color: var(--accent-soft); background: var(--accent-bg); border-color: transparent; }
+
+/* Formulario manual */
+.manual-campos { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-3); }
+.manual-campo { display: flex; flex-direction: column; gap: var(--space-1); font-size: var(--fs-sm); color: var(--text-muted); }
+.manual-campo input { width: 92px; }
+.manual-materia { flex: 1 1 240px; }
+.manual-materia select { width: 100%; }
+.manual-agregar { align-self: flex-end; }
+.manual-mensajes { min-height: 20px; }
+.manual-error { margin: 2px 0 0; font-size: var(--fs-sm); color: var(--risk); }
+input[aria-invalid='true'] { border-color: var(--risk); }
+
+@media (max-width: 899px) {
+  .notas { padding: var(--space-4); }
+}

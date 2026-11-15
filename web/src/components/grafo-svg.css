@@ -1,0 +1,28 @@
+.grafo-svg { display: block; width: 100%; height: auto; overflow: visible; }
+.grafo-svg-flecha { fill: var(--line-strong); }
+.grafo-svg-arista { fill: none; stroke: var(--line-strong); stroke-width: 1.25; transition: stroke var(--dur) var(--ease), opacity var(--dur) var(--ease); }
+.grafo-svg-arista-res { stroke: var(--accent-soft); stroke-width: 1.75; }
+.grafo-svg-arista-aten { opacity: 0.25; }
+.grafo-svg-columna { font-size: 10px; fill: var(--text-muted); letter-spacing: 0.02em; }
+
+.grafo-svg-nodo { transition: opacity var(--dur) var(--ease); }
+.grafo-svg-circulo { fill: var(--bg-raised); stroke: var(--line-strong); stroke-width: 1.5; transition: fill var(--dur) var(--ease), stroke var(--dur) var(--ease); }
+.grafo-svg-interior { font-family: var(--font-mono); font-size: 9px; fill: var(--text); pointer-events: none; }
+.grafo-svg-etiqueta { font-size: 11px; fill: var(--text-muted); pointer-events: none; }
+.grafo-svg-clicable { cursor: pointer; }
+.grafo-svg-clicable:hover .grafo-svg-circulo { stroke: var(--accent-soft); }
+.grafo-svg-nodo:focus-visible { outline: none; }
+.grafo-svg-nodo:focus-visible .grafo-svg-circulo { stroke: var(--text); stroke-width: 2.5; }
+
+.grafo-svg-actual .grafo-svg-circulo { fill: var(--accent-deep); stroke: var(--accent-soft); stroke-width: 2.5; filter: drop-shadow(0 0 6px var(--accent-glow)); }
+.grafo-svg-actual .grafo-svg-etiqueta { fill: var(--text); font-weight: 600; }
+.grafo-svg-resaltado .grafo-svg-circulo { fill: var(--accent-bg); stroke: var(--accent-soft); stroke-width: 2; }
+.grafo-svg-resaltado .grafo-svg-etiqueta { fill: var(--text); }
+.grafo-svg-hecho .grafo-svg-circulo { fill: var(--accent-deep); stroke: var(--accent-soft); }
+.grafo-svg-cola .grafo-svg-circulo { fill: var(--bg-panel); stroke: var(--warn); stroke-width: 2.25; stroke-dasharray: 3 2.5; }
+.grafo-svg-atenuado { opacity: 0.3; }
+
+@media (forced-colors: active) {
+  .grafo-svg-circulo { stroke: CanvasText; }
+  .grafo-svg-actual .grafo-svg-circulo { fill: Highlight; }
+}

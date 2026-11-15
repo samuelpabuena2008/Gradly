@@ -1,0 +1,63 @@
+/* Logo animado: los trazos se dibujan, los nodos aparecen en cascada y el centro pulsa una vez. */
+
+.logo { display: block; flex-shrink: 0; overflow: visible; }
+
+.logo-animado .g-arco,
+.logo-animado .g-barra,
+.logo-animado .g-flecha {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: logo-trazo 720ms var(--ease) 120ms forwards;
+}
+.logo-animado .g-barra { animation-delay: 620ms; animation-duration: 320ms; }
+.logo-animado .g-flecha { animation-delay: 880ms; animation-duration: 200ms; }
+
+.logo-animado .g-nodo {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: logo-nodo 320ms var(--ease) calc(160ms + var(--i) * 110ms) forwards;
+}
+
+.logo-animado .g-halo {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(0);
+  animation: logo-halo-escala 600ms var(--ease) 1000ms forwards;
+}
+.logo-animado .g-centro {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: logo-centro 640ms var(--ease) 1000ms forwards;
+}
+.logo-animado .g-texto { opacity: 0; animation: logo-halo 500ms var(--ease) 1100ms forwards; }
+
+@keyframes logo-trazo { to { stroke-dashoffset: 0; } }
+@keyframes logo-nodo {
+  from { opacity: 0; transform: scale(0.2); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes logo-halo { to { opacity: 1; } }
+@keyframes logo-halo-escala { to { transform: scale(1); } }
+@keyframes logo-centro {
+  0% { opacity: 0; transform: scale(0.4); }
+  55% { opacity: 1; transform: scale(1.22); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-animado .g-halo { animation: none; transform: none; }
+  .logo-animado .g-arco,
+  .logo-animado .g-barra,
+  .logo-animado .g-flecha,
+  .logo-animado .g-nodo,
+  .logo-animado .g-centro,
+  .logo-animado .g-texto {
+    animation: none;
+    opacity: 1;
+    stroke-dashoffset: 0;
+    transform: none;
+  }
+}

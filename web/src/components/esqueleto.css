@@ -1,0 +1,9 @@
+.esqueleto { display: flex; flex-direction: column; gap: var(--space-3); max-width: 720px; margin: 0 auto; padding: var(--space-8) var(--space-6); }
+.esqueleto-barra { display: block; background: linear-gradient(90deg, var(--bg-raised) 25%, var(--bg-hover) 50%, var(--bg-raised) 75%); background-size: 200% 100%; border-radius: var(--radius-md); animation: esqueleto-brilla 1.4s linear infinite; }
+.esqueleto-titulo { height: 28px; width: 55%; }
+.esqueleto-linea { height: 14px; }
+.esqueleto-corta { width: 70%; }
+.esqueleto-rejilla { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); margin-top: var(--space-3); }
+.esqueleto-bloque { height: 96px; }
+@keyframes esqueleto-brilla { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .esqueleto-barra { animation: none; } }

@@ -1,0 +1,96 @@
+/* Vista Modelo: fórmula, ejemplo en cascada y métricas. */
+
+.modelo { display: flex; flex-direction: column; gap: var(--space-6); max-width: 820px; margin: 0 auto; padding: var(--space-6); }
+.modelo-titulo { margin: 0 0 2px; font-size: var(--fs-2xl); }
+.modelo-seccion h2 { display: flex; align-items: center; gap: var(--space-2); margin: 0 0 var(--space-3); font-size: var(--fs-xl); }
+.modelo-seccion h3 { margin: var(--space-6) 0 var(--space-2); font-size: var(--fs-md); }
+
+.modelo-aviso { display: flex; gap: var(--space-3); padding: var(--space-4); background: var(--warn-bg); border: 1px solid var(--warn); border-radius: var(--radius-lg); }
+.modelo-aviso svg { flex-shrink: 0; margin-top: 2px; color: var(--warn); }
+.modelo-aviso p { margin: var(--space-1) 0 0; font-size: var(--fs-sm); color: var(--text-muted); }
+.modelo-aviso strong { color: var(--text); }
+.modelo-info { display: inline-grid; place-items: center; width: 24px; height: 24px; padding: 0; color: var(--text-muted); background: none; border: none; border-radius: var(--radius-pill); cursor: help; }
+.modelo-info:hover { color: var(--text); background: var(--bg-hover); }
+
+/* Fórmula */
+.modelo-formula { padding: var(--space-4); overflow-x: auto; font-size: 26px; text-align: center; background: var(--bg-panel); border: 1px solid var(--line); border-radius: var(--radius-lg); }
+@media (max-width: 899px) { .modelo-formula { padding: var(--space-3); font-size: 19px; } }
+.modelo-formula math { font-family: 'Cambria Math', 'STIX Two Math', var(--font-ui), serif; }
+.modelo-terminos { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-3); margin: var(--space-4) 0 0; }
+.modelo-terminos > div { padding: var(--space-3); background: var(--bg-panel); border: 1px solid var(--line); border-radius: var(--radius-md); }
+.modelo-terminos dt { font-weight: 600; font-size: var(--fs-sm); }
+.modelo-terminos dt .mono { color: var(--accent-soft); margin-right: var(--space-1); }
+.modelo-terminos dd { margin: var(--space-1) 0 0; font-size: var(--fs-sm); color: var(--text-muted); }
+
+/* Ejemplo en cascada: cada término entra uno tras otro */
+.modelo-ejemplo-cabecera { display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-3); font-size: var(--fs-sm); color: var(--text-muted); }
+.modelo-cascada { display: flex; flex-direction: column; gap: var(--space-2); margin: 0; padding: var(--space-4); list-style: none; background: var(--bg-panel); border: 1px solid var(--line); border-radius: var(--radius-lg); }
+.modelo-cascada li { display: grid; grid-template-columns: minmax(210px, 1.6fr) minmax(80px, 2fr) 64px 56px; align-items: center; gap: var(--space-3); font-size: var(--fs-sm); animation: cascada-entra var(--dur-slow) var(--ease) both; animation-delay: calc(var(--i) * 140ms); }
+.modelo-cascada-nombre .mono { color: var(--accent-soft); margin-right: var(--space-1); }
+.modelo-cascada-pista { height: 8px; background: var(--bg-raised); border-radius: var(--radius-pill); overflow: hidden; }
+.modelo-cascada-barra { display: block; height: 100%; background: var(--accent-deep); border-radius: var(--radius-pill); }
+.modelo-cascada-barra-final { background: var(--accent-soft); }
+.modelo-cascada-valor { text-align: right; color: var(--text-muted); }
+.modelo-cascada-total { text-align: right; font-weight: 600; }
+.modelo-cascada-final { margin-top: var(--space-1); padding-top: var(--space-2); border-top: 1px solid var(--line-strong); }
+@keyframes cascada-entra { from { opacity: 0; transform: translateX(-8px); } }
+.modelo-sin-ejemplo { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); }
+
+/* MAE */
+.modelo-mae { display: flex; flex-direction: column; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }
+.modelo-mae li { display: grid; grid-template-columns: minmax(150px, 1.2fr) minmax(80px, 2fr) 56px; align-items: center; gap: var(--space-3); font-size: var(--fs-sm); }
+.modelo-mae-pista { height: 10px; background: var(--bg-raised); border-radius: var(--radius-pill); overflow: hidden; }
+.modelo-mae-barra { display: block; height: 100%; border-radius: var(--radius-pill); }
+.modelo-mae-base { background: var(--line-strong); }
+.modelo-mae-regresion { background: var(--accent); }
+.modelo-mae-red { background: var(--accent-soft); }
+
+/* Intervalos */
+.modelo-intervalos { display: block; width: 100%; max-width: 560px; height: auto; }
+.modelo-eje-cero { stroke: var(--text-muted); stroke-dasharray: 3 3; }
+.modelo-bigote { stroke: var(--text-muted); stroke-width: 1.75; }
+.modelo-punto-mejora { fill: var(--ok); }
+.modelo-punto-peor { fill: var(--warn); }
+.modelo-svg-texto { font-size: 12px; fill: var(--text); }
+.modelo-svg-tenue { fill: var(--text-muted); font-size: 11px; }
+.modelo-lecturas { display: flex; flex-direction: column; gap: var(--space-1); margin: var(--space-2) 0 0; padding-left: 18px; font-size: var(--fs-sm); color: var(--text-muted); }
+
+/* Calibración del semáforo */
+.modelo-segmentado { margin-bottom: var(--space-3); }
+.modelo-segmentado .segmento { border: none; background: transparent; font: inherit; }
+.modelo-segmentado .segmento-activo { background: var(--accent-deep); }
+.modelo-calibracion { display: flex; flex-direction: column; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
+.modelo-cal-fila { display: grid; grid-template-columns: 150px minmax(120px, 1fr) 48px 120px; align-items: center; gap: var(--space-3); font-size: var(--fs-sm); }
+.modelo-cal-nombre { font-weight: 500; }
+.modelo-cal-verde { color: var(--ok); }
+.modelo-cal-amarillo { color: var(--warn); }
+.modelo-cal-rojo { color: var(--risk); }
+.modelo-cal-pista { position: relative; height: 14px; background: var(--bg-raised); border-radius: var(--radius-sm); overflow: hidden; }
+.modelo-cal-esperado { position: absolute; top: 0; bottom: 0; background: var(--bg-hover); border-left: 1px solid var(--line-strong); border-right: 1px solid var(--line-strong); }
+.modelo-cal-barra { position: absolute; left: 0; top: 4px; height: 6px; border-radius: var(--radius-pill); }
+.modelo-cal-barra-verde { background: var(--ok); }
+.modelo-cal-barra-amarillo { background: var(--warn); }
+.modelo-cal-barra-rojo { background: var(--risk); }
+.modelo-cal-valor { text-align: right; font-weight: 600; }
+.modelo-cal-n { color: var(--text-muted); font-size: var(--fs-xs); }
+
+/* Tabla */
+.modelo-tabla-caja { overflow-x: auto; }
+.modelo-tabla { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+.modelo-tabla th, .modelo-tabla td { padding: var(--space-2) var(--space-3); text-align: left; border-bottom: 1px solid var(--line); }
+.modelo-tabla thead th { color: var(--text-muted); font-weight: 500; border-bottom-color: var(--line-strong); }
+.modelo-tabla tbody th { font-weight: 400; }
+.modelo-tabla td { text-align: right; }
+.modelo-tabla thead th:not(:first-child) { text-align: right; }
+.modelo-pie { padding-top: var(--space-2); border-top: 1px solid var(--line); }
+
+@media (max-width: 899px) {
+  .modelo { padding: var(--space-4); }
+  .modelo-cascada li { grid-template-columns: 1fr 56px 56px; }
+  .modelo-cascada-pista { grid-column: 1 / -1; grid-row: 2; }
+  .modelo-mae li { grid-template-columns: 1fr 56px; }
+  .modelo-mae-pista { grid-column: 1 / -1; grid-row: 2; }
+  .modelo-cal-fila { grid-template-columns: 1fr 48px; }
+  .modelo-cal-pista { grid-column: 1 / -1; grid-row: 2; }
+  .modelo-cal-n { grid-column: 1 / -1; grid-row: 3; }
+}
