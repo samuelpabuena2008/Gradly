@@ -17,6 +17,10 @@
   Carga tus notas y mira cómo te puede ir en las materias que vienen y en cuáles enfocarte.
 </p>
 
+<p align="center">
+  <a href="https://gradly-delta.vercel.app"><strong>Probar Gradly en línea →</strong></a>
+</p>
+
 - **La malla como grafo.** 50 materias y sus prerrequisitos de Ingeniería de Sistemas, en un grafo dirigido acíclico.
 - **Predicción por materia.** Nota esperada, rango y semáforo de riesgo, con las materias previas que más pesan.
 - **Qué repasar.** Prioriza por centralidad en el grafo y señala los temas puntuales a reforzar.
@@ -107,6 +111,18 @@ Validación cruzada por estudiante con 300 estudiantes simulados sobre la malla 
 ### Pruebas
 
 Cada parte tiene casos con resultado conocido: un grafo resuelto a mano, una predicción calculada a mano que Python y TypeScript deben reproducir, la recuperación de pesos simulados y la retropropagación contra la derivada numérica. La web suma pruebas de punta a punta y de accesibilidad con Playwright (`npm run test:e2e`).
+
+### Despliegue
+
+La web está publicada en Vercel: [gradly-delta.vercel.app](https://gradly-delta.vercel.app). Es un sitio estático; la predicción corre en el navegador y no necesita la API.
+
+[`vercel.json`](vercel.json) construye desde `web/` y publica `web/dist`. Se despliega desde la raíz del repo porque la web importa la malla y los pesos de `data/`; [`.vercelignore`](.vercelignore) deja por fuera `api/`, `model/` y `docs/`.
+
+```bash
+npx vercel deploy --prod
+```
+
+La API (opcional) se despliega aparte con [`api/Dockerfile`](api/Dockerfile) y Postgres; ver [`api/README.md`](api/README.md).
 
 ### Equipo
 
