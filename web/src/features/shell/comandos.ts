@@ -6,7 +6,9 @@ import {
   BrainCircuit,
   CircleHelp,
   Download,
+  ClipboardPaste,
   Expand,
+  Footprints,
   FilePenLine,
   ImageDown,
   Route,
@@ -23,6 +25,7 @@ import type { Datos } from '../../lib/ui/arranque'
 import type { Vista } from '../../lib/ui/ruta'
 import { useApp } from '../../store/app'
 import { useGrafo, type SolicitudGrafo } from '../../store/grafo'
+import { useImportacion } from '../../store/importacion'
 import {
   abrirMateria,
   alternarModelo,
@@ -91,6 +94,23 @@ export function construirComandos(datos: Datos, tipoModelo: 'regresion' | 'red')
       icono: Upload,
       palabras: 'subir certificado csv pdf cargar',
       ejecutar: () => irA({ tipo: 'vista', vista: 'notas' }),
+    },
+    {
+      id: 'accion:pegar',
+      titulo: 'Pegar texto con mis notas',
+      grupo: 'Acciones',
+      detalle: 'Texto del certificado o tabla CSV',
+      icono: ClipboardPaste,
+      palabras: 'pegar texto copiar certificado csv',
+      ejecutar: () => useImportacion.getState().abrirPegar(true),
+    },
+    {
+      id: 'accion:recorrido',
+      titulo: 'Ver el recorrido guiado',
+      grupo: 'Acciones',
+      icono: Footprints,
+      palabras: 'tour ayuda tutorial bienvenida',
+      ejecutar: () => useApp.getState().abrirRecorrido(true),
     },
     {
       id: 'accion:ejemplo',

@@ -98,7 +98,7 @@ export function PaginaMateria({ id }: { id: string }) {
         tipoModelo={escenario.tipoModelo}
         faltantes={faltantes}
         nombreDe={nombreDe}
-        hipotetica={false}
+        hipotetica={escenario.hipoteticas.has(id)}
       />
       <BloquePorQue p={p} nombreDe={nombreDe} />
       <BloqueTemas p={p} malla={malla} nombreDe={nombreDe} />

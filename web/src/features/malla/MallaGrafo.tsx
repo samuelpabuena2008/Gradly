@@ -268,12 +268,13 @@ function Lienzo() {
         enfocada: hover === id,
         enCadena: prefs.cadena && enCadena.has(id),
         cuello: prefs.cuellos && cuellos.has(id),
+        hipotetica: escenario.hipoteticas.has(id),
         colorSemestre: prefs.colorearPor === 'semestre' ? materia.semestre : null,
         retraso: encendiendo ? (materia.semestre - 1) * 30 : null,
       })
     }
     return m
-  }, [malla, estados, radios, seleccionada, foco, hover, prefs.cadena, enCadena, prefs.cuellos, cuellos, prefs.colorearPor, encendiendo])
+  }, [malla, estados, radios, seleccionada, foco, hover, prefs.cadena, enCadena, prefs.cuellos, cuellos, prefs.colorearPor, encendiendo, escenario.hipoteticas])
 
   const nodos = useMemo<NodoMateriaTipo[]>(
     () =>

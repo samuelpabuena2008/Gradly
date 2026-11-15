@@ -22,3 +22,9 @@ export function fmtDelta(d: number | null | undefined, decimales = 1): string {
 
 /** «1 nota», «31 notas». */
 export const plural = (n: number, uno: string, varios: string): string => `${n} ${n === 1 ? uno : varios}`
+
+/** Nota con un decimal, o dos si hace falta (3 → «3.0», 3.75 → «3.75»). */
+export function fmtNotaCorta(n: number | null | undefined): string {
+  if (typeof n !== 'number' || !Number.isFinite(n)) return VACIO
+  return Math.abs(n * 10 - Math.round(n * 10)) < 1e-9 ? n.toFixed(1) : n.toFixed(2)
+}

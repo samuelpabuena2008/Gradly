@@ -2,14 +2,22 @@
 // verdad) de sus hipótesis del simulador (`ajustes`). Las notas efectivas son derivadas, ver escenario.tsx.
 //
 // Privacidad: solo las preferencias de interfaz (paneles, anchos) se guardan en localStorage.
-// Las notas viven únicamente en memoria hasta que el usuario active la persistencia (Fase 5).
+// Las notas viven únicamente en memoria hasta que el usuario active la persistencia (opt-in, Ajustes).
 
 import { create } from 'zustand'
 import type { Nota } from '../types'
 import type { TipoModelo } from '../lib/model/predict'
 import type { Ajustes } from '../lib/ui/escenario'
 import { guardarJson, leerJson } from '../lib/ui/almacenamiento'
+import { agregarNota as agregarANotas, fusionarNotas, claveNota, type ResultadoAgregar } from '../lib/ui/notas'
 import { abrirPestana, cerrarPestana, moverPestana } from '../lib/ui/pestanas'
+import {
+  borrarNotasGuardadas,
+  fijarPersistencia,
+  guardarNotas,
+  leerNotasGuardadas,
+  persistenciaActiva,
+} from '../lib/ui/persistencia'
 
 export type TabInspector = 'detalle' | 'simulador' | 'analisis'
 
@@ -71,8 +79,19 @@ interface Estado extends Prefs {
   pestanas: string[]
   paletaAbierta: boolean
   atajosAbiertos: boolean
+  /** Opt-in: recordar las notas en este navegador. Apagado por defecto. */
+  persistirNotas: boolean
+  /** El recorrido guiado se está mostrando. */
+  recorridoAbierto: boolean
+  /** El usuario prefirió explorar la malla antes de cargar notas (solo esta sesión). */
+  bienvenidaDescartada: boolean
 
   reemplazarNotas: (notas: Nota[]) => void
+  /** Suma notas a las existentes (el mismo intento de la misma materia y periodo lo reemplaza el nuevo). */
+  combinarNotas: (notas: Nota[]) => void
+  agregarNota: (nota: Nota) => ResultadoAgregar
+  quitarNota: (materia: string, periodo: string) => void
+  editarNota: (materia: string, periodo: string, valor: number) => void
   borrarNotas: () => void
   fijarAjuste: (materia: string, nota: number) => void
   quitarAjuste: (materia: string) => void
@@ -89,20 +108,43 @@ interface Estado extends Prefs {
   elegirTabInspector: (tab: TabInspector) => void
   abrirPaleta: (abierta?: boolean) => void
   abrirAtajos: (abiertos?: boolean) => void
+  fijarPersistirNotas: (activa: boolean) => void
+  abrirRecorrido: (abierto?: boolean) => void
+  descartarBienvenida: () => void
 }
 
-export const useApp = create<Estado>()((set) => ({
+export const useApp = create<Estado>()((set, get) => ({
   ...leerPrefs(),
-  notasReales: [],
+  persistirNotas: persistenciaActiva(),
+  // Con la persistencia activada (opt-in) las notas guardadas se recuperan al abrir.
+  notasReales: persistenciaActiva() ? leerNotasGuardadas() : [],
   ajustes: {},
   tipoModelo: null,
   seleccionada: null,
   pestanas: [],
   paletaAbierta: false,
   atajosAbiertos: false,
+  recorridoAbierto: false,
+  bienvenidaDescartada: false,
 
   // Cambiar las notas reales descarta el escenario hipotético: ya no corresponde a esos datos.
   reemplazarNotas: (notas) => set({ notasReales: notas, ajustes: {} }),
+  combinarNotas: (nuevas) => set((s) => ({ notasReales: fusionarNotas(s.notasReales, nuevas), ajustes: {} })),
+  agregarNota: (nota) => {
+    const r = agregarANotas(get().notasReales, nota)
+    if (r.resultado !== 'duplicada') set({ notasReales: r.notas, ajustes: {} })
+    return r.resultado
+  },
+  quitarNota: (materia, periodo) =>
+    set((s) => {
+      const clave = claveNota({ materia, periodo })
+      return { notasReales: s.notasReales.filter((n) => claveNota(n) !== clave), ajustes: {} }
+    }),
+  editarNota: (materia, periodo, valor) =>
+    set((s) => ({
+      notasReales: s.notasReales.map((n) => (n.materia === materia && n.periodo === periodo ? { ...n, nota: valor } : n)),
+      ajustes: {},
+    })),
   borrarNotas: () => set({ notasReales: [], ajustes: {}, seleccionada: null }),
   fijarAjuste: (materia, nota) => set((s) => ({ ajustes: { ...s.ajustes, [materia]: nota } })),
   quitarAjuste: (materia) =>
@@ -123,6 +165,9 @@ export const useApp = create<Estado>()((set) => ({
   elegirTabInspector: (tabInspector) => set({ tabInspector }),
   abrirPaleta: (abierta) => set((s) => ({ paletaAbierta: abierta ?? !s.paletaAbierta })),
   abrirAtajos: (abiertos) => set((s) => ({ atajosAbiertos: abiertos ?? !s.atajosAbiertos })),
+  fijarPersistirNotas: (persistirNotas) => set({ persistirNotas }),
+  abrirRecorrido: (abierto) => set((s) => ({ recorridoAbierto: abierto ?? !s.recorridoAbierto })),
+  descartarBienvenida: () => set({ bienvenidaDescartada: true }),
 }))
 
 // Persistencia de preferencias de interfaz (nunca de notas).
@@ -139,4 +184,17 @@ useApp.subscribe((s) => {
   if (serializado === anterior) return
   anterior = serializado
   guardarJson(CLAVE_PREFS, prefs)
+})
+
+// Persistencia OPCIONAL de las notas: solo mientras el usuario la mantenga activada en Ajustes.
+useApp.subscribe((s, anterior) => {
+  if (s.persistirNotas !== anterior.persistirNotas) {
+    fijarPersistencia(s.persistirNotas)
+    if (s.persistirNotas) guardarNotas(s.notasReales)
+    return
+  }
+  if (s.persistirNotas && s.notasReales !== anterior.notasReales) {
+    if (s.notasReales.length === 0) borrarNotasGuardadas()
+    else guardarNotas(s.notasReales)
+  }
 })

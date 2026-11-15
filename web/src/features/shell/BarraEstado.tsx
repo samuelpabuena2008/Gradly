@@ -12,6 +12,7 @@ export function BarraEstado() {
   const datos = useDatos()
   const escenario = useEscenario()
   const abrirAtajos = useApp((s) => s.abrirAtajos)
+  const persistirNotas = useApp((s) => s.persistirNotas)
   const redDisponible = tieneRed(datos.modelo)
   const nNotas = escenario.mapaReales.size
   const textoNotas = nNotas === 1 ? '1 nota' : `${nNotas} notas`
@@ -20,7 +21,7 @@ export function BarraEstado() {
     <footer className="statusbar" aria-label="Estado">
       <span className="status-item status-privacidad">
         <Lock size={12} strokeWidth={1.75} aria-hidden="true" />
-        Tus notas no salen de este navegador
+        {persistirNotas ? 'Tus notas se guardan solo en este navegador' : 'Tus notas no salen de este navegador'}
       </span>
       <span className="status-sep" aria-hidden="true" />
       <span className="status-item num">{textoNotas}</span>

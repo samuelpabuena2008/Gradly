@@ -5,36 +5,33 @@ import { lazy, Suspense, type ReactNode } from 'react'
 import { EsqueletoVista } from '../../components/Esqueleto'
 import { MallaGrafo } from '../malla/MallaGrafo'
 import { PaginaMateria } from '../materia/PaginaMateria'
-import { ImportarNotas } from '../notas/ImportarNotas'
+import { Bienvenida } from '../bienvenida/Bienvenida'
+import { VistaNotas } from '../notas/VistaNotas'
 import { VistaPredicciones } from '../prediccion/VistaPredicciones'
 import type { Ruta } from '../../lib/ui/ruta'
 import { useApp } from '../../store/app'
-import { useDatos } from '../../store/escenario'
 
 const VistaLaboratorio = lazy(() => import('../laboratorio/VistaLaboratorio'))
 const VistaModelo = lazy(() => import('../modelo/VistaModelo'))
-
-function Desplazable({ children }: { children: ReactNode }) {
-  return (
-    <div className="vista-scroll">
-      <div className="vista-contenido">{children}</div>
-    </div>
-  )
-}
 
 /** Vistas que gestionan su propio ancho y relleno. */
 function DesplazableLibre({ children }: { children: ReactNode }) {
   return <div className="vista-scroll vista-scroll-libre">{children}</div>
 }
 
-function VistaNotas() {
-  const { malla } = useDatos()
-  const notasReales = useApp((s) => s.notasReales)
-  const reemplazarNotas = useApp((s) => s.reemplazarNotas)
+/** La malla; sin notas queda de fondo, en gris, bajo la bienvenida. */
+function VistaMalla() {
+  const sinNotas = useApp((s) => s.notasReales.length === 0)
+  const descartada = useApp((s) => s.bienvenidaDescartada)
+  const bienvenida = sinNotas && !descartada
   return (
-    <Desplazable>
-      <ImportarNotas malla={malla} notas={notasReales} onCambiar={reemplazarNotas} />
-    </Desplazable>
+    <div className="malla-con-bienvenida">
+      {/* inert: mientras se ve la bienvenida, el grafo de fondo no recibe foco ni clics. */}
+      <div className={bienvenida ? 'malla-fondo malla-fondo-atenuado' : 'malla-fondo'} inert={bienvenida}>
+        <MallaGrafo />
+      </div>
+      {bienvenida && <Bienvenida />}
+    </div>
   )
 }
 
@@ -54,9 +51,13 @@ export function ContenidoCentro({ ruta }: { ruta: Ruta }) {
   if (ruta.tipo === 'materia') return <DesplazableLibre><PaginaMateria id={ruta.id} /></DesplazableLibre>
   switch (ruta.vista) {
     case 'malla':
-      return <MallaGrafo />
+      return <VistaMalla />
     case 'notas':
-      return <VistaNotas />
+      return (
+        <DesplazableLibre>
+          <VistaNotas />
+        </DesplazableLibre>
+      )
     case 'predicciones':
       return <DesplazableLibre><VistaPredicciones /></DesplazableLibre>
     case 'laboratorio':

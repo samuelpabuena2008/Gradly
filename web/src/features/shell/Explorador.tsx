@@ -303,6 +303,7 @@ export function Explorador() {
                       const clave = `m${m.id}`
                       const valor = valorMateria(estado)
                       const esPrediccion = estado.tipo === 'disponible'
+                      const hipotetica = escenario.hipoteticas.has(m.id)
                       return (
                         <li key={m.id} role="none">
                           <div
@@ -323,10 +324,10 @@ export function Explorador() {
                               {m.nombre}
                             </span>
                             <span className="solo-lectores">
-                              {`, ${textoEstado(estado)}${valor ? `, ${esPrediccion ? 'nota esperada' : 'nota'} ${valor}` : ''}`}
+                              {`, ${textoEstado(estado)}${valor ? `, ${esPrediccion ? 'nota esperada' : 'nota'} ${valor}` : ''}${hipotetica ? ', hipotética' : ''}`}
                             </span>
                             {valor && (
-                              <span className={`exp-valor num${esPrediccion ? ' exp-valor-pred' : ''}`} aria-hidden="true">
+                              <span className={`exp-valor num${esPrediccion ? ' exp-valor-pred' : ''}${hipotetica ? ' exp-valor-hip' : ''}`} aria-hidden="true">
                                 {valor}
                               </span>
                             )}

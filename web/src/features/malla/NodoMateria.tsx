@@ -22,6 +22,8 @@ export interface DatosNodo extends Record<string, unknown> {
   enfocada: boolean
   enCadena: boolean
   cuello: boolean
+  /** La nota vigente viene de un escenario hipotético (borde discontinuo y etiqueta). */
+  hipotetica: boolean
   /** Semestre para colorear por semestre; `null` = colorear por estado. */
   colorSemestre: number | null
   /** Retraso (ms) de la animación de encendido; `null` = sin animación. */
@@ -71,7 +73,7 @@ function numeroDe(e: EstadoMateria): number | null {
 }
 
 function NodoMateriaBase({ data }: NodeProps<NodoMateriaTipo>) {
-  const { materia, estado, radio: r, seleccionada, atenuada, enfocada, enCadena, cuello, colorSemestre, retraso } = data
+  const { materia, estado, radio: r, seleccionada, atenuada, enfocada, enCadena, cuello, hipotetica, colorSemestre, retraso } = data
   const animado = useNumeroAnimado(numeroDe(estado))
   const valor = animado === null ? null : animado.toFixed(1)
   const caja = 2 * (r + MARGEN_NODO)
@@ -86,6 +88,7 @@ function NodoMateriaBase({ data }: NodeProps<NodoMateriaTipo>) {
     enfocada && 'nodo-enfocada',
     enCadena && 'nodo-en-cadena',
     cuello && 'nodo-cuello',
+    hipotetica && 'nodo-hipotetica',
     colorSemestre !== null && 'nodo-por-semestre',
     retraso !== null && 'nodo-encender',
   ]
@@ -116,6 +119,7 @@ function NodoMateriaBase({ data }: NodeProps<NodoMateriaTipo>) {
       <div className="nodo-etiqueta">
         <span className="nodo-nombre">{materia.nombre}</span>
         {valor !== null && <span className={`nodo-valor mono${esPrediccion ? ' nodo-valor-pred' : ''}`}>{esPrediccion ? `≈ ${valor}` : valor}</span>}
+        {hipotetica && <span className="nodo-tag-hip">hipotética</span>}
       </div>
       {enfocada && (
         <div className="nodo-tarjeta" role="presentation">

@@ -165,7 +165,7 @@ export function BarraPestanas({ ruta, idPanel }: { ruta: Ruta; idPanel: string }
 
       <div className="tabbar-acciones">
         <Tip texto="Paleta de comandos" atajo="Ctrl+K" side="bottom">
-          <button type="button" className="btn btn-fantasma tabbar-btn" aria-label="Paleta de comandos" onClick={() => abrirPaleta(true)}>
+          <button type="button" className="btn btn-fantasma tabbar-btn" aria-label="Paleta de comandos" data-tour="paleta" onClick={() => abrirPaleta(true)}>
             <Command size={16} strokeWidth={1.5} aria-hidden="true" />
           </button>
         </Tip>

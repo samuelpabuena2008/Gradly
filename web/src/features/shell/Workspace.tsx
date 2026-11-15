@@ -1,12 +1,13 @@
 // Espacio de trabajo tipo Obsidian: ribbon · explorador · centro con pestañas · inspector · barra de estado.
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Dialogos } from './Dialogos'
 import { ProveedorTips } from '../../components/Tip'
 import { ErrorBoundary } from '../../components/ErrorBoundary'
 import { LIMITES_PANEL, useApp } from '../../store/app'
 import { useDatos } from '../../store/escenario'
 import { useRuta } from '../../store/ruta'
+import { BannerEscenario } from '../simulador/BannerEscenario'
 import { BarraEstado } from './BarraEstado'
 import { BarraPestanas } from './BarraPestanas'
 import { Divisor } from './Divisor'
@@ -15,10 +16,13 @@ import { Inspector } from './Inspector'
 import { Ribbon } from './Ribbon'
 import { ContenidoCentro, nombreDeRuta } from './Vistas'
 import { DialogoAjustes } from '../ayuda/DialogoAjustes'
+import { recorridoVisto } from '../../lib/ui/recorrido'
 import { useAtajos } from './useAtajos'
 import './shell.css'
 
 const ID_PANEL = 'panel-centro'
+/** El recorrido se ofrece una sola vez por sesión, la primera vez que llegan notas. */
+let recorridoOfrecido = false
 const TITULO_VISTA: Record<string, string> = {
   malla: 'tu malla',
   notas: 'tus notas',
@@ -39,6 +43,18 @@ export function Workspace() {
 
   useAtajos(ruta)
 
+  // La primera vez que se cargan notas se ofrece el recorrido guiado (omitible; recordado solo con opt-in).
+  const nNotas = useApp((s) => s.notasReales.length)
+  const notasAntes = useRef(nNotas)
+  useEffect(() => {
+    const antes = notasAntes.current
+    notasAntes.current = nNotas
+    if (antes > 0 || nNotas === 0 || recorridoOfrecido || recorridoVisto()) return
+    recorridoOfrecido = true
+    const t = setTimeout(() => useApp.getState().abrirRecorrido(true), 900)
+    return () => clearTimeout(t)
+  }, [nNotas])
+
   // Un enlace profundo (#/materia/MAT1101) o el botón «atrás» abren la pestaña correspondiente.
   useEffect(() => {
     if (ruta.tipo === 'materia' && materiaPorId.has(ruta.id)) useApp.getState().abrirMateria(ruta.id)
@@ -54,7 +70,7 @@ export function Workspace() {
           <Ribbon ruta={ruta} onAjustes={() => setAjustesAbiertos(true)} />
 
           {exploradorAbierto && (
-            <aside className="ws-explorador" aria-label="Explorador de materias" style={{ width: anchoExplorador }}>
+            <aside className="ws-explorador" aria-label="Explorador de materias" data-tour="explorador" style={{ width: anchoExplorador }}>
               <ErrorBoundary vista="el explorador de materias">
                 <Explorador />
               </ErrorBoundary>
@@ -71,9 +87,11 @@ export function Workspace() {
 
           <main className="ws-centro" id="contenido" tabIndex={-1}>
             <BarraPestanas ruta={ruta} idPanel={ID_PANEL} />
+            <BannerEscenario />
             <div
               className="ws-panel"
               id={ID_PANEL}
+              data-tour="grafo"
               role="tabpanel"
               aria-labelledby={pestanaActiva}
               aria-label={pestanaActiva ? undefined : 'Contenido'}
@@ -89,7 +107,7 @@ export function Workspace() {
           </main>
 
           {inspectorAbierto && (
-            <aside className="ws-inspector" aria-label="Inspector" style={{ width: anchoInspector }}>
+            <aside className="ws-inspector" aria-label="Inspector" data-tour="inspector" style={{ width: anchoInspector }}>
               <Divisor
                 etiqueta="Ancho del inspector"
                 ancho={anchoInspector}

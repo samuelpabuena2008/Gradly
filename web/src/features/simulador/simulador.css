@@ -1,0 +1,37 @@
+/* Simulador «¿Qué pasaría si…?» dentro del inspector. */
+
+.sim { display: flex; flex-direction: column; gap: var(--space-4); }
+.sim-barra { display: flex; gap: var(--space-2); align-items: center; }
+.sim-buscar { position: relative; flex: 1; display: flex; align-items: center; }
+.sim-buscar svg { position: absolute; left: 8px; color: var(--text-muted); pointer-events: none; }
+.sim-buscar input { width: 100%; padding-left: 28px; }
+.sim-titulo { margin: 0 0 var(--space-2); font-size: var(--fs-sm); color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; }
+
+.sim-lista { display: flex; flex-direction: column; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }
+.sim-fila { padding: var(--space-2) var(--space-3); background: var(--bg-raised); border: 1px solid var(--line); border-radius: var(--radius-md); }
+/* Las notas hipotéticas se distinguen por forma: borde discontinuo y etiqueta, no solo color */
+.sim-fila-ajustada { border: 1px dashed var(--warn); background: var(--warn-bg); }
+.sim-fila-cabecera { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.sim-nombre { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--fs-sm); font-weight: 500; }
+.sim-restaurar { min-height: 0; padding: 3px; flex-shrink: 0; }
+.sim-control { display: grid; grid-template-columns: minmax(0, 1fr) 56px; align-items: center; gap: var(--space-3); margin-top: var(--space-1); }
+.sim-control input[type='range'] { width: 100%; min-height: 28px; margin: 0; }
+.sim-sin-valor { opacity: 0.55; }
+.sim-numero { width: 100%; text-align: right; }
+.sim-numero-hipotetica { border-style: dashed; border-color: var(--warn); }
+.sim-pie { margin: 2px 0 0; font-size: var(--fs-xs); }
+
+.sim-resultado { padding: var(--space-3); background: var(--bg-canvas); border: 1px solid var(--line-strong); border-radius: var(--radius-md); }
+.sim-resultado h3 { margin: 0 0 var(--space-2); font-size: var(--fs-md); }
+.sim-desbloqueo { margin: 0 0 var(--space-2); font-size: var(--fs-sm); }
+.sim-deltas { display: flex; flex-direction: column; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.sim-deltas li { display: flex; align-items: center; gap: var(--space-2); font-size: var(--fs-sm); }
+.sim-delta-nombre { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sim-delta-valor { color: var(--text-muted); font-size: var(--fs-xs); white-space: nowrap; }
+
+/* Banner persistente sobre el contenido central */
+.banner-escenario { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-4); flex-shrink: 0; padding: var(--space-2) var(--space-4); font-size: var(--fs-sm); background: var(--warn-bg); border-bottom: 1px dashed var(--warn); }
+.banner-titulo { display: inline-flex; align-items: center; gap: var(--space-2); font-weight: 600; color: var(--warn); }
+.banner-deltas { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); margin: 0; padding: 0; list-style: none; color: var(--text); }
+.banner-deltas .mono { color: var(--text); }
+.banner-restaurar { margin-left: auto; }

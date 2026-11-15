@@ -56,7 +56,9 @@ export function borrarTodo(): void {
   }
   useConfirmacion.getState().pedir({
     titulo: '¿Borrar todas tus notas?',
-    mensaje: 'Se quitan de este navegador las notas que cargaste. Podrás deshacerlo durante unos segundos.',
+    mensaje: useApp.getState().persistirNotas
+      ? 'Se borran las notas que cargaste, también las que Gradly había guardado en este navegador. Podrás deshacerlo durante unos segundos.'
+      : 'Se quitan de este navegador las notas que cargaste. Podrás deshacerlo durante unos segundos.',
     etiquetaConfirmar: 'Borrar notas',
     alConfirmar: () => {
       const copia = useApp.getState().notasReales

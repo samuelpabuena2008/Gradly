@@ -4,6 +4,7 @@
 import { useMemo, useState } from 'react'
 import { PartyPopper, Sparkles } from 'lucide-react'
 import { AvisoPocasNotas } from '../../components/AvisoPocasNotas'
+import { Delta } from '../../components/Delta'
 import { BarraRango } from '../../components/BarraRango'
 import { Semaforo } from '../../components/Semaforo'
 import { SelectorModelo } from '../../components/SelectorModelo'
@@ -18,6 +19,7 @@ import {
   type FiltroSemaforo,
   type OrdenPrediccion,
 } from '../../lib/ui/predicciones'
+import { deltasPredicciones } from '../../lib/ui/proyeccion'
 import { useApp } from '../../store/app'
 import { useDatos, useEscenario } from '../../store/escenario'
 import { abrirMateria, cargarEjemplo, irA } from '../shell/acciones'
@@ -49,6 +51,11 @@ export function VistaPredicciones() {
   const nombreDe = (id: string) => materiaPorId.get(id)?.nombre ?? id
   const resumen = useMemo(() => resumirPredicciones(predicciones, malla), [predicciones, malla])
   const enfoque = useMemo(() => recomendarEnfoque(predicciones, malla), [predicciones, malla])
+  // Con un escenario hipotético, cada tarjeta muestra cuánto cambió frente a lo real.
+  const deltaDe = useMemo(
+    () => new Map(deltasPredicciones(escenario.prediccionesBase, predicciones).map((d) => [d.materia, d])),
+    [escenario.prediccionesBase, predicciones],
+  )
   const visibles = useMemo(
     () => ordenarPredicciones(filtrarPredicciones(predicciones, filtro), orden, (id) => materiaPorId.get(id)?.semestre ?? 99),
     [predicciones, filtro, orden, materiaPorId],
@@ -226,6 +233,7 @@ export function VistaPredicciones() {
                   <div className="pred-nota">
                     <span className="mono pred-nota-valor">{fmtNota(p.nota)}</span>
                     <span className="pred-nota-pie">esperada</span>
+                    {deltaDe.get(p.materia)?.nueva ? <span className="etiqueta-hipotetica">nueva</span> : <Delta valor={deltaDe.get(p.materia)?.delta ?? null} />}
                   </div>
                   <div className="pred-barra">
                     <BarraRango nota={p.nota} rango={p.rango} aprobacion={malla.nota_aprobacion} semaforo={p.semaforo} compacto />

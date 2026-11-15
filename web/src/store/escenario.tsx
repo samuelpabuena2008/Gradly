@@ -2,7 +2,7 @@
 // notas efectivas = reales + ajustes, y sus predicciones. Se calcula una sola vez por cambio y lo
 // comparten todos los paneles (explorador, grafo, inspector, barra de estado).
 
-import { createContext, useContext, useMemo, type ReactNode } from 'react'
+import { createContext, useContext, useDeferredValue, useMemo, type ReactNode } from 'react'
 import type { Nota, Prediccion } from '../types'
 import type { Datos } from '../lib/ui/arranque'
 import { nivel, predecirSiguientes, ultimasNotas, type TipoModelo } from '../lib/model/predict'
@@ -28,6 +28,11 @@ export interface Escenario {
   mapaReales: Map<string, number>
   predicciones: Prediccion[]
   prediccionPorId: Map<string, Prediccion>
+  /** Predicciones y promedio solo con lo importado (sin el escenario), para mostrar «antes → después». */
+  prediccionesBase: Prediccion[]
+  promedioBase: number | null
+  /** Materias cuya nota vigente es hipotética (viene de un ajuste y no de lo importado). */
+  hipoteticas: Set<string>
   /** Hay ajustes que cambian algo: se está viendo un escenario hipotético. */
   hipotetico: boolean
   /** Promedio de las notas vigentes; `null` si no hay notas. */
@@ -46,7 +51,8 @@ export function useEscenario(): Escenario {
 
 export function EscenarioProvider({ datos, children }: { datos: Datos; children: ReactNode }) {
   const notasReales = useApp((s) => s.notasReales)
-  const ajustes = useApp((s) => s.ajustes)
+  // Arrastrar el simulador no debe bloquear la entrada: el escenario se recalcula con prioridad baja.
+  const ajustes = useDeferredValue(useApp((s) => s.ajustes))
   const elegido = useApp((s) => s.tipoModelo)
   const tipoModelo = elegido ?? datos.recomendado
   const { malla, modelo } = datos
@@ -60,9 +66,17 @@ export function EscenarioProvider({ datos, children }: { datos: Datos; children:
     [malla, modelo, notas, tipoModelo],
   )
   const prediccionPorId = useMemo(() => new Map(predicciones.map((p) => [p.materia, p])), [predicciones])
+  const hipotetico = Object.keys(efectivos).length > 0
+  // Sin escenario, «antes» y «después» son lo mismo: no se calcula dos veces.
+  const prediccionesBase = useMemo(
+    () => (hipotetico ? predecirSiguientes(malla, modelo, notasReales, tipoModelo) : predicciones),
+    [hipotetico, malla, modelo, notasReales, tipoModelo, predicciones],
+  )
+  const hipoteticas = useMemo(() => new Set(Object.keys(efectivos)), [efectivos])
 
   const escenario = useMemo<Escenario>(() => {
     const valores = [...mapaNotas.values()]
+    const reales = [...mapaReales.values()]
     return {
       tipoModelo,
       notas,
@@ -70,11 +84,14 @@ export function EscenarioProvider({ datos, children }: { datos: Datos; children:
       mapaReales,
       predicciones,
       prediccionPorId,
-      hipotetico: Object.keys(efectivos).length > 0,
+      prediccionesBase,
+      promedioBase: reales.length > 0 ? reales.reduce((a, b) => a + b, 0) / reales.length : null,
+      hipoteticas,
+      hipotetico,
       promedio: valores.length > 0 ? valores.reduce((a, b) => a + b, 0) / valores.length : null,
       nivel: valores.length > 0 ? nivel(modelo, mapaNotas) : null,
     }
-  }, [tipoModelo, notas, mapaNotas, mapaReales, predicciones, prediccionPorId, efectivos, modelo])
+  }, [tipoModelo, notas, mapaNotas, mapaReales, predicciones, prediccionPorId, prediccionesBase, hipoteticas, hipotetico, modelo])
 
   return (
     <DatosContext.Provider value={datos}>

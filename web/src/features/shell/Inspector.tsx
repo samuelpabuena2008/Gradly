@@ -7,7 +7,8 @@ import { estadoMateria, valorMateria } from '../../lib/ui/estado'
 import { useApp, type TabInspector } from '../../store/app'
 import { useDatos, useEscenario } from '../../store/escenario'
 import { AnalisisMalla } from '../malla/AnalisisMalla'
-import { abrirMateria, irA } from './acciones'
+import { Simulador } from '../simulador/Simulador'
+import { abrirMateria } from './acciones'
 
 const TABS: { id: TabInspector; etiqueta: string }[] = [
   { id: 'detalle', etiqueta: 'Detalle' },
@@ -77,23 +78,6 @@ function Detalle() {
       )}
       <button type="button" className="btn" onClick={() => abrirMateria(materia.id)}>
         Abrir página de la materia
-      </button>
-    </div>
-  )
-}
-
-function Simulador() {
-  const hayNotas = useApp((s) => s.notasReales.length > 0)
-  return (
-    <div className="insp-vacio">
-      <p className="insp-vacio-titulo">¿Qué pasaría si…?</p>
-      <p className="ayuda">
-        {hayNotas
-          ? 'Mueve una de tus notas en la vista Notas y mira al instante cómo cambian tu malla y tus predicciones.'
-          : 'Primero carga tus notas. Después podrás mover una nota y ver cómo cambian tus predicciones.'}
-      </p>
-      <button type="button" className="btn" onClick={() => irA({ tipo: 'vista', vista: 'notas' })}>
-        {hayNotas ? 'Abrir Notas' : 'Cargar mis notas'}
       </button>
     </div>
   )
