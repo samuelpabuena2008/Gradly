@@ -1,97 +1,129 @@
-# Gradly
+<p align="center">
+  <img src="docs/assets/banner.svg" alt="Gradly: mira tu carrera como un grafo" width="100%">
+</p>
 
-Predictor de rendimiento académico por estudiante. Proyecto final de Matemáticas Discretas (MAT 4021), Uninorte.
+<p align="center">
+  <img src="https://img.shields.io/badge/React-19-8b5cf6?style=flat-square&logo=react&logoColor=white&labelColor=12101b" alt="React 19">
+  <img src="https://img.shields.io/badge/TypeScript-7-8b5cf6?style=flat-square&logo=typescript&logoColor=white&labelColor=12101b" alt="TypeScript 7">
+  <img src="https://img.shields.io/badge/Vite-8-8b5cf6?style=flat-square&logo=vite&logoColor=white&labelColor=12101b" alt="Vite 8">
+  <img src="https://img.shields.io/badge/Python-3.11+-8b5cf6?style=flat-square&logo=python&logoColor=white&labelColor=12101b" alt="Python 3.11+">
+  <img src="https://img.shields.io/badge/NumPy-2-8b5cf6?style=flat-square&logo=numpy&logoColor=white&labelColor=12101b" alt="NumPy 2">
+  <img src="https://img.shields.io/badge/FastAPI-0.115-8b5cf6?style=flat-square&logo=fastapi&logoColor=white&labelColor=12101b" alt="FastAPI">
+  <img src="https://img.shields.io/badge/MAT_4021-Uninorte-5bdcd0?style=flat-square&labelColor=12101b" alt="Matemáticas Discretas, Uninorte">
+</p>
 
-El estudiante importa sus notas (desde el **PDF oficial de Certificado de Notas de Uninorte**, un CSV o el simulador interactivo) y ve, sobre la malla de su carrera, cómo le puede ir en las materias que vienen,
-con un semáforo de riesgo, el "por qué" de cada predicción, **los contenidos cruzados puntuales que conviene reforzar** y un simulador **«¿Qué pasaría si...?»** en vivo.
-**Las notas se procesan en el navegador y no salen del computador del estudiante.**
+<p align="center">
+  Predictor de rendimiento académico sobre la malla curricular.<br>
+  Carga tus notas y mira cómo te puede ir en las materias que vienen y en cuáles enfocarte.
+</p>
 
-## Estructura
+- **La malla como grafo.** 50 materias y sus prerrequisitos de Ingeniería de Sistemas, en un grafo dirigido acíclico.
+- **Predicción por materia.** Nota esperada, rango y semáforo de riesgo, con las materias previas que más pesan.
+- **Qué repasar.** Prioriza por centralidad en el grafo y señala los temas puntuales a reforzar.
+- **Privado.** Las notas se procesan en el navegador y no salen del computador.
 
-```
-data/    Contrato compartido: malla (JSON), plantilla de notas (CSV), pesos del modelo (JSON)
-web/     App web: React + TypeScript + Vite (grafos, predicción, interfaz)
-model/   Python: estudiantes simulados, entrenamiento y validación, exporta data/pesos.json
-api/     Backend opcional (FastAPI): recibe notas donadas con autorización
-docs/    Plan, documento LaTeX y diapositivas
-```
+<p align="center">
+  <img src="docs/assets/gradly-demo.gif" alt="Gradly: notas de ejemplo, malla por semestre, detalle de una materia y predicciones del próximo semestre" width="100%">
+</p>
 
-El plan completo y las decisiones están en [docs/PLAN.md](docs/PLAN.md).
-Decisiones y hallazgos del modelo: [docs/modelo/DECISIONES.md](docs/modelo/DECISIONES.md).
+## Instalación y uso
 
-## Requisitos
+Requisitos: Node 20+ y Python 3.11+.
 
-- Node 20 o superior
-- Python 3.11 o superior
-
-## Cómo correrlo
-
-### Web
+**Web**
 
 ```bash
 cd web
 npm install
-npm run dev        # http://localhost:5173
-npm test           # pruebas (grafos, predicción, CSV)
+npm run dev          # http://localhost:5173
+npm test
 ```
 
-### Modelo (Python)
+Entra con el certificado PDF de Uninorte, un CSV (`materia,periodo,nota`), texto pegado o las notas de ejemplo.
 
-Desde la raíz del repo:
+**Modelo**
 
 ```bash
 python -m venv .venv
-.venv\Scripts\activate          # Windows  (en Mac/Linux: source .venv/bin/activate)
+source .venv/bin/activate                 # Windows: .venv\Scripts\activate
 pip install -r model/requirements.txt -r api/requirements.txt
-```
 
-```bash
 cd model
-python -m gradly_model.train                   # simula 300 estudiantes, entrena y exporta ../data/pesos.json
-python -m gradly_model.train --notas notas.csv # con datos reales: estudiante,materia,periodo,nota
-python -m gradly_model.simulate --n 300        # solo genera ../data/simulados.csv
-python -m gradly_model.experimentos            # docs/modelo/: reporte, curva de aprendizaje y figuras (≈1 min)
+python -m gradly_model.train              # entrena y exporta data/pesos.json
+python -m gradly_model.train --notas notas.csv
+python -m gradly_model.experimentos       # reporte y figuras en docs/modelo/
 pytest
 ```
 
-### API (opcional)
+**API (opcional)**
 
 ```bash
 cd api
-uvicorn app.main:app --reload    # http://localhost:8000/docs
+uvicorn app.main:app --reload             # http://localhost:8000/docs
 pytest
 ```
 
-Variables de entorno en [api/.env.example](api/.env.example). Sin `DATABASE_URL` usa SQLite local;
-para producción basta poner la URL de un Postgres (por ejemplo, Supabase).
+Variables en [`api/.env.example`](api/.env.example). Sin `DATABASE_URL` usa SQLite.
 
-## Formato de los datos
+## Más información
 
-**Notas** (`data/plantilla_notas.csv` o Certificado PDF de Uninorte): `materia,periodo,nota`, escala 0–5, periodo `AAAA-S`.
-Si una materia se repite, cuenta el intento más reciente. La web también lee directamente el PDF oficial de Certificado de Notas de Uninorte en el navegador (mapeando electivas a sus casillas `ELG*` e ignorando exigencias de inglés de 0 créditos).
+### Estructura
 
-**Malla** (`data/malla_sistemas.json`): materias con su semestre, prerrequisitos (aristas dirigidas),
-aristas blandas (relaciones transversales entre áreas como Álgebra Lineal → Física / EDO) y `contenidos_cruzados` (temas específicos de una materia previa que se aplican en una materia posterior cuando está en riesgo).
-`data/malla_sistemas.json` es la malla oficial de Ingeniería de Sistemas y Computación (50 materias, 32 prerrequisitos, 8 aristas blandas y 26 puentes de contenidos cruzados), tomada del diagrama del plan de estudios. `data/malla_ejemplo.json` es una malla pequeña de 16 materias que usan las pruebas.
+```
+web/     App: React, TypeScript, Vite y React Flow
+model/   Simulación, entrenamiento y validación (Python, NumPy)
+api/     Donación anónima de notas (FastAPI, Postgres)
+data/    Malla, plantilla de notas, pesos del modelo y esquemas
+docs/    Plan, decisiones del modelo, informe y diapositivas
+```
 
-**Modelo** (`data/pesos.json`): `medias` (μ de cada materia) y, para cada materia objetivo, `b`, `beta`,
-`sigma` (error típico) y el peso de cada materia de la que depende en la malla (sus ancestros, entrenados con regularización Ridge ponderada por distancia en el DAG), además de los pesos de la red neuronal (`red.cursos`). En la interfaz el estudiante puede alternar en vivo entre **Regresión** y **Red neuronal (MLP)**. La predicción de regresión es
+### Modelo
 
-ŷ = μ + b + β · a + Σ w · z
+Una regresión por materia sobre sus ancestros en la malla, con penalización que crece con la distancia en el grafo:
 
-donde `a` es el nivel del estudiante, Σ (nota − μ) / (n + 1) sobre sus n materias anteriores, y
-`z` = (nota previa − μ) − a es cómo le fue en esa materia frente a su propio nivel.
+```
+ŷ = μ + b + β·a + Σ w·z
+```
 
-## Pruebas con resultado conocido
+`μ` es la media de la materia, `a` el nivel del estudiante y `z` cómo le fue en cada materia previa frente a su nivel. También hay una red neuronal escrita en NumPy; en la app se puede alternar entre las dos.
 
-| Prueba | Dónde |
-|---|---|
-| Malla de 6 materias calculada a mano (orden topológico, camino más largo, centralidad, descendientes) | `web/src/lib/graph/dag.test.ts` |
-| Predicción, rango, semáforo, enfoque por centralidad y contenidos cruzados | `web/src/lib/model/predict.test.ts` |
-| Lectura del CSV y del Certificado de Notas en PDF de Uninorte | `web/src/lib/import/csv.test.ts`, `web/src/lib/import/certificado.test.ts` |
-| El modelo recupera pesos simulados, regulariza por distancia en el DAG y le gana al promedio | `model/tests/test_modelo.py` |
-| Retropropagación de la red igual a la derivada numérica; la red aprende una relación en V | `model/tests/test_red.py` |
-| La red da lo mismo en TypeScript y en Python (caso de `data/fixtures/red_caso_conocido.json`) | `web/src/lib/model/red.test.ts`, `model/tests/test_red.py` |
-| La fórmula da lo mismo en TypeScript y en Python (caso de `data/fixtures/`) | `web/src/lib/model/contrato.test.ts`, `model/tests/test_contrato_prediccion.py` |
-| Los archivos de `data/` cumplen los esquemas de `data/schemas/` y usan los mismos códigos | `model/tests/test_contrato_datos.py` |
-| Donaciones sin datos personales y con consentimiento | `api/tests/test_donaciones.py` |
+| | Error medio (puntos de nota) |
+| --- | --- |
+| Promedio del estudiante | 0,457 |
+| Red neuronal | 0,303 |
+| **Regresión sobre la malla** | **0,294** |
+
+Validación cruzada por estudiante con 300 estudiantes simulados sobre la malla oficial. Detalles en [`docs/modelo/DECISIONES.md`](docs/modelo/DECISIONES.md) y [`docs/modelo/reporte.md`](docs/modelo/reporte.md).
+
+### Datos
+
+| Archivo | Contenido |
+| --- | --- |
+| [`data/malla_sistemas.json`](data/malla_sistemas.json) | Malla oficial: materias, prerrequisitos, aristas blandas y contenidos cruzados |
+| [`data/malla_ejemplo.json`](data/malla_ejemplo.json) | Malla pequeña de 16 materias para las pruebas |
+| [`data/plantilla_notas.csv`](data/plantilla_notas.csv) | Formato de notas: `materia,periodo,nota` |
+| [`data/pesos.json`](data/pesos.json) | Pesos del modelo que usa la web |
+
+### Pruebas
+
+Cada parte tiene casos con resultado conocido: un grafo resuelto a mano, una predicción calculada a mano que Python y TypeScript deben reproducir, la recuperación de pesos simulados y la retropropagación contra la derivada numérica. La web suma pruebas de punta a punta y de accesibilidad con Playwright (`npm run test:e2e`).
+
+### Equipo
+
+| | Frente |
+| --- | --- |
+| [Carlos Del Castillo](https://github.com/krl0sconk) | Modelo |
+| [Maikel Ortiz](https://github.com/MaikelO11) | Web |
+| [Joel Trespalacios](https://github.com/ImGTrK) | API |
+| [Samuel Pabuena](https://github.com/samuelpabuena2008) | Base del repositorio y grafos |
+| [Rafael Sierra](https://github.com/rafaelcodesx) | Informe |
+
+Proyecto final de Matemáticas Discretas (MAT 4021), Universidad del Norte, 2026. Profesor Iván Gómez.
+
+### Contribuir
+
+Trabaja en una rama, corre las pruebas de la parte que tocaste y abre un pull request contra `main`.
+
+### Licencia
+
+Todavía sin licencia definida.
