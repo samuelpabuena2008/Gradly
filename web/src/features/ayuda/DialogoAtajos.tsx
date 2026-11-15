@@ -2,6 +2,7 @@
 
 import * as Dialog from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
+import { useRetornoFoco } from '../../components/useRetornoFoco'
 import { useApp } from '../../store/app'
 import './ayuda.css'
 
@@ -72,11 +73,12 @@ const GLOSARIO: [string, string][] = [
 export function DialogoAtajos() {
   const abierto = useApp((s) => s.atajosAbiertos)
   const abrirAtajos = useApp((s) => s.abrirAtajos)
+  const retornoFoco = useRetornoFoco()
   return (
     <Dialog.Root open={abierto} onOpenChange={abrirAtajos}>
       <Dialog.Portal>
         <Dialog.Overlay className="dlg-overlay" />
-        <Dialog.Content className="dlg-contenido ayuda-dialogo" aria-describedby={undefined}>
+        <Dialog.Content className="dlg-contenido ayuda-dialogo" aria-describedby={undefined} {...retornoFoco}>
           <div className="ayuda-cabecera">
             <Dialog.Title className="dlg-titulo">Ayuda y atajos</Dialog.Title>
             <Dialog.Close asChild>

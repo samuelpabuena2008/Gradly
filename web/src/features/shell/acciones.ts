@@ -23,6 +23,8 @@ export function irA(ruta: Ruta): void {
 /** Abre la página de la materia en una pestaña y la deja seleccionada en todos los paneles. */
 export function abrirMateria(id: string): void {
   useApp.getState().abrirMateria(id)
+  // En móvil el detalle es una hoja sobre el contenido: al abrir la página completa ya no hace falta y la taparía.
+  if (esMovil()) useApp.getState().alternarInspector(false)
   navegar({ tipo: 'materia', id })
 }
 

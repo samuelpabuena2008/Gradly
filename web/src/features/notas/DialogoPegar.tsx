@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
+import { useRetornoFoco } from '../../components/useRetornoFoco'
 import { useDatos } from '../../store/escenario'
 import { useImportacion } from '../../store/importacion'
 import { importarTexto } from './importacion'
@@ -13,6 +14,7 @@ export function DialogoPegar() {
   const abrirPegar = useImportacion((s) => s.abrirPegar)
   const { malla } = useDatos()
   const [texto, setTexto] = useState('')
+  const retornoFoco = useRetornoFoco()
 
   function enviar() {
     if (!texto.trim()) return
@@ -25,7 +27,7 @@ export function DialogoPegar() {
     <Dialog.Root open={abierto} onOpenChange={abrirPegar}>
       <Dialog.Portal>
         <Dialog.Overlay className="dlg-overlay" />
-        <Dialog.Content className="dlg-contenido imp-dialogo">
+        <Dialog.Content className="dlg-contenido imp-dialogo" {...retornoFoco}>
           <div className="imp-cabecera">
             <Dialog.Title className="dlg-titulo">Pegar texto</Dialog.Title>
             <Dialog.Close asChild>

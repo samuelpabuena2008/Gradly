@@ -7,6 +7,7 @@
 import { useRef, type CSSProperties, type PointerEvent, type ReactNode } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { debeCerrarHoja } from '../lib/ui/pantalla'
+import { useRetornoFoco } from './useRetornoFoco'
 import './cajon.css'
 
 interface Props {
@@ -27,7 +28,7 @@ interface Props {
 export function Cajon({ abierto, alCerrar, titulo, lado, modal = true, ancho, sobreBarra = false, children }: Props) {
   const contenido = useRef<HTMLDivElement>(null)
   const arrastre = useRef<{ y0: number; t0: number; id: number } | null>(null)
-  const quienAbrio = useRef<HTMLElement | null>(null)
+  const retornoFoco = useRetornoFoco()
 
   const clases = ['cajon', `cajon-${lado}`, sobreBarra ? 'cajon-sobre-barra' : ''].filter(Boolean).join(' ')
   const estilo = lado === 'derecha' && ancho ? ({ '--cajon-ancho': `${ancho}px` } as CSSProperties) : undefined
@@ -63,18 +64,7 @@ export function Cajon({ abierto, alCerrar, titulo, lado, modal = true, ancho, so
           aria-describedby={undefined}
           // Sin telón, tocar fuera no cierra: así se puede elegir otra materia con la hoja abierta.
           onInteractOutside={modal ? undefined : (e) => e.preventDefault()}
-          // Se abre desde el estado (no hay un Trigger de Radix): se recuerda quién tenía el foco para devolvérselo.
-          onOpenAutoFocus={() => {
-            quienAbrio.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
-          }}
-          onCloseAutoFocus={(e) => {
-            const destino = quienAbrio.current
-            quienAbrio.current = null
-            if (destino?.isConnected) {
-              e.preventDefault()
-              destino.focus()
-            }
-          }}
+          {...retornoFoco}
         >
           <Dialog.Title className="solo-lectores">{titulo}</Dialog.Title>
           {lado === 'inferior' && (

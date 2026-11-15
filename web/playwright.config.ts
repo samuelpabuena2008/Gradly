@@ -1,8 +1,5 @@
 import { defineConfig, devices } from '@playwright/test'
 
-// Solo se lee `process.env.CI`; así no hace falta añadir @types/node al proyecto.
-declare const process: { env: Record<string, string | undefined> }
-
 const PUERTO = 5199
 const URL_BASE = `http://localhost:${PUERTO}`
 
@@ -23,7 +20,12 @@ export default defineConfig({
     serviceWorkers: 'block',
   },
   projects: [
-    { name: 'escritorio', use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } } },
+    {
+      name: 'escritorio',
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
+      // La suite móvil necesita un contexto táctil: solo corre en el proyecto «movil».
+      testIgnore: /movil\.spec\.ts/,
+    },
     {
       name: 'movil',
       use: { ...devices['Pixel 7'], viewport: { width: 390, height: 844 } },

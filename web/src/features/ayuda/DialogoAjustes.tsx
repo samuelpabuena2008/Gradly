@@ -3,6 +3,7 @@
 
 import * as Dialog from '@radix-ui/react-dialog'
 import { Lock, Trash2, X } from 'lucide-react'
+import { useRetornoFoco } from '../../components/useRetornoFoco'
 import { LIMITES_PANEL, useApp } from '../../store/app'
 import { borrarTodo } from '../shell/acciones'
 import './ayuda.css'
@@ -18,12 +19,13 @@ export function DialogoAjustes({ abierto, onCambiar }: { abierto: boolean; onCam
   const fijarAnchoInspector = useApp((s) => s.fijarAnchoInspector)
   const fijarPersistirNotas = useApp((s) => s.fijarPersistirNotas)
   const abrirRecorrido = useApp((s) => s.abrirRecorrido)
+  const retornoFoco = useRetornoFoco()
 
   return (
     <Dialog.Root open={abierto} onOpenChange={onCambiar}>
       <Dialog.Portal>
         <Dialog.Overlay className="dlg-overlay" />
-        <Dialog.Content className="dlg-contenido" aria-describedby="ajustes-descripcion">
+        <Dialog.Content className="dlg-contenido" aria-describedby="ajustes-descripcion" {...retornoFoco}>
           <div className="ayuda-cabecera">
             <Dialog.Title className="dlg-titulo">Ajustes</Dialog.Title>
             <Dialog.Close asChild>

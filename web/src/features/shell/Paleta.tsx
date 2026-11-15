@@ -3,6 +3,7 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import { CornerDownLeft, Search } from 'lucide-react'
 import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from 'react'
+import { useRetornoFoco } from '../../components/useRetornoFoco'
 import { filtrarDifuso } from '../../lib/ui/fuzzy'
 import { guardarJson, leerJson } from '../../lib/ui/almacenamiento'
 import { useApp } from '../../store/app'
@@ -19,6 +20,7 @@ function Contenido({ onCerrar }: { onCerrar: () => void }) {
   const datos = useDatos()
   const { tipoModelo } = useEscenario()
   const idLista = useId()
+  const retornoFoco = useRetornoFoco()
   const [consulta, setConsulta] = useState('')
   const [activo, setActivo] = useState(0)
   const [recientes, setRecientes] = useState<string[]>(() => {
@@ -84,7 +86,7 @@ function Contenido({ onCerrar }: { onCerrar: () => void }) {
   const buscando = consulta.trim() !== ''
 
   return (
-    <Dialog.Content className="paleta" aria-describedby={undefined}>
+    <Dialog.Content className="paleta" aria-describedby={undefined} {...retornoFoco}>
       <Dialog.Title className="solo-lectores">Paleta de comandos</Dialog.Title>
       <div className="paleta-buscador">
         <Search size={16} strokeWidth={1.5} aria-hidden="true" />

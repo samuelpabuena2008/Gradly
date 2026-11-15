@@ -4,6 +4,7 @@
 import { Fragment, useMemo } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { AlertTriangle, Check, CircleAlert, Trash2, X } from 'lucide-react'
+import { useRetornoFoco } from '../../components/useRetornoFoco'
 import { plural } from '../../lib/ui/formato'
 import { notasDeRevision, validarFilas } from '../../lib/ui/notas'
 import { useApp } from '../../store/app'
@@ -190,6 +191,7 @@ export function DialogoImportacion() {
   const avisos = useImportacion((s) => s.avisos)
   const errores = useImportacion((s) => s.errores)
   const cerrar = useImportacion((s) => s.cerrar)
+  const retornoFoco = useRetornoFoco()
 
   return (
     <Dialog.Root open={fase !== 'inactivo'} onOpenChange={(abierto) => !abierto && cancelarImportacion()}>
@@ -197,6 +199,7 @@ export function DialogoImportacion() {
         <Dialog.Overlay className="dlg-overlay" />
         <Dialog.Content
           className={`dlg-contenido imp-dialogo${fase === 'revision' ? ' imp-dialogo-ancho' : ''}`}
+          {...retornoFoco}
         >
           {fase === 'leyendo' && (
             <>

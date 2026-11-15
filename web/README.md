@@ -21,6 +21,7 @@ npm run dev        # http://localhost:5173
 | `npm run preview` | Sirve la compilación de `dist/` |
 | `npm test` | Pruebas unitarias y de componentes (Vitest) |
 | `npm run test:e2e` | Pruebas de extremo a extremo y de accesibilidad (Playwright + axe, solo Chromium) |
+| `npm run typecheck:e2e` | Revisa los tipos de `e2e/` y de la configuración de Playwright (usan tipos de Node, por eso van aparte de `src/`) |
 | `npm run contraste` | Verifica los pares de color de los tokens contra WCAG 2.2 AA |
 
 La primera vez que corras Playwright en una máquina nueva: `npx playwright install chromium`.
@@ -51,6 +52,17 @@ web/
 ```
 
 Las pruebas unitarias viven junto al código (`*.test.ts` / `*.test.tsx`). El entorno global de Vitest es `node`; las pruebas de componentes declaran `// @vitest-environment jsdom` en su propio archivo.
+
+## Pruebas
+
+| Suite | Dónde | Qué cubre |
+|---|---|---|
+| Unitarias y de componentes | `src/**/*.test.ts(x)` | Lógica de grafos, predicción, red e importadores; estado de nodos, escenario (reales + ajustes), fusión de notas, validación de periodo y nota, layout sin solapes; importador (cada caso de error), simulador, selector de modelo con y sin red, explorador con teclado, paleta, semáforo, cajón y barra inferior |
+| Prueba de mono | `src/features/shell/mono.test.tsx` | 600 acciones aleatorias con semilla fija (importar, borrar, simular, cambiar de modelo, pestañas, paneles, paleta, atajos, clics reales, hashes inválidos). Tras cada una exige: sin excepciones ni salida de consola, sin `NaN`/`undefined` en el DOM, y que `notasReales` solo cambie por acciones explícitas. Si falla, el mensaje trae la semilla y la secuencia para reproducirlo |
+| E2E | `e2e/flujo`, `errores`, `teclado`, `movil` | De la primera carga a «borrar con deshacer»; archivo inválido, PDF corrupto, >10 MB, cabecera mala; recorrido solo con teclado; flujo táctil en 390 px, deslizar para cerrar, controles de 44 px y sin scroll horizontal (también al 200 % de zoom) |
+| Accesibilidad | `e2e/a11y.spec.ts` | axe con cero violaciones serias o críticas en cada vista y cada modal, en escritorio y móvil |
+
+La prueba de mono vive en Vitest (y no en Playwright) para poder leer `notasReales` directamente del store.
 
 ## Decisiones de diseño
 
