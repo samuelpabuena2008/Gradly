@@ -4,6 +4,7 @@
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { X } from 'lucide-react'
+import { esMovil } from '../../lib/ui/pantalla'
 import { PASOS_RECORRIDO, recordarRecorridoVisto, type PasoRecorrido } from '../../lib/ui/recorrido'
 import { useApp } from '../../store/app'
 import './bienvenida.css'
@@ -124,7 +125,7 @@ function RecorridoAbierto({ alCerrar }: { alCerrar: () => void }) {
         </div>
         <h2 className="recorrido-titulo">{paso.titulo}</h2>
         <p id="recorrido-texto" className="recorrido-texto">
-          {paso.texto}
+          {esMovil() && paso.textoMovil ? paso.textoMovil : paso.texto}
         </p>
         <label className="recorrido-recordar">
           <input type="checkbox" checked={noMostrar} onChange={(e) => setNoMostrar(e.target.checked)} />

@@ -42,6 +42,17 @@ interface Props {
   columnas?: { x: number; texto: string }[]
 }
 
+/**
+ * Nombre accesible de un nodo. WCAG 2.5.3 (etiqueta en el nombre): si el nodo dibuja un texto, el nombre
+ * accesible debe empezar por él; así quien dicta «clic en MAT1031» por voz acierta con el control.
+ */
+export function nombreAccesible(n: Pick<NodoSvg, 'id' | 'etiqueta' | 'descripcion'>): string {
+  const nombre = n.descripcion ?? n.etiqueta ?? n.id
+  const visible = n.etiqueta?.replace(/…$/, '').trim()
+  if (!visible || nombre.toLowerCase().startsWith(visible.toLowerCase())) return nombre
+  return `${visible}: ${nombre}`
+}
+
 function GrafoSvgBase({ nodos, aristas, ancho, alto, etiqueta, radio = 9, tamanoEtiqueta, onElegir, columnas }: Props) {
   const porId = new Map(nodos.map((n) => [n.id, n]))
   const idMarca = 'flecha' + useId().replace(/:/g, '')
@@ -92,7 +103,7 @@ function GrafoSvgBase({ nodos, aristas, ancho, alto, etiqueta, radio = 9, tamano
             className={`grafo-svg-nodo grafo-svg-${n.tono ?? 'normal'}${interactivo ? ' grafo-svg-clicable' : ''}`}
             transform={`translate(${n.x} ${n.y})`}
             role={interactivo ? 'button' : 'img'}
-            aria-label={n.descripcion ?? n.etiqueta ?? n.id}
+            aria-label={nombreAccesible(n)}
             tabIndex={interactivo ? 0 : undefined}
             onClick={interactivo ? () => onElegir?.(n.id) : undefined}
             onKeyDown={
@@ -106,15 +117,18 @@ function GrafoSvgBase({ nodos, aristas, ancho, alto, etiqueta, radio = 9, tamano
                 : undefined
             }
           >
-            <title>{n.descripcion ?? n.etiqueta ?? n.id}</title>
-            <circle r={r} className="grafo-svg-circulo" />
+            {/* El tooltip nativo va en el círculo: así su texto no se suma al texto visible del nodo (axe lo compara con el aria-label). */}
+            <circle r={r} className="grafo-svg-circulo">
+              <title>{n.descripcion ?? n.etiqueta ?? n.id}</title>
+            </circle>
+            {/* El texto dibujado es solo visual: el nombre accesible del nodo (aria-label) ya lo dice todo. */}
             {n.interior && (
-              <text className="grafo-svg-interior" textAnchor="middle" dy="0.35em">
+              <text className="grafo-svg-interior" textAnchor="middle" dy="0.35em" aria-hidden="true">
                 {n.interior}
               </text>
             )}
             {n.etiqueta && (
-              <text className="grafo-svg-etiqueta" textAnchor="middle" y={r + (tamanoEtiqueta ?? 11) + 1} style={tamanoEtiqueta ? { fontSize: tamanoEtiqueta } : undefined}>
+              <text className="grafo-svg-etiqueta" textAnchor="middle" y={r + (tamanoEtiqueta ?? 11) + 1} style={tamanoEtiqueta ? { fontSize: tamanoEtiqueta } : undefined} aria-hidden="true">
                 {n.etiqueta}
               </text>
             )}

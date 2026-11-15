@@ -20,6 +20,7 @@ import {
 } from '../lib/ui/persistencia'
 
 export type TabInspector = 'detalle' | 'simulador' | 'analisis'
+export type ModoMalla = 'grafo' | 'lista'
 
 export const LIMITES_PANEL = {
   explorador: { min: 220, max: 480, inicial: 280 },
@@ -85,6 +86,8 @@ interface Estado extends Prefs {
   recorridoAbierto: boolean
   /** El usuario prefirió explorar la malla antes de cargar notas (solo esta sesión). */
   bienvenidaDescartada: boolean
+  /** En móvil, la malla se puede ver como grafo o como lista por semestre (el grafo táctil denso es incómodo). */
+  modoMalla: ModoMalla
 
   reemplazarNotas: (notas: Nota[]) => void
   /** Suma notas a las existentes (el mismo intento de la misma materia y periodo lo reemplaza el nuevo). */
@@ -111,6 +114,7 @@ interface Estado extends Prefs {
   fijarPersistirNotas: (activa: boolean) => void
   abrirRecorrido: (abierto?: boolean) => void
   descartarBienvenida: () => void
+  elegirModoMalla: (modo: ModoMalla) => void
 }
 
 export const useApp = create<Estado>()((set, get) => ({
@@ -126,6 +130,7 @@ export const useApp = create<Estado>()((set, get) => ({
   atajosAbiertos: false,
   recorridoAbierto: false,
   bienvenidaDescartada: false,
+  modoMalla: 'grafo',
 
   // Cambiar las notas reales descarta el escenario hipotético: ya no corresponde a esos datos.
   reemplazarNotas: (notas) => set({ notasReales: notas, ajustes: {} }),
@@ -168,6 +173,7 @@ export const useApp = create<Estado>()((set, get) => ({
   fijarPersistirNotas: (persistirNotas) => set({ persistirNotas }),
   abrirRecorrido: (abierto) => set((s) => ({ recorridoAbierto: abierto ?? !s.recorridoAbierto })),
   descartarBienvenida: () => set({ bienvenidaDescartada: true }),
+  elegirModoMalla: (modoMalla) => set({ modoMalla }),
 }))
 
 // Persistencia de preferencias de interfaz (nunca de notas).

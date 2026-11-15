@@ -37,6 +37,12 @@
    documento, lo alargan y enfocar una fila desplaza toda la página. */
 .exp-fila { position: relative; display: flex; align-items: center; gap: var(--space-2); min-height: 28px; padding: 2px var(--space-2); font-size: var(--fs-sm); border-radius: var(--radius-md); cursor: pointer; user-select: none; transition: background var(--dur-fast) var(--ease); }
 .exp-fila:hover { background: var(--bg-hover); }
+@media (pointer: coarse), (max-width: 899px) {
+  .exp-fila { min-height: 44px; }
+  .exp-buscador { min-height: 44px; }
+  .exp-buscador input { min-height: 40px; }
+  .exp-chips { gap: var(--space-2); }
+}
 .exp-fila-sem { font-weight: 600; color: var(--text); }
 .exp-fila-mat { padding-left: 26px; }
 .exp-seleccionada { background: var(--accent-bg); box-shadow: inset 2px 0 0 var(--accent); }

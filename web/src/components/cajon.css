@@ -1,0 +1,74 @@
+/* Cajón lateral y hoja inferior (Radix Dialog). */
+
+:root {
+  --nav-inferior-h: 56px;
+  --seguro-abajo: env(safe-area-inset-bottom, 0px);
+}
+
+.cajon-telon {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: var(--bg-overlay);
+  animation: cajon-fade var(--dur) var(--ease);
+}
+
+.cajon {
+  position: fixed;
+  z-index: 121;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--bg-panel);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+/* Cajón lateral derecho (900–1279 px). */
+.cajon-derecha {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(var(--cajon-ancho, 360px), calc(100vw - var(--ribbon-w) - 16px));
+  border-width: 0 0 0 1px;
+  animation: cajon-desde-derecha var(--dur-slow) var(--ease);
+}
+
+/* Hoja inferior (móvil). */
+.cajon-inferior {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: min(78dvh, 640px);
+  padding-bottom: var(--seguro-abajo);
+  border-width: 1px 0 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  transform: translateY(var(--cajon-dy, 0px));
+  transition: transform var(--dur) var(--ease);
+  animation: cajon-desde-abajo var(--dur-slow) var(--ease);
+}
+.cajon-inferior.cajon-sobre-barra {
+  bottom: calc(var(--nav-inferior-h) + var(--statusbar-h) + var(--seguro-abajo));
+  max-height: min(58dvh, 520px);
+  padding-bottom: 0;
+  border-width: 1px 0;
+}
+.cajon-arrastrando { transition: none; }
+
+.cajon-asa {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  height: 22px;
+  cursor: grab;
+  touch-action: none;
+  background: var(--bg-canvas);
+}
+.cajon-asa span { width: 40px; height: 4px; background: var(--line-strong); border-radius: var(--radius-pill); }
+
+.cajon > .inspector { flex: 1; min-height: 0; }
+
+@keyframes cajon-fade { from { opacity: 0; } }
+@keyframes cajon-desde-derecha { from { transform: translateX(24px); opacity: 0; } }
+@keyframes cajon-desde-abajo { from { transform: translateY(24px); opacity: 0; } }

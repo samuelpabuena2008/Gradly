@@ -267,7 +267,7 @@ export function BloqueRelaciones({ malla, materia, previas, dependientes, materi
           <h2 id="mat-mini" className="materia-seccion">
             Vecindad en la malla
           </h2>
-          <p className="ayuda">Prerrequisitos a la izquierda y dependientes a la derecha, hasta dos pasos. Haz clic en una materia para abrirla.</p>
+          <p className="ayuda">Prerrequisitos a la izquierda y dependientes a la derecha, hasta dos pasos. Toca o haz clic en una materia para abrirla.</p>
           <div className="mini-grafo">
             <GrafoSvg nodos={nodos} aristas={aristas} ancho={ancho} alto={alto} etiqueta={`Vecindad de ${materia.nombre} en la malla`} onElegir={abrirMateria} />
           </div>

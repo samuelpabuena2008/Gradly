@@ -38,7 +38,7 @@ import { useApp } from '../../store/app'
 import { useDatos, useEscenario } from '../../store/escenario'
 import { useGrafo, type PrefsGrafo } from '../../store/grafo'
 import { avisar } from '../../store/toasts'
-import { abrirMateria } from '../shell/acciones'
+import { abrirMateria, elegirMateria } from '../shell/acciones'
 import { AristaMateria, type AristaMateriaTipo } from './AristaMateria'
 import { BarraCamara, Leyenda } from './ControlesGrafo'
 import { EncabezadosSemestre } from './EncabezadosSemestre'
@@ -517,7 +517,7 @@ function Lienzo() {
         edgeTypes={edgeTypes}
         onNodesChange={alCambiarNodos}
         onInit={() => setIniciado(true)}
-        onNodeClick={(_, n) => seleccionar(n.id)}
+        onNodeClick={(_, n) => elegirMateria(n.id)}
         onNodeDoubleClick={(_, n) => abrirMateria(n.id)}
         onNodeMouseEnter={(_, n) => setHover(n.id)}
         onNodeMouseLeave={() => setHover(null)}

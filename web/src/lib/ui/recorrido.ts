@@ -11,9 +11,17 @@ export interface PasoRecorrido {
   selector: string | null
   titulo: string
   texto: string
+  /** Variante para pantallas táctiles (sin mouse ni atajos de teclado). */
+  textoMovil?: string
 }
 
 export const PASOS_RECORRIDO: PasoRecorrido[] = [
+  {
+    id: 'navegacion',
+    selector: '[data-tour="nav"]',
+    titulo: 'Tus vistas',
+    texto: 'Abajo cambias entre la malla, tus notas y las predicciones. En «Más» están el laboratorio de grafos, el modelo y los ajustes.',
+  },
   {
     id: 'explorador',
     selector: '[data-tour="explorador"]',
@@ -25,6 +33,8 @@ export const PASOS_RECORRIDO: PasoRecorrido[] = [
     selector: '[data-tour="grafo"]',
     titulo: 'Tu malla como grafo',
     texto: 'Cada círculo es una materia y cada línea un prerrequisito. Violeta es aprobada; verde, amarillo y rojo dicen cómo te puede ir en las que puedes inscribir. Pasa el mouse para ver sus vecinas.',
+    textoMovil:
+      'Cada círculo es una materia y cada línea un prerrequisito. Violeta es aprobada; verde, amarillo y rojo dicen cómo te puede ir. Toca una materia para ver su detalle y pellizca para acercar. Si prefieres, cambia a «Lista».',
   },
   {
     id: 'inspector',

@@ -3,6 +3,8 @@
 // con un mensaje claro: la importación nunca rompe la interfaz.
 
 import type { Malla, Nota } from '../../types'
+// El lector de CSV es diminuto y ya viaja con la paleta de comandos (cargar ejemplo): va en el bundle principal.
+import { parsearNotasCsv } from '../import/csv'
 import { describirErrorPdf, validarArchivo, type ErrorMostrable } from './archivo'
 
 export type Origen = 'pdf' | 'csv' | 'texto' | 'ejemplo'
@@ -40,7 +42,6 @@ export async function leerTexto(texto: string, malla: Malla, origen: Origen = 't
       const r = parsearTextoCertificado(texto, malla)
       return { origen, nombre, notas: r.notas, errores: r.errores, avisos: r.avisos }
     }
-    const { parsearNotasCsv } = await import('../import/csv')
     const r = parsearNotasCsv(texto)
     return { origen, nombre, notas: r.notas, errores: r.errores, avisos: [] }
   } catch (e) {

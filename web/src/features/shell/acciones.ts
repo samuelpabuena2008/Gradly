@@ -5,6 +5,7 @@ import type { Datos } from '../../lib/ui/arranque'
 import { parsearNotasCsv } from '../../lib/import/csv'
 import { descargarTexto, notasACsv } from '../../lib/ui/exportar'
 import { otroModelo, tieneRed, NOMBRE_MODELO } from '../../lib/ui/modelos'
+import { esMovil } from '../../lib/ui/pantalla'
 import { siguienteTrasCerrar } from '../../lib/ui/pestanas'
 import type { Ruta } from '../../lib/ui/ruta'
 import { useApp } from '../../store/app'
@@ -23,6 +24,25 @@ export function irA(ruta: Ruta): void {
 export function abrirMateria(id: string): void {
   useApp.getState().abrirMateria(id)
   navegar({ tipo: 'materia', id })
+}
+
+/**
+ * Elige una materia (un toque en el grafo o en la lista). En móvil, además, abre la hoja inferior con su
+ * detalle: ahí no hay inspector fijo y el doble toque para abrir la página es incómodo.
+ */
+export function elegirMateria(id: string): void {
+  const app = useApp.getState()
+  app.seleccionar(id)
+  if (esMovil()) {
+    app.elegirTabInspector('detalle')
+    app.alternarInspector(true)
+  }
+}
+
+/** Lleva a la malla en su vista de lista (en móvil sustituye al explorador lateral). */
+export function mostrarLista(): void {
+  useApp.getState().elegirModoMalla('lista')
+  navegar({ tipo: 'vista', vista: 'malla' })
 }
 
 /** Cierra una pestaña de materia; si estaba activa, pasa a la vecina o a la malla. */

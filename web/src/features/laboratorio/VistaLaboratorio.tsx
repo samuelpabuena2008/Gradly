@@ -442,7 +442,7 @@ export default function VistaLaboratorio() {
                   )}
                 </>
               ) : (
-                <p className="ayuda">Elige una materia en la lista o haciendo clic en el grafo para ver todo lo que depende de ella.</p>
+                <p className="ayuda">Elige una materia en la lista o toca (o haz clic) en el grafo para ver todo lo que depende de ella.</p>
               ))}
           </aside>
         </div>

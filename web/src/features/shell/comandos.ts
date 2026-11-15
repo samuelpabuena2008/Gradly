@@ -33,7 +33,9 @@ import {
   cargarEjemplo,
   exportarCsv,
   irA,
+  mostrarLista,
 } from './acciones'
+import { esMovil } from '../../lib/ui/pantalla'
 
 export type GrupoComando = 'Materias' | 'Ir a' | 'Acciones'
 
@@ -136,7 +138,8 @@ export function construirComandos(datos: Datos, tipoModelo: 'regresion' | 'red')
       atajo: 'Ctrl+B',
       icono: PanelLeft,
       palabras: 'panel izquierdo materias',
-      ejecutar: () => useApp.getState().alternarExplorador(),
+      // En móvil no hay explorador lateral: su lugar lo ocupa la vista de lista de la malla.
+      ejecutar: () => (esMovil() ? mostrarLista() : useApp.getState().alternarExplorador()),
     },
     {
       id: 'accion:inspector',

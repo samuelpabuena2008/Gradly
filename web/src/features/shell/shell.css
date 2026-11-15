@@ -127,14 +127,116 @@ body.redimensionando * { pointer-events: none; }
 .status-boton:hover { color: var(--text); background: var(--bg-hover); }
 .status-boton:focus-visible { outline-offset: -2px; }
 
-/* ---- Pantallas medianas y pequeñas: los paneles laterales pasan a cajones superpuestos ---- */
+/* ---- Pantallas medianas (900–1279): el inspector es un cajón (components/Cajon) y la barra de estado se aligera ---- */
 @media (max-width: 1279px) {
-  .ws-inspector { position: absolute; top: 0; right: 0; bottom: 0; z-index: 20; max-width: calc(100% - var(--ribbon-w) - 16px); border-left: 1px solid var(--line-strong); box-shadow: var(--shadow-lg); }
-  .divisor-inspector { display: none; }
   .status-opcional { display: none; }
 }
-@media (max-width: 899px) {
-  .ws-explorador { position: absolute; top: 0; bottom: 0; left: var(--ribbon-w); z-index: 20; max-width: calc(100% - var(--ribbon-w) - 16px); border-right: 1px solid var(--line-strong); box-shadow: var(--shadow-lg); }
-  .divisor-explorador { display: none; }
-  .status-privacidad { overflow: hidden; text-overflow: ellipsis; }
+
+/* ---- Móvil (<900): barra inferior de pestañas, hoja de detalle y lista de materias ---- */
+.nav-inferior {
+  display: flex;
+  flex-shrink: 0;
+  height: calc(var(--nav-inferior-h) + var(--seguro-abajo));
+  padding: 0 0 var(--seguro-abajo);
+  background: var(--bg-canvas);
+  border-top: 1px solid var(--line);
 }
+.nav-item {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 var(--space-1);
+  font-size: 11px;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease);
+}
+.nav-item span { overflow: hidden; max-width: 100%; text-overflow: ellipsis; white-space: nowrap; }
+.nav-item:active { background: var(--bg-hover); }
+.nav-item-activo { color: var(--accent-soft); }
+.nav-item-activo::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 24%;
+  right: 24%;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 0 0 3px 3px;
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+.nav-item:focus-visible { outline-offset: -3px; }
+
+.mas-hoja { display: flex; flex-direction: column; gap: 2px; padding: var(--space-2) var(--space-3) var(--space-4); overflow-y: auto; }
+.mas-titulo { margin: 0; padding: var(--space-2) var(--space-2) var(--space-3); font-size: var(--fs-lg); }
+.mas-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 48px;
+  padding: 0 var(--space-3);
+  font-size: var(--fs-md);
+  color: var(--text);
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+.mas-item:active, .mas-item:hover { background: var(--bg-hover); }
+.mas-item[aria-current='page'] { color: var(--accent-soft); background: var(--accent-bg); }
+.mas-ico { display: grid; place-items: center; width: 28px; color: var(--accent-soft); }
+
+/* Malla en móvil: selector Grafo/Lista arriba y el contenido debajo. */
+.malla-movil { display: flex; flex-direction: column; }
+.malla-movil > .malla-fondo { flex: 1; min-height: 0; }
+.malla-modo {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-app);
+  border-bottom: 1px solid var(--line);
+}
+.malla-modo-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex: 1;
+  min-height: 44px;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+.malla-modo-activo { color: var(--text); background: var(--accent-bg); border-color: var(--accent-deep); }
+.malla-lista { height: 100%; overflow: hidden; background: var(--bg-panel); }
+.malla-lista .explorador { height: 100%; display: flex; flex-direction: column; }
+/* Con la hoja de detalle abierta la lista sigue siendo alcanzable y la materia elegida queda a la vista. */
+.workspace-hoja .malla-lista .exp-arbol { padding-bottom: 56dvh; }
+.workspace-hoja .malla-lista .exp-fila-mat { scroll-margin-bottom: 56dvh; }
+
+@media (max-width: 899px) {
+  .status-opcional, .status-no-movil { display: none; }
+  .status-privacidad { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .tabbar { height: 44px; }
+  .tab-boton { min-height: 44px; }
+  .tab-cerrar { margin-right: 0; opacity: 1; }
+  .vista-scroll { padding: var(--space-4); }
+  /* Con la barra inferior, el contenido respeta la zona segura del dispositivo. */
+  .workspace { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+}
+
+/* El centro es un destino del enlace «Saltar al contenido», no un control: sin anillo de foco. */
+.ws-centro:focus-visible, .ws-centro:focus { outline: none; }

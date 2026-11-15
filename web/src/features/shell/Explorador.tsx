@@ -8,7 +8,7 @@ import { estadoMateria, ETIQUETA_SEMAFORO, valorMateria, type EstadoMateria } fr
 import { filtrarDifuso } from '../../lib/ui/fuzzy'
 import { useApp } from '../../store/app'
 import { useDatos, useEscenario } from '../../store/escenario'
-import { abrirMateria } from './acciones'
+import { abrirMateria, elegirMateria } from './acciones'
 import './explorador.css'
 
 type Filtro = 'todas' | 'disponibles' | 'riesgo' | 'aprobadas'
@@ -315,7 +315,7 @@ export function Explorador() {
                             className={`exp-nodo exp-fila exp-fila-mat exp-${estado.tipo}${seleccionada === m.id ? ' exp-seleccionada' : ''}`}
                             onClick={() => {
                               setFoco(clave)
-                              seleccionar(m.id)
+                              elegirMateria(m.id)
                             }}
                             onDoubleClick={() => abrirMateria(m.id)}
                           >

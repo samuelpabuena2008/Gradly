@@ -3,7 +3,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { Dialogos } from './Dialogos'
 import { ProveedorTips } from '../../components/Tip'
+import { Cajon } from '../../components/Cajon'
 import { ErrorBoundary } from '../../components/ErrorBoundary'
+import { usePantalla } from '../../components/usePantalla'
+import { BarraInferior } from './BarraInferior'
 import { LIMITES_PANEL, useApp } from '../../store/app'
 import { useDatos } from '../../store/escenario'
 import { useRuta } from '../../store/ruta'
@@ -63,13 +66,29 @@ export function Workspace() {
   const claveRuta = ruta.tipo === 'materia' ? `materia:${ruta.id}` : `vista:${ruta.vista}`
   const pestanaActiva = ruta.tipo === 'vista' || materiaPorId.has(ruta.id) ? `tab-${claveRuta}` : undefined
 
+  // §9.1: amplio = tres paneles · medio = el inspector es un cajón · móvil = barra inferior, hoja de detalle y lista.
+  const modo = usePantalla()
+  const amplio = modo === 'amplio'
+  const movil = modo === 'movil'
+  const alternarInspector = useApp((s) => s.alternarInspector)
+  useEffect(() => {
+    // Un cajón abierto por una sesión anterior en pantalla ancha taparía el contenido al abrir la app.
+    if (modo !== 'amplio') useApp.getState().alternarInspector(false)
+  }, [modo])
+
+  const inspector = (
+    <ErrorBoundary vista="el inspector">
+      <Inspector />
+    </ErrorBoundary>
+  )
+
   return (
     <ProveedorTips>
-      <div className="workspace">
+      <div className={`workspace workspace-${modo}${movil && inspectorAbierto ? ' workspace-hoja' : ''}`}>
         <div className="ws-cuerpo">
-          <Ribbon ruta={ruta} onAjustes={() => setAjustesAbiertos(true)} />
+          {!movil && <Ribbon ruta={ruta} onAjustes={() => setAjustesAbiertos(true)} />}
 
-          {exploradorAbierto && (
+          {!movil && exploradorAbierto && (
             <aside className="ws-explorador" aria-label="Explorador de materias" data-tour="explorador" style={{ width: anchoExplorador }}>
               <ErrorBoundary vista="el explorador de materias">
                 <Explorador />
@@ -106,7 +125,7 @@ export function Workspace() {
             </div>
           </main>
 
-          {inspectorAbierto && (
+          {amplio && inspectorAbierto && (
             <aside className="ws-inspector" aria-label="Inspector" data-tour="inspector" style={{ width: anchoInspector }}>
               <Divisor
                 etiqueta="Ancho del inspector"
@@ -116,14 +135,28 @@ export function Workspace() {
                 claseExtra="divisor-inspector"
                 onCambiar={fijarAnchoInspector}
               />
-              <ErrorBoundary vista="el inspector">
-                <Inspector />
-              </ErrorBoundary>
+              {inspector}
             </aside>
           )}
         </div>
 
+        {/* Pantallas medianas: cajón lateral con telón. Móvil: hoja inferior que deja tocar el grafo. */}
+        {!amplio && (
+          <Cajon
+            abierto={inspectorAbierto}
+            alCerrar={() => alternarInspector(false)}
+            titulo="Inspector"
+            lado={movil ? 'inferior' : 'derecha'}
+            modal={!movil}
+            ancho={anchoInspector}
+            sobreBarra={movil}
+          >
+            {inspector}
+          </Cajon>
+        )}
+
         <BarraEstado />
+        {movil && <BarraInferior ruta={ruta} onAjustes={() => setAjustesAbiertos(true)} />}
         <Dialogos />
         <DialogoAjustes abierto={ajustesAbiertos} onCambiar={setAjustesAbiertos} />
       </div>

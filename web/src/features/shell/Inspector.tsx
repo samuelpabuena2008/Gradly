@@ -31,7 +31,7 @@ function Detalle() {
         <MousePointerClick size={24} strokeWidth={1.25} aria-hidden="true" />
         <p className="insp-vacio-titulo">Elige una materia</p>
         <p className="ayuda">
-          Haz clic en una materia del explorador o del grafo para ver aquí su estado y su predicción. Con doble clic
+          Elige una materia en el explorador o en el grafo para ver aquí su estado y su predicción. Con doble clic
           abres su página.
         </p>
       </div>

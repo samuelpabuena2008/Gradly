@@ -26,3 +26,13 @@
 .toast-accion { color: var(--accent-soft); font-weight: 600; }
 .toast-cerrar { padding: 4px; min-height: 0; }
 @keyframes toast-entra { from { opacity: 0; transform: translateY(8px); } }
+
+/* Móvil: los avisos quedan sobre la barra inferior y ocupan el ancho útil. */
+@media (max-width: 899px) {
+  .toaster {
+    left: var(--space-3);
+    right: var(--space-3);
+    bottom: calc(var(--statusbar-h) + var(--nav-inferior-h) + var(--seguro-abajo) + var(--space-3));
+    max-width: none;
+  }
+}

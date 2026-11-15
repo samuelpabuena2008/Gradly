@@ -14,6 +14,7 @@
 
 /* Fórmula */
 .modelo-formula { padding: var(--space-4); overflow-x: auto; font-size: 26px; text-align: center; background: var(--bg-panel); border: 1px solid var(--line); border-radius: var(--radius-lg); }
+@media (max-width: 899px) { .modelo-formula { padding: var(--space-3); font-size: 19px; } }
 .modelo-formula math { font-family: 'Cambria Math', 'STIX Two Math', var(--font-ui), serif; }
 .modelo-terminos { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-3); margin: var(--space-4) 0 0; }
 .modelo-terminos > div { padding: var(--space-3); background: var(--bg-panel); border: 1px solid var(--line); border-radius: var(--radius-md); }
