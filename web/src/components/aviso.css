@@ -1,0 +1,2 @@
+.aviso-pocas { display: flex; align-items: flex-start; gap: var(--space-2); margin: 0; padding: var(--space-2) var(--space-3); font-size: var(--fs-sm); color: var(--text); background: var(--accent-bg); border: 1px solid var(--accent-deep); border-radius: var(--radius-md); }
+.aviso-pocas svg { flex-shrink: 0; margin-top: 2px; color: var(--accent-soft); }

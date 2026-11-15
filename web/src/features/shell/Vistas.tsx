@@ -1,15 +1,18 @@
-// Contenido del centro según la ruta. Las vistas de las fases siguientes (rediseño del grafo,
-// predicciones, laboratorio, modelo) reemplazan a estas versiones base.
+// Contenido del centro según la ruta. Las vistas Laboratorio y Modelo se descargan bajo demanda
+// (muestran un esqueleto mientras llegan).
 
-import { FlaskConical, BrainCircuit } from 'lucide-react'
-import type { ReactNode } from 'react'
+import { lazy, Suspense, type ReactNode } from 'react'
+import { EsqueletoVista } from '../../components/Esqueleto'
 import { MallaGrafo } from '../malla/MallaGrafo'
 import { PaginaMateria } from '../materia/PaginaMateria'
 import { ImportarNotas } from '../notas/ImportarNotas'
-import { PanelPrediccion } from '../prediccion/PanelPrediccion'
+import { VistaPredicciones } from '../prediccion/VistaPredicciones'
 import type { Ruta } from '../../lib/ui/ruta'
 import { useApp } from '../../store/app'
-import { useDatos, useEscenario } from '../../store/escenario'
+import { useDatos } from '../../store/escenario'
+
+const VistaLaboratorio = lazy(() => import('../laboratorio/VistaLaboratorio'))
+const VistaModelo = lazy(() => import('../modelo/VistaModelo'))
 
 function Desplazable({ children }: { children: ReactNode }) {
   return (
@@ -17,6 +20,11 @@ function Desplazable({ children }: { children: ReactNode }) {
       <div className="vista-contenido">{children}</div>
     </div>
   )
+}
+
+/** Vistas que gestionan su propio ancho y relleno. */
+function DesplazableLibre({ children }: { children: ReactNode }) {
+  return <div className="vista-scroll vista-scroll-libre">{children}</div>
 }
 
 function VistaNotas() {
@@ -27,35 +35,6 @@ function VistaNotas() {
     <Desplazable>
       <ImportarNotas malla={malla} notas={notasReales} onCambiar={reemplazarNotas} />
     </Desplazable>
-  )
-}
-
-function VistaPredicciones() {
-  const { malla, recomendado } = useDatos()
-  const escenario = useEscenario()
-  const seleccionar = useApp((s) => s.seleccionar)
-  const elegirModelo = useApp((s) => s.elegirModelo)
-  return (
-    <Desplazable>
-      <PanelPrediccion
-        malla={malla}
-        predicciones={escenario.predicciones}
-        onSeleccionar={seleccionar}
-        tipoModelo={escenario.tipoModelo}
-        recomendado={recomendado}
-        onCambiarTipo={elegirModelo}
-      />
-    </Desplazable>
-  )
-}
-
-function VistaEnPreparacion({ titulo, texto, icono }: { titulo: string; texto: string; icono: ReactNode }) {
-  return (
-    <div className="vista-vacia">
-      {icono}
-      <h1 className="vista-vacia-titulo">{titulo}</h1>
-      <p className="ayuda">{texto}</p>
-    </div>
   )
 }
 
@@ -72,29 +51,25 @@ export function nombreDeRuta(ruta: Ruta): string {
 }
 
 export function ContenidoCentro({ ruta }: { ruta: Ruta }) {
-  if (ruta.tipo === 'materia') return <Desplazable><PaginaMateria id={ruta.id} /></Desplazable>
+  if (ruta.tipo === 'materia') return <DesplazableLibre><PaginaMateria id={ruta.id} /></DesplazableLibre>
   switch (ruta.vista) {
     case 'malla':
       return <MallaGrafo />
     case 'notas':
       return <VistaNotas />
     case 'predicciones':
-      return <VistaPredicciones />
+      return <DesplazableLibre><VistaPredicciones /></DesplazableLibre>
     case 'laboratorio':
       return (
-        <VistaEnPreparacion
-          titulo="Laboratorio de grafos"
-          texto="Aquí verás, paso a paso, cómo se ordena la malla y dónde están sus cuellos de botella. Estamos terminando esta vista."
-          icono={<FlaskConical size={28} strokeWidth={1.25} aria-hidden="true" />}
-        />
+        <Suspense fallback={<EsqueletoVista etiqueta="Cargando el Laboratorio de grafos" />}>
+          <DesplazableLibre><VistaLaboratorio /></DesplazableLibre>
+        </Suspense>
       )
     case 'modelo':
       return (
-        <VistaEnPreparacion
-          titulo="Cómo piensa Gradly"
-          texto="Aquí encontrarás la fórmula del modelo y qué tan bien acierta. Estamos terminando esta vista."
-          icono={<BrainCircuit size={28} strokeWidth={1.25} aria-hidden="true" />}
-        />
+        <Suspense fallback={<EsqueletoVista etiqueta="Cargando la vista Modelo" />}>
+          <DesplazableLibre><VistaModelo /></DesplazableLibre>
+        </Suspense>
       )
   }
 }

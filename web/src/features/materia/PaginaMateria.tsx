@@ -1,12 +1,15 @@
-// Página de una materia (pestaña, estilo «nota» de Obsidian). Versión base de la Fase 2:
-// título, propiedades y enlaces entre materias. La Fase 4 agrega rango, «por qué» y mini-grafo.
+// Página de una materia (pestaña, estilo «nota» de Obsidian): título, propiedades y bloques de
+// predicción, por qué, temas a reforzar, relaciones, comparación de modelos e historial de intentos.
 
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
+import { AvisoPocasNotas } from '../../components/AvisoPocasNotas'
 import { Semaforo } from '../../components/Semaforo'
 import { predecesores } from '../../lib/graph/dag'
-import { estadoMateria, valorMateria } from '../../lib/ui/estado'
+import { estadoMateria } from '../../lib/ui/estado'
+import { fmtNota } from '../../lib/ui/formato'
+import { useApp } from '../../store/app'
 import { useDatos, useEscenario } from '../../store/escenario'
-import { abrirMateria } from '../shell/acciones'
+import { BloqueComparar, BloqueIntentos, BloquePorQue, BloquePrediccion, BloqueRelaciones, BloqueTemas } from './bloques'
 import './materia.css'
 
 const ESTADO_TEXTO = {
@@ -17,8 +20,9 @@ const ESTADO_TEXTO = {
 } as const
 
 export function PaginaMateria({ id }: { id: string }) {
-  const { malla, materiaPorId } = useDatos()
+  const { malla, modelo, materiaPorId } = useDatos()
   const escenario = useEscenario()
+  const notasReales = useApp((s) => s.notasReales)
   const materia = materiaPorId.get(id)
 
   const { previas, dependientes } = useMemo(
@@ -28,6 +32,11 @@ export function PaginaMateria({ id }: { id: string }) {
     }),
     [malla, id],
   )
+  const estadoDe = useCallback(
+    (otra: string) => estadoMateria(otra, malla, escenario.mapaNotas, escenario.prediccionPorId),
+    [malla, escenario.mapaNotas, escenario.prediccionPorId],
+  )
+  const nombreDe = useCallback((otra: string) => materiaPorId.get(otra)?.nombre ?? otra, [materiaPorId])
 
   if (!materia) {
     return (
@@ -38,16 +47,10 @@ export function PaginaMateria({ id }: { id: string }) {
     )
   }
 
-  const estado = estadoMateria(id, malla, escenario.mapaNotas, escenario.prediccionPorId)
-  const valor = valorMateria(estado)
-  const enlace = (otra: string) => (
-    <li key={otra}>
-      <button type="button" className="materia-enlace" onClick={() => abrirMateria(otra)}>
-        {materiaPorId.get(otra)?.nombre ?? otra}
-        <span className="mono materia-codigo">{otra}</span>
-      </button>
-    </li>
-  )
+  const estado = estadoDe(id)
+  const p = estado.prediccion
+  const faltantes = previas.filter((previa) => estadoDe(previa).tipo !== 'aprobada')
+  const notaVigente = estado.nota ?? p?.nota
 
   return (
     <article className="materia">
@@ -70,43 +73,52 @@ export function PaginaMateria({ id }: { id: string }) {
             <th scope="row">Estado</th>
             <td>
               {ESTADO_TEXTO[estado.tipo]}
-              {estado.tipo === 'disponible' && estado.prediccion && (
+              {p && (
                 <>
                   {' '}
-                  <Semaforo nivel={estado.prediccion.semaforo} />
+                  <Semaforo nivel={p.semaforo} />
                 </>
               )}
             </td>
           </tr>
-          {valor && (
+          {notaVigente !== undefined && Number.isFinite(notaVigente) && (
             <tr>
               <th scope="row">{estado.tipo === 'disponible' ? 'Nota esperada' : 'Nota'}</th>
-              <td className="mono">{valor}</td>
+              <td className="mono">{fmtNota(notaVigente)}</td>
             </tr>
           )}
         </tbody>
       </table>
 
-      <section aria-labelledby="mat-previas">
-        <h2 id="mat-previas" className="materia-seccion">
-          Prerrequisitos
-        </h2>
-        {previas.length > 0 ? <ul className="materia-lista">{previas.map(enlace)}</ul> : <p className="ayuda">Esta materia no tiene prerrequisitos.</p>}
-      </section>
-
-      <section aria-labelledby="mat-entrantes">
-        <h2 id="mat-entrantes" className="materia-seccion">
-          Enlaces entrantes
-        </h2>
-        {dependientes.length > 0 ? (
-          <>
-            <p className="ayuda">Materias que dependen de esta:</p>
-            <ul className="materia-lista">{dependientes.map(enlace)}</ul>
-          </>
-        ) : (
-          <p className="ayuda">Ninguna materia depende directamente de esta.</p>
-        )}
-      </section>
+      {p && <AvisoPocasNotas cantidad={escenario.mapaReales.size} />}
+      <BloquePrediccion
+        estado={estado}
+        hayNotas={escenario.mapaNotas.size > 0}
+        aprobacion={malla.nota_aprobacion}
+        tipoModelo={escenario.tipoModelo}
+        faltantes={faltantes}
+        nombreDe={nombreDe}
+        hipotetica={false}
+      />
+      <BloquePorQue p={p} nombreDe={nombreDe} />
+      <BloqueTemas p={p} malla={malla} nombreDe={nombreDe} />
+      <BloqueRelaciones
+        malla={malla}
+        materia={materia}
+        previas={previas}
+        dependientes={dependientes}
+        materiaPorId={materiaPorId}
+        estadoDe={estadoDe}
+      />
+      <BloqueComparar
+        id={id}
+        malla={malla}
+        modelo={modelo}
+        notas={escenario.mapaNotas}
+        tipoModelo={escenario.tipoModelo}
+        hayPrediccion={Boolean(p)}
+      />
+      <BloqueIntentos id={id} reales={notasReales} aprobacion={malla.nota_aprobacion} />
     </article>
   )
 }
